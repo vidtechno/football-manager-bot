@@ -155,3 +155,17 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
   - Testlar faqat runner'ning mahalliy Docker xizmatidagi lokal Supabase stekida (`npx supabase start` va `npx supabase test db --local`) bajariladi.
   - CI HECH QACHON masofaviy Supabase loyihasiga ulanmaydi, maxfiy kalitlar yoki remote credentials ishlatmaydi.
   - Joylashtirilgan migratsiyalar o'zgarmasdir; har qanday to'g'rilash faqat yangi forward migratsiyalar orqali amalga oshiriladi.
+
+---
+
+### [2026-08-19] DEC-018: 4C-Bosqich Global Shablonlar Domen Migratsiyasi Shakllantirilishi
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Qayta ishlatiluvchi klub shablonlari (`club_templates`), klub versiyalari (`club_template_versions`), futbolchilar shablonlari (`player_templates`), pozitsiyalar (`player_template_positions`) va atributlar versiyalari (`player_template_versions`) bazaviy sxemasini shakllantirish.
+- **Qaror:**
+  - `club_templates` va `player_templates` jadvallari yaratildi. Aniq 20 ta boshlang'ich klub slaglari va qisqa kodlari kiritildi.
+  - Futbolchi atributlari `JSONB` ob'ektda emas, to'liq normalizatsiya qilingan relatsion ustunlarda (outfield va goalkeeper ko'rsatkichlari) saqlanadi.
+  - Futbolchining yoshi o'rniga tug'ilgan sanasi (`date_of_birth`) saqlanadi.
+  - Aniq 12 ta pozitsiya kodi (`enum_player_position`) yaratildi. Har bir faol futbolchida tranzaksiya yakunida kamida bitta asosiy pozitsiya bo'lishi shartiligi deferred constraint trigger orqali tekshiriladi.
+  - Shablon versiyalari o'zgarmasdir. Admin Telegram ID lari manba kodiga yoki hujjatlarga qattiq yozilmaydi (`ADMIN_TELEGRAM_ID` server env orqali o'tkaziladi).
+  - 5 ta jadvalda RLS yoqildi, `anon` va `authenticated` ruxsatsizlantirildi, `service_role` ga minimal DML va RPC ruxsatlari berildi.
