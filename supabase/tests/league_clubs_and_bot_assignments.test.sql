@@ -231,7 +231,34 @@ BEGIN
 END;
 $$;
 
+-- 5. Test Forward Repair Regression for publish_club_template_version
+DO $$
+DECLARE
+    v_admin_id UUID;
+    v_club_template_id UUID;
+    v_version_id UUID;
+BEGIN
+    INSERT INTO public.admin_users (email, role, status)
+    VALUES ('admin_repair_test@example.com', 'SUPER_ADMIN', 'ACTIVE')
+    RETURNING id INTO v_admin_id;
+
+    SELECT id INTO v_club_template_id FROM public.club_templates WHERE slug = 'real-madrid';
+
+    v_version_id := public.publish_club_template_version(
+        v_admin_id,
+        v_club_template_id,
+        98,
+        1200000000.00
+    );
+
+    IF v_version_id IS NULL THEN
+        RAISE EXCEPTION 'Test Failed: Forward repaired publish_club_template_version returned NULL.';
+    END IF;
+END;
+$$;
+
 SELECT pass('League clubs and bot manager assignments tests completed successfully.');
 SELECT * FROM finish();
 
 ROLLBACK;
+
