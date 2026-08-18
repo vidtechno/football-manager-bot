@@ -34,7 +34,7 @@ DECLARE
 BEGIN
     -- Create test manager & lobby league
     INSERT INTO public.managers (telegram_user_id, manager_name) VALUES (888880001, 'owner_4b2') RETURNING id INTO v_owner_id;
-    INSERT INTO public.leagues (name, code, owner_manager_id, status) VALUES ('4B2 Test League', 'CLB4B2', v_owner_id, 'LOBBY') RETURNING id INTO v_league_id;
+    INSERT INTO public.leagues (name, code, owner_manager_id, status) VALUES ('4B2 Test League', 'C4B299', v_owner_id, 'LOBBY') RETURNING id INTO v_league_id;
 
     -- Initialize 20 club slots
     v_init_result := public.initialize_gigants_league_clubs(v_league_id);
@@ -89,7 +89,7 @@ BEGIN
     INSERT INTO public.manager_blocks (manager_id, reason, is_blocked) VALUES (v_blocked_id, 'Violation', TRUE);
 
     -- Create League & Members
-    INSERT INTO public.leagues (name, code, owner_manager_id, status) VALUES ('Selection Test League', 'SEL4B2', v_owner_id, 'LOBBY') RETURNING id INTO v_league_id;
+    INSERT INTO public.leagues (name, code, owner_manager_id, status) VALUES ('Selection Test League', 'S4B299', v_owner_id, 'LOBBY') RETURNING id INTO v_league_id;
     INSERT INTO public.league_members (league_id, manager_id, role) VALUES (v_league_id, v_owner_id, 'OWNER');
     INSERT INTO public.league_members (league_id, manager_id, role) VALUES (v_league_id, v_member1_id, 'MEMBER');
     INSERT INTO public.league_members (league_id, manager_id, role) VALUES (v_league_id, v_member2_id, 'MEMBER');
@@ -183,7 +183,7 @@ BEGIN
     INSERT INTO public.managers (telegram_user_id, manager_name) VALUES (888880007, 'bot_owner') RETURNING id INTO v_owner_id;
     INSERT INTO public.managers (telegram_user_id, manager_name) VALUES (888880008, 'bot_member') RETURNING id INTO v_member_id;
 
-    INSERT INTO public.leagues (name, code, owner_manager_id, status) VALUES ('Bot Test League', 'BOT4B2', v_owner_id, 'LOBBY') RETURNING id INTO v_league_id;
+    INSERT INTO public.leagues (name, code, owner_manager_id, status) VALUES ('Bot Test League', 'B4B299', v_owner_id, 'LOBBY') RETURNING id INTO v_league_id;
     INSERT INTO public.league_members (league_id, manager_id, role) VALUES (v_league_id, v_owner_id, 'OWNER');
     INSERT INTO public.league_members (league_id, manager_id, role) VALUES (v_league_id, v_member_id, 'MEMBER');
 
