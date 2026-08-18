@@ -135,33 +135,36 @@ Ma me'lumotlar bazasi 9 ta mantiqiy domenga bo'lingan **45 ta alohida jadvaldan*
 
 #### 13. `club_templates`
 
-- **Vazifasi:** Asosiy 20 ta top-klubning global shablon ma me'lumotlari.
+- **Vazifasi:** Asosiy top-klublarning global o'zgarmas shablon ma'lumotlari.
 - **PK:** `id UUID`
-- **Ustunlar:** `name TEXT UNIQUE NOT NULL`, `short_name VARCHAR(3) UNIQUE NOT NULL`, `country TEXT NOT NULL`, `reputation INT DEFAULT 85`
+- **Ustunlar:** `slug VARCHAR(50) UNIQUE NOT NULL`, `name VARCHAR(100) NOT NULL`, `short_code VARCHAR(10) UNIQUE NOT NULL`, `country VARCHAR(100) NOT NULL`, `logo_url TEXT`, `is_active BOOLEAN DEFAULT TRUE`, `created_at TIMESTAMPTZ`, `updated_at TIMESTAMPTZ`
 
 #### 14. `club_template_versions`
 
-- **Vazifasi:** Klub shablonlarining versiyalari tarixi (kelajakdagi ligalar uchun).
+- **Vazifasi:** Klub shablonlarining versiyalari tarixi (reputatsiya va baza tarkib qiymati).
 - **PK:** `id UUID`
-- **Ustunlar:** `club_template_id UUID REFERENCES club_templates(id)`, `version INT NOT NULL`, `base_squad_value DECIMAL(15,2)`, `created_at TIMESTAMPTZ`
+- **Ustunlar:** `club_template_id UUID REFERENCES club_templates(id)`, `version INT NOT NULL`, `reputation INT CHECK (1..100)`, `base_squad_value NUMERIC(15,2)`, `effective_from TIMESTAMPTZ`, `effective_to TIMESTAMPTZ`, `is_current BOOLEAN DEFAULT TRUE`, `created_at TIMESTAMPTZ`, `created_by_admin_id UUID REFERENCES admin_users(id)`
+- **Constraints:** `UNIQUE(club_template_id, version)`, partial `UNIQUE(club_template_id) WHERE is_current = TRUE`
 
 #### 15. `player_templates`
 
-- **Vazifasi:** Global futbolchilar bazasi shablonlari.
+- **Vazifasi:** Global futbolchilar shablonlari bazasi.
 - **PK:** `id UUID`
-- **Ustunlar:** `club_template_id UUID REFERENCES club_templates(id)`, `name TEXT NOT NULL`, `age INT NOT NULL`, `nationality TEXT NOT NULL`, `base_market_value DECIMAL(15,2)`, `base_overall_rating INT`
+- **Ustunlar:** `canonical_key VARCHAR(100) UNIQUE NOT NULL`, `current_club_template_id UUID REFERENCES club_templates(id)`, `full_name VARCHAR(150) NOT NULL`, `date_of_birth DATE NOT NULL`, `nationality VARCHAR(100) NOT NULL`, `is_active BOOLEAN DEFAULT TRUE`, `created_at TIMESTAMPTZ`, `updated_at TIMESTAMPTZ`
 
 #### 16. `player_template_positions`
 
-- **Vazifasi:** Futbolchi shablonlarining asosiy va ikkinchi darajali pozitsiyalari.
+- **Vazifasi:** Futbolchi shablonlarining asosiy (primary) va ikkinchi darajali pozitsiyalari (`enum_player_position`).
 - **PK:** `id UUID`
-- **Ustunlar:** `player_template_id UUID REFERENCES player_templates(id)`, `position_code VARCHAR(5) NOT NULL`, `is_primary BOOLEAN DEFAULT FALSE`
+- **Ustunlar:** `player_template_id UUID REFERENCES player_templates(id)`, `position_code enum_player_position NOT NULL`, `is_primary BOOLEAN DEFAULT FALSE`, `created_at TIMESTAMPTZ`
+- **Constraints:** `UNIQUE(player_template_id, position_code)`, partial `UNIQUE(player_template_id) WHERE is_primary = TRUE`, deferred constraint trigger enforcing >=1 primary position per active player.
 
 #### 17. `player_template_versions`
 
-- **Vazifasi:** Futbolchi atributlarining versiyalari (yangi ligalar uchun).
+- **Vazifasi:** Futbolchi atributlarining to'liq normalizatsiya qilingan relatsion versiyalari tarixi (JSONB emas).
 - **PK:** `id UUID`
-- **Ustunlar:** `player_template_id UUID REFERENCES player_templates(id)`, `version INT NOT NULL`, `attributes JSONB NOT NULL`, `created_at TIMESTAMPTZ`
+- **Ustunlar:** `player_template_id UUID REFERENCES player_templates(id)`, `version INT NOT NULL`, `market_value_eur NUMERIC(15,2)`, `overall_rating INT CHECK (1..99)`, Outfield stats (`pace, shooting, passing, dribbling, defending, physical`), Goalkeeper stats (`reflexes, handling, positioning, aerial_ability, distribution, one_on_one`), `effective_from TIMESTAMPTZ`, `effective_to TIMESTAMPTZ`, `is_current BOOLEAN DEFAULT TRUE`, `created_at TIMESTAMPTZ`, `created_by_admin_id UUID REFERENCES admin_users(id)`
+- **Constraints:** `UNIQUE(player_template_id, version)`, partial `UNIQUE(player_template_id) WHERE is_current = TRUE`, validation trigger (GK vs Outfield stats).
 
 ---
 

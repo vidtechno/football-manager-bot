@@ -25,7 +25,7 @@
 - [ ] **4. Supabase poydevori va migratsiyalar (Supabase foundation and migrations)**
   - [x] **4A. Supabase Identity & Access domen migratsiyasi (`create_identity_and_access_schema`):** Tayyorlash va remote masofaviy Supabase loyihasiga (`cxuqmfvnrzsrafjhoggu`) muvaffaqiyatli push qilish yakunlandi (20260818193305). Anonymous ruxsat taqiqi va RLS 401 qaytarilishi sinovdan o'tdi.
   - [x] **4B1. Supabase Leagues & Membership poydevori (`create_leagues_and_membership_foundation`):** Tayyorlash va remote masofaviy Supabase loyihasiga (`cxuqmfvnrzsrafjhoggu`) muvaffaqiyatli push qilish yakunlandi (20260818195026). Anonymous API ruxsat taqiqi (Status 401) barcha 5 ta jadval bo'yicha sinovdan o'tdi.
-  - [ ] **4C. Supabase Global Shablonlar domen migratsiyasi:** `global_club_templates`, `global_player_templates`.
+  - [ ] **4C. Supabase Global Shablonlar domen migratsiyasi (`create_global_club_and_player_templates`):** `club_templates`, `club_template_versions`, `player_templates`, `player_template_positions`, `player_template_versions` jadvallari, 20 ta boshlang'ich klub slaglari, `enum_player_position` va to'liq normalizatsiya qilingan versiyalash modeli shakllantirildi.
   - [ ] **4B2. Supabase League Clubs va Bot Tayinlovlari migratsiyasi:** `league_clubs` (foreign key `global_club_templates.id` bog'liqligi sababli 4C dan keyin) va `bot_manager_assignments`.
   - [ ] 45 ta to'liq normalizatsiya qilingan jadvallar loyihasi (`DATABASE_PLAN.md`) asosida qolgan SQL migratsiyalari shakllantirilgan.
   - [ ] Global shablonlar va liga nusxalari ajratilgan.
