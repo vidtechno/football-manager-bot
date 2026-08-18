@@ -106,8 +106,16 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
 
 - **Maqom:** Tasdiqlangan (Approved)
 - **Kontekst:** Supabase poydevori uchun birinchi SQL migratsiyasini shakllantirish.
+- **Qaror:** `20260818193305_create_identity_and_access_schema.sql` migratsiyasi va uning SQL testlar to'plami yaratildi.
+
+---
+
+### [2026-08-19] DEC-014: 4A-Bosqich Identity & Access Migratsiyasining Masofaviy Joylashtirilishi (Remote Deployment)
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Identity & Access migratsiyasini audit qilish, GitHub ga squash merge qilish va masofaviy Supabase loyihasiga push qilish.
 - **Qaror:**
-  - `20260818193305_create_identity_and_access_schema.sql` migratsiyasi va uning SQL testlar to'plami (`supabase/tests/identity_and_access.test.sql`) yaratildi.
-  - 5 ta jadval (`managers`, `manager_profiles`, `admin_users`, `manager_blocks`, `admin_audit_logs`) shakllantirildi.
-  - Barcha jadvallarda RLS yoqildi, `anon` va `authenticated` huquqlari o'chirilib, faqat backend `service_role` ruxsati saqlandi.
-  - `admin_audit_logs` jadvali uchun `UPDATE`/`DELETE` taqiqlovchi trigger yozildi.
+  - Migratsiya dry-run va strict SQL auditidan muvaffaqiyatli o'tdi.
+  - Masofaviy Supabase (`cxuqmfvnrzsrafjhoggu`) loyihasiga `20260818193305_create_identity_and_access_schema.sql` muvaffaqiyatli joriy qilindi.
+  - Anonim API so'rovlariga `managers` jadvali bo'yicha ruxsat taqiqlandi (Status 401: Permission Denied).
+  - Faqat server-side backend `service_role` ruxsati saqlab qolindi.

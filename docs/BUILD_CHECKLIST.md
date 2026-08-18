@@ -23,7 +23,7 @@
   - [x] `.github/workflows/ci.yml` GitHub Actions CI workflow tayyorlangan.
 
 - [ ] **4. Supabase poydevori va migratsiyalar (Supabase foundation and migrations)**
-  - [x] **4A. Supabase Identity & Access domen migratsiyasi (`create_identity_and_access_schema`):** `managers`, `manager_profiles`, `admin_users`, `manager_blocks`, `admin_audit_logs` jadvallari, RLS va append-only trigger yaratildi.
+  - [x] **4A. Supabase Identity & Access domen migratsiyasi (`create_identity_and_access_schema`):** Tayyorlash va remote masofaviy Supabase loyihasiga (`cxuqmfvnrzsrafjhoggu`) muvaffaqiyatli push qilish yakunlandi (20260818193305). Anonymous ruxsat taqiqi va RLS 401 qaytarilishi sinovdan o'tdi.
   - [ ] 45 ta to'liq normalizatsiya qilingan jadvallar loyihasi (`DATABASE_PLAN.md`) asosida qolgan SQL migratsiyalari shakllantirilgan.
   - [ ] Global shablonlar va liga nusxalari ajratilgan.
   - [ ] 12 ta ENUM turlari va 14 ta bazaviy Triggers/Stored Functions o'rnatilgan.
