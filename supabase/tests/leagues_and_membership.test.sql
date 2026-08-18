@@ -125,7 +125,7 @@ BEGIN
         IF v_code !~ '^[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{6}$' THEN
             RAISE EXCEPTION 'Test Failed: Generated code % contains invalid characters.', v_code;
         END IF;
-    END FOR;
+    END LOOP;
 END;
 $$;
 
