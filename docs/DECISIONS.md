@@ -147,11 +147,11 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
 ---
 
 ### [2026-08-19] DEC-017: GitHub Actions-da Avtomatik Supabase Migratsiya va SQL Testlarini O'rnatish
-* **Maqom:** Tasdiqlangan (Approved)
-* **Kontekst:** Baza migratsiyalari va SQL testlarini har bir Pull Request va `main` ga push qilinganda avtomatik ravishda izchil tekshirish.
-* **Qaror:**
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Baza migratsiyalari va SQL testlarini har bir Pull Request va `main` ga push qilinganda avtomatik ravishda izchil tekshirish.
+- **Qaror:**
   - GitHub Actions `ci.yml` ga `supabase-migration-test` ish (job) qo'shildi.
   - Testlar faqat runner'ning mahalliy Docker xizmatidagi lokal Supabase stekida (`npx supabase start` va `npx supabase test db --local`) bajariladi.
   - CI HECH QACHON masofaviy Supabase loyihasiga ulanmaydi, maxfiy kalitlar yoki remote credentials ishlatmaydi.
   - Joylashtirilgan migratsiyalar o'zgarmasdir; har qanday to'g'rilash faqat yangi forward migratsiyalar orqali amalga oshiriladi.
-

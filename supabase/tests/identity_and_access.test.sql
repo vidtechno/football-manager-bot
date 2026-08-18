@@ -151,7 +151,7 @@ BEGIN
     -- Expect failure on UPDATE
     BEGIN
         UPDATE public.admin_audit_logs SET reason = 'Modified Reason' WHERE id = log_id;
-    EXCEPTION WHEN P0001 THEN
+    EXCEPTION WHEN raise_exception THEN
         v_caught_upd := TRUE;
     END;
 
@@ -162,7 +162,7 @@ BEGIN
     -- Expect failure on DELETE
     BEGIN
         DELETE FROM public.admin_audit_logs WHERE id = log_id;
-    EXCEPTION WHEN P0001 THEN
+    EXCEPTION WHEN raise_exception THEN
         v_caught_del := TRUE;
     END;
 
