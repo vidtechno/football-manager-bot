@@ -34,7 +34,7 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
 
 - **Maqom:** Tasdiqlangan (Approved)
 - **Kontekst:** O'yin natijalari va hodisalarini ishonchli va adolatli simulyatsiya qilish.
-- **Qaror:** O'yin jarayoni to'liq dasturlangan o'yin mantiqiga asoslanadi. Jonli o o'yin davomida hech qanday sun'iy intellekt (AI) modeliga tayanilmaydi.
+- **Qaror:** O'yin jarayoni to'liq dasturlangan o'yin mantiqiga asoslanadi. Jonli o'yin davomida hech qanday sun'iy intellekt (AI) modeliga tayanilmaydi.
 
 ---
 
@@ -65,7 +65,7 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
 ### [2026-08-18] DEC-008: Tenglashtiruvchi Boshlang'ich Byudjet Formulasi
 
 - **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Kuchli va kuchsiz klublar o me'rtasidagi moliyaviy balansni o'rnatish.
+- **Kontekst:** Kuchli va kuchsiz klublar o'rtasidagi moliyaviy balansni o'rnatish.
 - **Qaror:** Byudjet = €100m + (eng yuqori tarkib qiymati - joriy klub tarkib qiymati) * 35%. Maksimal boshlang'ich byudjet: €400m.
 
 ---
@@ -81,7 +81,7 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
 ### [2026-08-18] DEC-010: Idempotent Tur Simulyatsiyasi va Deterministik Random Seed
 
 - **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Takroriy so'rovlarda duplikat natijalar paydo bo me'lishining oldini olish.
+- **Kontekst:** Takroriy so'rovlarda duplikat natijalar paydo bo'lishining oldini olish.
 - **Qaror:** Har bir o'yin deterministik random seed yordamida simulyatsiya qilinadi va Supabase Cron idempotent processing qulflaridan foydalanadi.
 
 ---
@@ -98,8 +98,16 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
 
 - **Maqom:** Tasdiqlangan (Approved)
 - **Kontekst:** Bazaviy ma'lumotlar yaxlitligi va masshtablash imkoniyatini audit qilish.
+- **Qaror:** Ma'lumotlar bazasi 45 ta alohida normalizatsiya qilingan jadvalga bo'lindi. Global shablonlar va liganing jonli ob'ektlari to'liq ajratildi.
+
+---
+
+### [2026-08-18] DEC-013: 4A-Bosqich Identity & Access Domen Migratsiyasi Yaratilishi
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Supabase poydevori uchun birinchi SQL migratsiyasini shakllantirish.
 - **Qaror:**
-  - Ma'lumotlar bazasi 45 ta alohida normalizatsiya qilingan jadvalga bo'lindi.
-  - Global shablonlar (`club_templates`, `player_templates`) va liganing jonli ob'ektlari (`league_clubs`, `league_players`) to'liq ajratildi.
-  - Sub-ob'ektlar (pozitsiyalar, taktik sozlamalar, muzokaralar tarixi, statistika) JSONB belgilarda saqlanmaydi, alohida jadvallar shaklida yoziladi.
-  - 14 ta qat'iy biznes qoidasi PostgreSQL Triggers, Stored Functions va Advisory Locks orqali atomar ta'minlanadi.
+  - `20260818193305_create_identity_and_access_schema.sql` migratsiyasi va uning SQL testlar to'plami (`supabase/tests/identity_and_access.test.sql`) yaratildi.
+  - 5 ta jadval (`managers`, `manager_profiles`, `admin_users`, `manager_blocks`, `admin_audit_logs`) shakllantirildi.
+  - Barcha jadvallarda RLS yoqildi, `anon` va `authenticated` huquqlari o'chirilib, faqat backend `service_role` ruxsati saqlandi.
+  - `admin_audit_logs` jadvali uchun `UPDATE`/`DELETE` taqiqlovchi trigger yozildi.
