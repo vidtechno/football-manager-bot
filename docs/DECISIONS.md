@@ -7,115 +7,111 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
 ## Tasdiqlangan Qarorlar Ro'yxati (Decision Log)
 
 ### [2026-08-18] DEC-001: Loyiha Texnologik Stekini Tasdiqlash
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Yuqori unumdorlikka ega serverless Telegram futbol menejeri o'yinini yaratish.
-- **Qaror:** TypeScript, Node.js, grammY, Supabase PostgreSQL, Supabase Cron, Vercel Functions, GitHub, Google Antigravity.
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Yuqori unumdorlikka ega serverless Telegram futbol menejeri o'yinini yaratish.
+* **Qaror:** TypeScript, Node.js, grammY, Supabase PostgreSQL, Supabase Cron, Vercel Functions, GitHub, Google Antigravity.
 
 ---
 
 ### [2026-08-18] DEC-002: Yagona Haqiqat Manbai va Til Standarti
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Hujjatlar va interfeys izchilligini ta'minlash.
-- **Qaror:** `MASTER_SPEC.md` loyihaning yagona haqiqat manbai hisoblanadi. Botning barcha foydalanuvchi interfeysi (matnlar, tugmalar, xabarlar) O'zbek tilida yoziladi. Kod va baza nomlari Ingliz tilida saqlanadi.
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Hujjatlar va interfeys izchilligini ta'minlash.
+* **Qaror:** `MASTER_SPEC.md` loyihaning yagona haqiqat manbai hisoblanadi. Botning barcha foydalanuvchi interfeysi (matnlar, tugmalar, xabarlar) O'zbek tilida yoziladi. Kod va baza nomlari Ingliz tilida saqlanadi.
 
 ---
 
 ### [2026-08-18] DEC-003: Telegram Shaxsiy Chat (Private Chat Only) Operatsiyasi
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Botning ishlash muhitini soddalashtirish va foydalanuvchilar bilan bevosita muloqotni ta'minlash.
-- **Qaror:** Bot to'liq shaxsiy chatda ishlaydi. Guruhlarga qo'shish yoki guruh adminlik huquqlari talab qilinmaydi.
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Botning ishlash muhitini soddalashtirish va foydalanuvchilar bilan bevosita muloqotni ta'minlash.
+* **Qaror:** Bot to'liq shaxsiy chatda ishlaydi. Guruhlarga qo'shish yoki guruh adminlik huquqlari talab qilinmaydi.
 
 ---
 
 ### [2026-08-18] DEC-004: Dasturlangan O'yin Simulyatsiya Mantiqi (Programmed Game Logic)
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** O'yin natijalari va hodisalarini ishonchli va adolatli simulyatsiya qilish.
-- **Qaror:** O'yin jarayoni to'liq dasturlangan o'yin mantiqiga asoslanadi. Jonli o'yin davomida hech qanday sun'iy intellekt (AI) modeliga tayanilmaydi.
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** O'yin natijalari va hodisalarini ishonchli va adolatli simulyatsiya qilish.
+* **Qaror:** O'yin jarayoni to'liq dasturlangan o'yin mantiqiga asoslanadi. Jonli o'yin davomida hech qanday sun'iy intellekt (AI) modeliga tayanilmaydi.
 
 ---
 
 ### [2026-08-18] DEC-005: Gigants Mode va 38 Turdan Iborat Mavsum
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Boshlang'ich o'yin rejimi va liga formati.
-- **Qaror:** Dastlabki rejim Evropaning top-20 klubidan iborat Gigants Mode bo'ladi. Mavsum 38 tur, 380 o'yindan iborat uy-mehmon formatida o'tkaziladi. Min 1 ta odam menejer ligani boshlashi mumkin.
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Boshlang'ich o'yin rejimi va liga formati.
+* **Qaror:** Dastlabki rejim Evropaning top-20 klubidan iborat Gigants Mode bo'ladi. Mavsum 38 tur, 380 o'yindan iborat uy-mehmon formatida o'tkaziladi. Min 1 ta odam menejer ligani boshlashi mumkin.
 
 ---
 
 ### [2026-08-18] DEC-006: Noyob 6 Belgili Liga Kodlari
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Ligalarga taklif kodi orqali xavfsiz va oson qo'shilish.
-- **Qaror:** Kodlar 6 belgili bo'lib, `O, 0, I, L, 1` chalg'ituvchi harflarisiz generatsiya qilinadi va bazada doimiy reestri saqlanadi.
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Ligalarga taklif kodi orqali xavfsiz va oson qo'shilish.
+* **Qaror:** Kodlar 6 belgili bo'lib, `O, 0, I, L, 1` chalg'ituvchi harflarisiz generatsiya qilinadi va bazada doimiy reestri saqlanadi.
 
 ---
 
 ### [2026-08-18] DEC-007: Bir Menejer Uchun Maksimal 2 Faol Liga Cheklovi
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Server yuklamasini nazorat qilish va adolatli o'yin muhitini ta'minlash.
-- **Qaror:** Bir menejer bir vaqtning o'zida ko'pi bilan 2 ta faol (kutilayotgan yoki aktiv) ligada ishtirok etishi mumkin.
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Server yuklamasini nazorat qilish va adolatli o'yin muhitini ta'minlash.
+* **Qaror:** Bir menejer bir vaqtning o'zida ko'pi bilan 2 ta faol (kutilayotgan yoki aktiv) ligada ishtirok etishi mumkin.
 
 ---
 
 ### [2026-08-18] DEC-008: Tenglashtiruvchi Boshlang'ich Byudjet Formulasi
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Kuchli va kuchsiz klublar o'rtasidagi moliyaviy balansni o'rnatish.
-- **Qaror:** Byudjet = €100m + (eng yuqori tarkib qiymati - joriy klub tarkib qiymati) * 35%. Maksimal boshlang'ich byudjet: €400m.
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Kuchli va kuchsiz klublar o'rtasidagi moliyaviy balansni o'rnatish.
+* **Qaror:** Byudjet = €100m + (eng yuqori tarkib qiymati - joriy klub tarkib qiymati) * 35%. Maksimal boshlang'ich byudjet: €400m.
 
 ---
 
 ### [2026-08-18] DEC-009: Transfer Oynalari va Anti-Drain Qoidalari
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Transferlar intizomi va bo'sh klublarni talon-taroj qilishdan himoyalash.
-- **Qaror:** Transfer oynalari 1-6 va 17-24 turlarda ochiq bo'ladi. Boshqaruvchisiz klublardan futbolchi sotib olishda 8 ta qat'iy anti-drain qoidalari va atomar tranzaksiyalar qo'llaniladi.
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Transferlar intizomi va bo'sh klublarni talon-taroj qilishdan himoyalash.
+* **Qaror:** Transfer oynalari 1-6 va 17-24 turlarda ochiq bo'ladi. Boshqaruvchisiz klublardan futbolchi sotib olishda 8 ta qat'iy anti-drain qoidalari va atomar tranzaksiyalar qo'llaniladi.
 
 ---
 
 ### [2026-08-18] DEC-010: Idempotent Tur Simulyatsiyasi va Deterministik Random Seed
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Takroriy so'rovlarda duplikat natijalar paydo bo'lishining oldini olish.
-- **Qaror:** Har bir o'yin deterministik random seed yordamida simulyatsiya qilinadi va Supabase Cron idempotent processing qulflaridan foydalanadi.
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Takroriy so'rovlarda duplikat natijalar paydo bo'lishining oldini olish.
+* **Qaror:** Har bir o'yin deterministik random seed yordamida simulyatsiya qilinadi va Supabase Cron idempotent processing qulflaridan foydalanadi.
 
 ---
 
 ### [2026-08-18] DEC-011: Owner Admin Panel va O'zgarmas Audit Loglar
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Tizim egasining ma'muriy boshqaruvi hamda xavfsizlik nazorati.
-- **Qaror:** Tizim egasi uchun protected veb admin panel yaratiladi. Har bir ma'muriy amal majburiy sabab bilan `admin_audit_logs` jadvalida saqlanadi.
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Tizim egasining ma'muriy boshqaruvi hamda xavfsizlik nazorati.
+* **Qaror:** Tizim egasi uchun protected veb admin panel yaratiladi. Har bir ma'muriy amal majburiy sabab bilan `admin_audit_logs` jadvalida saqlanadi.
 
 ---
 
 ### [2026-08-18] DEC-012: 45 Ta To'liq Normalizatsiya Qilingan Jadvallar va Shablon-Nusxa Ajratilishi
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Bazaviy ma'lumotlar yaxlitligi va masshtablash imkoniyatini audit qilish.
-- **Qaror:** Ma'lumotlar bazasi 45 ta alohida normalizatsiya qilingan jadvalga bo'lindi. Global shablonlar va liganing jonli ob'ektlari to'liq ajratildi.
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Bazaviy ma'lumotlar yaxlitligi va masshtablash imkoniyatini audit qilish.
+* **Qaror:** Ma'lumotlar bazasi 45 ta alohida normalizatsiya qilingan jadvalga bo'lindi. Global shablonlar va liganing jonli ob'ektlari to'liq ajratildi.
 
 ---
 
 ### [2026-08-18] DEC-013: 4A-Bosqich Identity & Access Domen Migratsiyasi Yaratilishi
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Supabase poydevori uchun birinchi SQL migratsiyasini shakllantirish.
-- **Qaror:** `20260818193305_create_identity_and_access_schema.sql` migratsiyasi va uning SQL testlar to'plami yaratildi.
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Supabase poydevori uchun birinchi SQL migratsiyasini shakllantirish.
+* **Qaror:** `20260818193305_create_identity_and_access_schema.sql` migratsiyasi va uning SQL testlar to'plami yaratildi.
 
 ---
 
 ### [2026-08-19] DEC-014: 4A-Bosqich Identity & Access Migratsiyasining Masofaviy Joylashtirilishi (Remote Deployment)
-
-- **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Identity & Access migratsiyasini audit qilish, GitHub ga squash merge qilish va masofaviy Supabase loyihasiga push qilish.
-- **Qaror:**
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Identity & Access migratsiyasini audit qilish, GitHub ga squash merge qilish va masofaviy Supabase loyihasiga push qilish.
+* **Qaror:**
   - Migratsiya dry-run va strict SQL auditidan muvaffaqiyatli o'tdi.
   - Masofaviy Supabase (`cxuqmfvnrzsrafjhoggu`) loyihasiga `20260818193305_create_identity_and_access_schema.sql` muvaffaqiyatli joriy qilindi.
   - Anonim API so'rovlariga `managers` jadvali bo'yicha ruxsat taqiqlandi (Status 401: Permission Denied).
-  - Faqat server-side backend `service_role` ruxsati saqlab qolindi.
+
+---
+
+### [2026-08-19] DEC-015: 4B1-Bosqich Leagues & Membership Poydevori Migratsiyasining Shakllantirilishi
+* **Maqom:** Tasdiqlangan (Approved)
+* **Kontekst:** Ligalar, a'zolik, sozlamalar va turlar poydevori uchun 5 ta jadval va tranzaksion funksiyalarni yaratish.
+* **Qaror:**
+  - `20260818195026_create_leagues_and_membership_foundation.sql` migratsiyasi va SQL testlari yaratildi.
+  - 5 ta jadval (`leagues`, `league_code_registry`, `league_members`, `league_settings`, `league_rounds`) shakllantirildi.
+  - `league_clubs` va `bot_manager_assignments` jadvallari Foreign Key bog'liqligi sababli 4C-bosqichdagi `global_club_templates` yaratilgandan so'ng 4B2-bosqichda joylashtirilishi belgilandi.
+  - Tranzaksion `create_league_with_owner`, `join_league_by_code`, `leave_lobby_league`, `delete_lobby_league` va 6-belgili noyob kod generatori joylashtirildi.
