@@ -57,6 +57,18 @@ npm run format:check
 
 ---
 
+## 🌿 Ishlab Chiqish Workflow (Development Workflow)
+
+Har bir yangi funksional ustida ishlashda quyidagi tartibga rioya qilinadi:
+
+1. Yangi feature branch yaratish: `git checkout -b feature/feature-name`
+2. Aniq belgilangan bitta vazifani amalga oshirish
+3. Barcha tekshiruv buyruqlarini yurgizish: `npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build`
+4. O'zgarishlarni commit qilish: `git commit -m "feat: description"`
+5. Masofaviy repozitoriyga push qilish: `git push origin feature/feature-name`
+
+---
+
 ## 📌 Asosiy Ishlash Qoidalari (Working Rules)
 
 - `MASTER_SPEC.md` loyihaning yagona haqiqat manbai hisoblanadi.

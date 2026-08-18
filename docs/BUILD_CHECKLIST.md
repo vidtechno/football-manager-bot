@@ -16,9 +16,11 @@
   - [x] ESLint, Prettier va kataloglar tuzilmasi (`src/bot`, `src/services`, `src/database`, `src/game`, `src/jobs`, `src/utils`) shakllantirilgan.
   - [x] Zod atrof-muhit validatsiyasi (`src/config/env.ts`) va Vitest testlari to'liq o'tgan.
 
-- [ ] **3. Git va GitHub sozlamalari (Git and GitHub setup)**
-  - [ ] `.gitignore` faylida `.env.local` va maxfiy fayllar to'g'ri istisno qilingan.
-  - [ ] GitHub repository va CI/CD workflow tayyorlangan.
+- [x] **3. Git va GitHub sozlamalari (Git and GitHub setup)**
+  - [x] `.gitignore` faylida `.env.local` va maxfiy fayllar to'g'ri istisno qilingan.
+  - [x] `.gitattributes` LF normalizatsiyasi o'rnatilgan.
+  - [x] GitHub private repository yaratilgan va remote `origin/main` ulandi.
+  - [x] `.github/workflows/ci.yml` GitHub Actions CI workflow tayyorlangan.
 
 - [ ] **4. Supabase poydevori va migratsiyalar (Supabase foundation and migrations)**
   - [ ] 45 ta to'liq normalizatsiya qilingan jadvallar loyihasi (`DATABASE_PLAN.md`) asosida SQL migratsiyalari shakllantirilgan.
