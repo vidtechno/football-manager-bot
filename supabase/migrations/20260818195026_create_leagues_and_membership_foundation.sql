@@ -1,4 +1,4 @@
--- Supabase Migration: Create Leagues and Membership Database Foundation
+-- Supabase Migration: Create Leagues and Membership Database Foundation (Hardened)
 -- Target Schema: public
 -- Security: RLS Enabled on all tables, Service Role Access Only
 
@@ -27,7 +27,7 @@ CREATE TYPE public.enum_round_status AS ENUM (
 CREATE TABLE public.leagues (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(50) NOT NULL CONSTRAINT chk_leagues_name_length CHECK (length(trim(name)) BETWEEN 3 AND 50),
-    code VARCHAR(6) UNIQUE NOT NULL CONSTRAINT chk_leagues_code_format CHECK (code ~ '^[A-HJ-NP-Z2-9]{6}$'),
+    code VARCHAR(6) UNIQUE NOT NULL CONSTRAINT chk_leagues_code_format CHECK (code ~ '^[A-HJKMNP-Z2-9]{6}$'),
     mode public.enum_league_mode NOT NULL DEFAULT 'GIGANTS',
     status public.enum_league_status NOT NULL DEFAULT 'LOBBY',
     owner_manager_id UUID NOT NULL REFERENCES public.managers(id) ON DELETE RESTRICT,
@@ -36,13 +36,18 @@ CREATE TABLE public.leagues (
     started_at TIMESTAMPTZ,
     completed_at TIMESTAMPTZ,
     cancelled_at TIMESTAMPTZ,
+    CONSTRAINT chk_leagues_completed_status CHECK (status != 'COMPLETED' OR (completed_at IS NOT NULL AND started_at IS NOT NULL)),
+    CONSTRAINT chk_leagues_completed_at_null CHECK (status = 'COMPLETED' OR completed_at IS NULL),
+    CONSTRAINT chk_leagues_cancelled_status CHECK (status != 'CANCELLED' OR cancelled_at IS NOT NULL),
+    CONSTRAINT chk_leagues_cancelled_at_null CHECK (status = 'CANCELLED' OR cancelled_at IS NULL),
+    CONSTRAINT chk_leagues_started_status CHECK (status NOT IN ('STARTING', 'ACTIVE', 'PAUSED', 'COMPLETED') OR started_at IS NOT NULL),
     CONSTRAINT chk_leagues_started_at_order CHECK (started_at IS NULL OR started_at >= created_at),
-    CONSTRAINT chk_leagues_completed_at_valid CHECK (completed_at IS NULL OR (status = 'COMPLETED' AND completed_at >= started_at)),
-    CONSTRAINT chk_leagues_cancelled_at_valid CHECK (cancelled_at IS NULL OR status = 'CANCELLED')
+    CONSTRAINT chk_leagues_completed_at_order CHECK (completed_at IS NULL OR completed_at >= started_at),
+    CONSTRAINT chk_leagues_cancelled_at_order CHECK (cancelled_at IS NULL OR cancelled_at >= created_at)
 );
 
 COMMENT ON TABLE public.leagues IS 'Primary league instances for multiplayer Football Manager competitions.';
-COMMENT ON COLUMN public.leagues.code IS '6-character invitation code using approved non-confusing charset (excluding O, 0, I, L, 1).';
+COMMENT ON COLUMN public.leagues.code IS '6-character invitation code using approved non-confusing charset ABCDEFGHJKMNPQRSTUVWXYZ23456789.';
 
 CREATE INDEX idx_leagues_owner_manager_id ON public.leagues (owner_manager_id);
 CREATE INDEX idx_leagues_code ON public.leagues (code);
@@ -55,9 +60,12 @@ CREATE TRIGGER trg_leagues_updated_at
 
 -- 3. Permanent League Code Registry Table
 CREATE TABLE public.league_code_registry (
-    code VARCHAR(6) PRIMARY KEY CONSTRAINT chk_league_code_registry_code_format CHECK (code ~ '^[A-HJ-NP-Z2-9]{6}$'),
-    league_id UUID UNIQUE REFERENCES public.leagues(id) ON DELETE SET NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    code VARCHAR(6) PRIMARY KEY CONSTRAINT chk_league_code_registry_code_format CHECK (code ~ '^[A-HJKMNP-Z2-9]{6}$'),
+    league_id UUID UNIQUE REFERENCES public.leagues(id) ON DELETE RESTRICT,
+    bound_at TIMESTAMPTZ,
+    released_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT chk_league_code_registry_bound_before_released CHECK (released_at IS NULL OR (bound_at IS NOT NULL AND released_at >= bound_at))
 );
 
 COMMENT ON TABLE public.league_code_registry IS 'Permanent registry preserving created invitation codes to prevent reuse across deleted leagues.';
@@ -67,13 +75,16 @@ CREATE OR REPLACE FUNCTION public.prevent_code_registry_modification()
 RETURNS TRIGGER AS $$
 BEGIN
     IF TG_OP = 'DELETE' THEN
-        RAISE EXCEPTION 'league_code_registry dan kodlarni o''chirish taqiqlangan. Kodlar doimiy saqlanadi.';
+        RAISE EXCEPTION 'league_code_registry dan kodlarni o''chirish taqiqlangan. Kodlar doimiy saqlanadi.' USING ERRCODE = 'P0001';
     ELSIF TG_OP = 'UPDATE' THEN
         IF OLD.code <> NEW.code THEN
-            RAISE EXCEPTION 'league_code_registry kodini o''zgartirish taqiqlangan.';
+            RAISE EXCEPTION 'league_code_registry kodini o''zgartirish taqiqlangan.' USING ERRCODE = 'P0001';
+        END IF;
+        IF OLD.released_at IS NOT NULL THEN
+            RAISE EXCEPTION 'Bo''shatilgan (released) kod ma''lumotlarini o''zgartirish taqiqlangan.' USING ERRCODE = 'P0001';
         END IF;
         IF OLD.league_id IS NOT NULL AND NEW.league_id IS NOT NULL AND OLD.league_id <> NEW.league_id THEN
-            RAISE EXCEPTION 'league_code_registry vaqtinchalik liga ID si qayta bog''lanishi taqiqlangan.';
+            RAISE EXCEPTION 'league_code_registry vaqtinchalik liga ID si qayta bog''lanishi taqiqlangan.' USING ERRCODE = 'P0001';
         END IF;
     END IF;
     RETURN NEW;
@@ -84,14 +95,15 @@ CREATE TRIGGER trg_prevent_code_registry_modification
     BEFORE UPDATE OR DELETE ON public.league_code_registry
     FOR EACH ROW EXECUTE FUNCTION public.prevent_code_registry_modification();
 
--- 4. Unique Code Generator Function
+-- 4. Cryptographic Unique Code Generator Function
 CREATE OR REPLACE FUNCTION public.generate_unique_league_code()
 RETURNS VARCHAR(6) AS $$
 DECLARE
-    chars TEXT := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    chars CONSTANT TEXT := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    bytes BYTEA;
     result VARCHAR(6) := '';
     i INT;
-    rand_val INT;
+    byte_val INT;
     attempts INT := 0;
     max_attempts CONSTANT INT := 50;
     code_exists BOOLEAN;
@@ -99,13 +111,14 @@ BEGIN
     LOOP
         attempts := attempts + 1;
         IF attempts > max_attempts THEN
-            RAISE EXCEPTION 'Noyob liga kodini generatsiya qilib bo''lmadi. Iltimos qaytadan urinib ko''ring.';
+            RAISE EXCEPTION 'Noyob liga kodini generatsiya qilib bo''lmadi. Iltimos qaytadan urinib ko''ring.' USING ERRCODE = 'P0001';
         END IF;
 
+        bytes := extensions.gen_random_bytes(6);
         result := '';
-        FOR i IN 1..6 LOOP
-            rand_val := floor(random() * 32)::INT + 1;
-            result := result || substr(chars, rand_val, 1);
+        FOR i IN 0..5 LOOP
+            byte_val := get_byte(bytes, i);
+            result := result || substr(chars, (byte_val % 32) + 1, 1);
         END FOR;
 
         SELECT EXISTS (
@@ -117,7 +130,7 @@ BEGIN
         END IF;
     END LOOP;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, extensions;
 
 -- 5. League Members Table
 CREATE TABLE public.league_members (
@@ -142,6 +155,102 @@ CREATE INDEX idx_league_members_manager_id ON public.league_members (manager_id)
 CREATE TRIGGER trg_league_members_updated_at
     BEFORE UPDATE ON public.league_members
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Direct DML Enforcement Trigger for League Members
+CREATE OR REPLACE FUNCTION public.enforce_league_members_rules()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_manager_status public.enum_manager_status;
+    v_is_blocked BOOLEAN;
+    v_league_status public.enum_league_status;
+    v_league_owner_id UUID;
+    v_active_leagues_count INT;
+    v_active_members_count INT;
+BEGIN
+    IF TG_OP = 'DELETE' THEN
+        RAISE EXCEPTION 'league_members jadvalidan to''g'’ridan-to''g'’ri o''chirish taqiqlangan. left_at maydonidan foydalaning.' USING ERRCODE = 'P0001';
+    END IF;
+
+    IF TG_OP = 'INSERT' THEN
+        -- Advisory locks in canonical order: manager lock, then league lock
+        PERFORM pg_advisory_xact_lock(hashtext('manager_' || NEW.manager_id::text));
+        PERFORM pg_advisory_xact_lock(hashtext('league_' || NEW.league_id::text));
+
+        -- 1. Check Manager exists & ACTIVE
+        SELECT status INTO v_manager_status FROM public.managers WHERE id = NEW.manager_id;
+        IF v_manager_status IS NULL OR v_manager_status <> 'ACTIVE' THEN
+            RAISE EXCEPTION 'Faol bo''lmagan menejer ligaga a''zo bo''la olmaydi.' USING ERRCODE = 'P0001';
+        END IF;
+
+        -- 2. Check Active Block
+        SELECT EXISTS (
+            SELECT 1 FROM public.manager_blocks WHERE manager_id = NEW.manager_id AND unblocked_at IS NULL
+        ) INTO v_is_blocked;
+        IF v_is_blocked THEN
+            RAISE EXCEPTION 'Bloklangan menejer ligada harakat qila olmaydi.' USING ERRCODE = 'P0001';
+        END IF;
+
+        -- 3. Check League Status & Owner Match
+        SELECT status, owner_manager_id INTO v_league_status, v_league_owner_id
+        FROM public.leagues WHERE id = NEW.league_id;
+
+        IF v_league_status IS NULL THEN
+            RAISE EXCEPTION 'Liga topilmadi.' USING ERRCODE = 'P0001';
+        ELSIF v_league_status <> 'LOBBY' THEN
+            RAISE EXCEPTION 'Faqat LOBBY holatidagi ligaga qo''shilish mumkin.' USING ERRCODE = 'P0001';
+        END IF;
+
+        IF NEW.role = 'OWNER' AND NEW.manager_id <> v_league_owner_id THEN
+            RAISE EXCEPTION 'A''zoning OWNER roli faqat liga egasiga mos kelishi shart.' USING ERRCODE = 'P0001';
+        END IF;
+
+        -- 4. Check Max 2 Active Counting Leagues per Manager
+        SELECT COUNT(DISTINCT lm.league_id) INTO v_active_leagues_count
+        FROM public.league_members lm
+        JOIN public.leagues l ON l.id = lm.league_id
+        WHERE lm.manager_id = NEW.manager_id
+          AND lm.left_at IS NULL
+          AND l.status IN ('LOBBY', 'STARTING', 'ACTIVE', 'PAUSED');
+
+        IF v_active_leagues_count >= 2 THEN
+            RAISE EXCEPTION 'Siz bir vaqtning o''zida ko''pi bilan 2 ta faol ligada qatnashishingiz mumkin.' USING ERRCODE = 'P0001';
+        END IF;
+
+        -- 5. Check Max 20 Active Human Members per League
+        SELECT COUNT(*) INTO v_active_members_count
+        FROM public.league_members
+        WHERE league_id = NEW.league_id AND left_at IS NULL;
+
+        IF v_active_members_count >= 20 THEN
+            RAISE EXCEPTION 'Ushbu ligada maksimal (20 ta) odam-menejerlar o''rni to''lgan.' USING ERRCODE = 'P0001';
+        END IF;
+
+    ELSIF TG_OP = 'UPDATE' THEN
+        -- Prevent changing core identifiers or roles
+        IF OLD.manager_id <> NEW.manager_id OR OLD.league_id <> NEW.league_id OR OLD.role <> NEW.role THEN
+            RAISE EXCEPTION 'league_members kalit ma''lumotlari va rolini o''zgartirish taqiqlangan.' USING ERRCODE = 'P0001';
+        END IF;
+
+        -- Check left_at modifications
+        IF OLD.left_at IS NULL AND NEW.left_at IS NOT NULL THEN
+            IF OLD.role = 'OWNER' THEN
+                RAISE EXCEPTION 'Liga egasi (OWNER) a''zolikdan chiqa olmaydi. Ligani o''chirishi lozim.' USING ERRCODE = 'P0001';
+            END IF;
+
+            SELECT status INTO v_league_status FROM public.leagues WHERE id = NEW.league_id;
+            IF v_league_status <> 'LOBBY' THEN
+                RAISE EXCEPTION 'Liga LOBBY holatidan chiqqach, a''zolar tarkibdan chiqa olmaydi.' USING ERRCODE = 'P0001';
+            END IF;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+CREATE TRIGGER trg_enforce_league_members_rules
+    BEFORE INSERT OR UPDATE OR DELETE ON public.league_members
+    FOR EACH ROW EXECUTE FUNCTION public.enforce_league_members_rules();
 
 -- 6. League Settings Table
 CREATE TABLE public.league_settings (
@@ -170,7 +279,7 @@ BEGIN
     
     IF OLD.round_speed <> NEW.round_speed THEN
         IF OLD.is_speed_locked OR v_league_status <> 'LOBBY' THEN
-            RAISE EXCEPTION 'O''yin tezligini (round_speed) faqat LOBBY holatida va sozlama qulflanmagan bo''lsa o''zgartirish mumkin.';
+            RAISE EXCEPTION 'O''yin tezligini (round_speed) faqat LOBBY holatida va sozlama qulflanmagan bo''lsa o''zgartirish mumkin.' USING ERRCODE = 'P0001';
         END IF;
     END IF;
     RETURN NEW;
@@ -194,10 +303,11 @@ CREATE TABLE public.league_rounds (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT unq_league_rounds_number UNIQUE (league_id, round_number),
-    CONSTRAINT chk_league_rounds_completed_at CHECK (completed_at IS NULL OR completed_at >= started_at),
-    CONSTRAINT chk_league_rounds_status_completed CHECK (status <> 'COMPLETED' OR completed_at IS NOT NULL),
-    CONSTRAINT chk_league_rounds_status_failed CHECK (status <> 'FAILED' OR failure_reason IS NOT NULL),
-    CONSTRAINT chk_league_rounds_status_in_progress CHECK (status <> 'IN_PROGRESS' OR scheduled_at IS NOT NULL)
+    CONSTRAINT chk_league_rounds_completed_status CHECK (status <> 'COMPLETED' OR (started_at IS NOT NULL AND completed_at IS NOT NULL AND completed_at >= started_at)),
+    CONSTRAINT chk_league_rounds_completed_at_req CHECK (completed_at IS NULL OR started_at IS NOT NULL),
+    CONSTRAINT chk_league_rounds_in_progress CHECK (status <> 'IN_PROGRESS' OR (scheduled_at IS NOT NULL AND started_at IS NOT NULL)),
+    CONSTRAINT chk_league_rounds_failed CHECK (status <> 'FAILED' OR (failure_reason IS NOT NULL AND length(trim(failure_reason)) > 0)),
+    CONSTRAINT chk_league_rounds_scheduled CHECK (status <> 'SCHEDULED' OR completed_at IS NULL)
 );
 
 COMMENT ON TABLE public.league_rounds IS 'Round schedule and status entries (38 rounds per season in Gigants mode).';
@@ -219,26 +329,30 @@ BEGIN
 
     -- Valid Transitions Matrix
     IF OLD.status = 'LOBBY' AND NEW.status IN ('STARTING', 'CANCELLED') THEN
-        -- When moving away from LOBBY, lock speed settings
         UPDATE public.league_settings SET is_speed_locked = TRUE WHERE league_id = NEW.id;
-        IF NEW.status = 'STARTING' AND NEW.started_at IS NULL THEN
-            NEW.started_at := NOW();
+        IF NEW.status = 'STARTING' THEN
+            NEW.started_at := COALESCE(NEW.started_at, NOW());
+        ELSIF NEW.status = 'CANCELLED' THEN
+            NEW.cancelled_at := COALESCE(NEW.cancelled_at, NOW());
         END IF;
         RETURN NEW;
     ELSIF OLD.status = 'STARTING' AND NEW.status IN ('ACTIVE', 'CANCELLED') THEN
+        IF NEW.status = 'CANCELLED' THEN
+            NEW.cancelled_at := COALESCE(NEW.cancelled_at, NOW());
+        END IF;
         RETURN NEW;
     ELSIF OLD.status = 'ACTIVE' AND NEW.status IN ('PAUSED', 'COMPLETED') THEN
-        IF NEW.status = 'COMPLETED' AND NEW.completed_at IS NULL THEN
-            NEW.completed_at := NOW();
+        IF NEW.status = 'COMPLETED' THEN
+            NEW.completed_at := COALESCE(NEW.completed_at, NOW());
         END IF;
         RETURN NEW;
     ELSIF OLD.status = 'PAUSED' AND NEW.status IN ('ACTIVE', 'CANCELLED') THEN
-        IF NEW.status = 'CANCELLED' AND NEW.cancelled_at IS NULL THEN
-            NEW.cancelled_at := NOW();
+        IF NEW.status = 'CANCELLED' THEN
+            NEW.cancelled_at := COALESCE(NEW.cancelled_at, NOW());
         END IF;
         RETURN NEW;
     ELSE
-        RAISE EXCEPTION 'Liganing % holatidan % holatiga o''tishi taqiqlangan.', OLD.status, NEW.status;
+        RAISE EXCEPTION 'Liganing % holatidan % holatiga o''tishi taqiqlangan.', OLD.status, NEW.status USING ERRCODE = 'P0001';
     END IF;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
@@ -252,7 +366,7 @@ CREATE OR REPLACE FUNCTION public.enforce_league_deletion_guard()
 RETURNS TRIGGER AS $$
 BEGIN
     IF OLD.status <> 'LOBBY' THEN
-        RAISE EXCEPTION 'Boshlangan, faol yoki yakunlangan ligalarni bazadan to''g'’ridan-to''g'’ri o''chirish taqiqlangan.';
+        RAISE EXCEPTION 'Boshlangan, faol yoki yakunlangan ligalarni bazadan to''g'’ridan-to''g'’ri o''chirish taqiqlangan.' USING ERRCODE = 'P0001';
     END IF;
     RETURN OLD;
 END;
@@ -273,55 +387,70 @@ CREATE OR REPLACE FUNCTION public.create_league_with_owner(
 RETURNS JSONB AS $$
 DECLARE
     v_manager_status public.enum_manager_status;
-    v_active_leagues_count INT;
+    v_is_blocked BOOLEAN;
     v_code VARCHAR(6);
     v_league_id UUID;
+    v_attempts INT := 0;
+    v_reserved BOOLEAN := FALSE;
     v_result JSONB;
 BEGIN
-    -- 1. Advisory lock on manager to prevent race conditions
+    -- 1. Advisory lock on manager
     PERFORM pg_advisory_xact_lock(hashtext('manager_' || p_owner_manager_id::text));
 
     -- 2. Verify manager exists and is ACTIVE
     SELECT status INTO v_manager_status FROM public.managers WHERE id = p_owner_manager_id;
     IF v_manager_status IS NULL THEN
-        RAISE EXCEPTION 'Menejer topilmadi.';
+        RAISE EXCEPTION 'Menejer topilmadi.' USING ERRCODE = 'P0001';
     ELSIF v_manager_status <> 'ACTIVE' THEN
-        RAISE EXCEPTION 'Bloklangan yoki faol bo''lmagan menejer liga yarata olmaydi.';
+        RAISE EXCEPTION 'Bloklangan yoki faol bo''lmagan menejer liga yarata olmaydi.' USING ERRCODE = 'P0001';
     END IF;
 
-    -- 3. Verify manager active counting leagues < 2
-    SELECT COUNT(DISTINCT lm.league_id) INTO v_active_leagues_count
-    FROM public.league_members lm
-    JOIN public.leagues l ON l.id = lm.league_id
-    WHERE lm.manager_id = p_owner_manager_id
-      AND lm.left_at IS NULL
-      AND l.status IN ('LOBBY', 'STARTING', 'ACTIVE', 'PAUSED');
-
-    IF v_active_leagues_count >= 2 THEN
-        RAISE EXCEPTION 'Siz bir vaqtning o''zida ko''pi bilan 2 ta faol ligada qatnashishingiz mumkin.';
+    -- Check active block
+    SELECT EXISTS (
+        SELECT 1 FROM public.manager_blocks WHERE manager_id = p_owner_manager_id AND unblocked_at IS NULL
+    ) INTO v_is_blocked;
+    IF v_is_blocked THEN
+        RAISE EXCEPTION 'Bloklangan menejer ligada harakat qila olmaydi.' USING ERRCODE = 'P0001';
     END IF;
 
-    -- 4. Generate unique 6-character code
-    v_code := public.generate_unique_league_code();
+    -- 3. Atomic Code Reservation Loop
+    LOOP
+        v_attempts := v_attempts + 1;
+        IF v_attempts > 50 THEN
+            RAISE EXCEPTION 'Noyob liga kodini rezerv qilib bo''lmadi. Iltimos qaytadan urinib ko''ring.' USING ERRCODE = 'P0001';
+        END IF;
 
-    -- 5. Create League
+        v_code := public.generate_unique_league_code();
+
+        BEGIN
+            INSERT INTO public.league_code_registry (code, league_id)
+            VALUES (v_code, NULL);
+            v_reserved := TRUE;
+            EXIT;
+        EXCEPTION WHEN unique_violation THEN
+            -- Collision retry
+        END;
+    END LOOP;
+
+    -- 4. Create League
     INSERT INTO public.leagues (name, code, mode, status, owner_manager_id)
     VALUES (trim(p_league_name), v_code, 'GIGANTS', 'LOBBY', p_owner_manager_id)
     RETURNING id INTO v_league_id;
 
-    -- 6. Reserve code permanently in registry
-    INSERT INTO public.league_code_registry (code, league_id)
-    VALUES (v_code, v_league_id);
+    -- 5. Bind reserved code in registry
+    UPDATE public.league_code_registry
+    SET league_id = v_league_id, bound_at = NOW()
+    WHERE code = v_code;
 
-    -- 7. Create League Settings
+    -- 6. Create League Settings
     INSERT INTO public.league_settings (league_id, round_speed, is_speed_locked, max_human_managers)
     VALUES (v_league_id, p_round_speed, FALSE, 20);
 
-    -- 8. Add Owner Membership
+    -- 7. Add Owner Membership (triggers will enforce limits)
     INSERT INTO public.league_members (league_id, manager_id, role)
     VALUES (v_league_id, p_owner_manager_id, 'OWNER');
 
-    -- 9. Return outcome
+    -- 8. Return outcome
     SELECT jsonb_build_object(
         'league_id', l.id,
         'name', l.name,
@@ -336,7 +465,7 @@ BEGIN
 
     RETURN v_result;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, extensions;
 
 -- B. Join League by Code
 CREATE OR REPLACE FUNCTION public.join_league_by_code(
@@ -348,73 +477,45 @@ DECLARE
     v_clean_code VARCHAR(6);
     v_league RECORD;
     v_manager_status public.enum_manager_status;
-    v_active_leagues_count INT;
-    v_active_members_count INT;
-    v_already_member BOOLEAN;
+    v_is_blocked BOOLEAN;
     v_result JSONB;
 BEGIN
     v_clean_code := upper(trim(p_code));
 
-    -- 1. Advisory lock on manager
+    -- 1. Lock manager
     PERFORM pg_advisory_xact_lock(hashtext('manager_' || p_manager_id::text));
 
     -- 2. Locate league
     SELECT * INTO v_league FROM public.leagues WHERE code = v_clean_code;
     IF v_league.id IS NULL THEN
-        RAISE EXCEPTION 'Ushbu taklif kodi bo''yicha liga topilmadi.';
+        RAISE EXCEPTION 'Ushbu taklif kodi bo''yicha liga topilmadi.' USING ERRCODE = 'P0001';
     END IF;
 
     IF v_league.status <> 'LOBBY' THEN
-        RAISE EXCEPTION 'Ushbu liga allaqachon boshlangan yoki yakunlangan. Qo''shilish imkonsiz.';
+        RAISE EXCEPTION 'Ushbu liga allaqachon boshlangan yoki yakunlangan. Qo''shilish imkonsiz.' USING ERRCODE = 'P0001';
     END IF;
 
-    -- 3. Advisory lock on league
+    -- 3. Lock league
     PERFORM pg_advisory_xact_lock(hashtext('league_' || v_league.id::text));
 
-    -- 4. Verify manager status
+    -- 4. Check manager status and block
     SELECT status INTO v_manager_status FROM public.managers WHERE id = p_manager_id;
-    IF v_manager_status IS NULL THEN
-        RAISE EXCEPTION 'Menejer topilmadi.';
-    ELSIF v_manager_status <> 'ACTIVE' THEN
-        RAISE EXCEPTION 'Bloklangan yoki faol bo''lmagan menejer ligaga qo''shila olmaydi.';
+    IF v_manager_status IS NULL OR v_manager_status <> 'ACTIVE' THEN
+        RAISE EXCEPTION 'Bloklangan yoki faol bo''lmagan menejer ligaga qo''shila olmaydi.' USING ERRCODE = 'P0001';
     END IF;
 
-    -- 5. Verify manager active counting leagues < 2
-    SELECT COUNT(DISTINCT lm.league_id) INTO v_active_leagues_count
-    FROM public.league_members lm
-    JOIN public.leagues l ON l.id = lm.league_id
-    WHERE lm.manager_id = p_manager_id
-      AND lm.left_at IS NULL
-      AND l.status IN ('LOBBY', 'STARTING', 'ACTIVE', 'PAUSED');
-
-    IF v_active_leagues_count >= 2 THEN
-        RAISE EXCEPTION 'Siz bir vaqtning o''zida ko''pi bilan 2 ta faol ligada qatnashishingiz mumkin.';
-    END IF;
-
-    -- 6. Check active human members < 20
-    SELECT COUNT(*) INTO v_active_members_count
-    FROM public.league_members
-    WHERE league_id = v_league.id AND left_at IS NULL;
-
-    IF v_active_members_count >= 20 THEN
-        RAISE EXCEPTION 'Ushbu ligada maksimal (20 ta) odam-menejerlar o me me''yori to'’lgan.';
-    END IF;
-
-    -- 7. Check manager not already in league
     SELECT EXISTS (
-        SELECT 1 FROM public.league_members
-        WHERE league_id = v_league.id AND manager_id = p_manager_id AND left_at IS NULL
-    ) INTO v_already_member;
-
-    IF v_already_member THEN
-        RAISE EXCEPTION 'Siz allaqachon ushbu liganing a''zosisiz.';
+        SELECT 1 FROM public.manager_blocks WHERE manager_id = p_manager_id AND unblocked_at IS NULL
+    ) INTO v_is_blocked;
+    IF v_is_blocked THEN
+        RAISE EXCEPTION 'Bloklangan menejer ligada harakat qila olmaydi.' USING ERRCODE = 'P0001';
     END IF;
 
-    -- 8. Add Member
+    -- 5. Add Member (triggers enforce active leagues and max 20 limits)
     INSERT INTO public.league_members (league_id, manager_id, role)
     VALUES (v_league.id, p_manager_id, 'MEMBER');
 
-    -- 9. Return JSON outcome
+    -- 6. Return JSON outcome
     SELECT jsonb_build_object(
         'league_id', l.id,
         'name', l.name,
@@ -437,26 +538,19 @@ CREATE OR REPLACE FUNCTION public.leave_lobby_league(
 )
 RETURNS JSONB AS $$
 DECLARE
-    v_league_status public.enum_league_status;
-    v_member_role public.enum_league_member_role;
+    v_league RECORD;
 BEGIN
-    SELECT status INTO v_league_status FROM public.leagues WHERE id = p_league_id;
-    IF v_league_status IS NULL THEN
-        RAISE EXCEPTION 'Liga topilmadi.';
-    ELSIF v_league_status <> 'LOBBY' THEN
-        RAISE EXCEPTION 'Liga boshlangandan so''ng undan chiqish imkonsiz.';
+    PERFORM pg_advisory_xact_lock(hashtext('manager_' || p_manager_id::text));
+    PERFORM pg_advisory_xact_lock(hashtext('league_' || p_league_id::text));
+
+    SELECT * INTO v_league FROM public.leagues WHERE id = p_league_id FOR UPDATE;
+    IF v_league.id IS NULL THEN
+        RAISE EXCEPTION 'Liga topilmadi.' USING ERRCODE = 'P0001';
+    ELSIF v_league.status <> 'LOBBY' THEN
+        RAISE EXCEPTION 'Liga boshlangandan so''ng undan chiqish imkonsiz.' USING ERRCODE = 'P0001';
     END IF;
 
-    SELECT role INTO v_member_role
-    FROM public.league_members
-    WHERE league_id = p_league_id AND manager_id = p_manager_id AND left_at IS NULL;
-
-    IF v_member_role IS NULL THEN
-        RAISE EXCEPTION 'Siz ushbu liganing faol a''zosi emassiz.';
-    ELSIF v_member_role = 'OWNER' THEN
-        RAISE EXCEPTION 'Liga egasi (OWNER) ligadan chiqa olmaydi. Liga egasi ligani to''liq o''chirishi mumkin.';
-    END IF;
-
+    -- Trigger trg_enforce_league_members_rules will validate OWNER role and status
     UPDATE public.league_members
     SET left_at = NOW()
     WHERE league_id = p_league_id AND manager_id = p_manager_id AND left_at IS NULL;
@@ -474,21 +568,26 @@ RETURNS JSONB AS $$
 DECLARE
     v_league RECORD;
 BEGIN
-    SELECT * INTO v_league FROM public.leagues WHERE id = p_league_id;
+    PERFORM pg_advisory_xact_lock(hashtext('manager_' || p_owner_manager_id::text));
+    PERFORM pg_advisory_xact_lock(hashtext('league_' || p_league_id::text));
+
+    SELECT * INTO v_league FROM public.leagues WHERE id = p_league_id FOR UPDATE;
     IF v_league.id IS NULL THEN
-        RAISE EXCEPTION 'Liga topilmadi.';
+        RAISE EXCEPTION 'Liga topilmadi.' USING ERRCODE = 'P0001';
     END IF;
 
     IF v_league.owner_manager_id <> p_owner_manager_id THEN
-        RAISE EXCEPTION 'Faqat liga egasi ligani o''chirish huquqiga ega.';
+        RAISE EXCEPTION 'Faqat liga egasi ligani o''chirish huquqiga ega.' USING ERRCODE = 'P0001';
     END IF;
 
     IF v_league.status <> 'LOBBY' THEN
-        RAISE EXCEPTION 'Faqat LOBBY holatidagi ligalarni o''chirish mumkin.';
+        RAISE EXCEPTION 'Faqat LOBBY holatidagi ligalarni o''chirish mumkin.' USING ERRCODE = 'P0001';
     END IF;
 
-    -- Unbind code in registry so code is preserved permanently without deletion
-    UPDATE public.league_code_registry SET league_id = NULL WHERE league_id = p_league_id;
+    -- Unbind code in registry to mark as permanently released
+    UPDATE public.league_code_registry
+    SET league_id = NULL, released_at = NOW()
+    WHERE league_id = p_league_id;
 
     -- Delete league (cascades to members, settings, rounds)
     DELETE FROM public.leagues WHERE id = p_league_id;
@@ -504,12 +603,16 @@ ALTER TABLE public.league_members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.league_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.league_rounds ENABLE ROW LEVEL SECURITY;
 
--- Revoke permissions from public API roles (anon, authenticated)
+-- Revoke all permissions from untrusted API roles (anon, authenticated)
 REVOKE ALL ON TABLE public.leagues FROM anon, authenticated;
 REVOKE ALL ON TABLE public.league_code_registry FROM anon, authenticated;
 REVOKE ALL ON TABLE public.league_members FROM anon, authenticated;
 REVOKE ALL ON TABLE public.league_settings FROM anon, authenticated;
 REVOKE ALL ON TABLE public.league_rounds FROM anon, authenticated;
+
+-- Revoke DELETE on leagues and code registry even from service_role to force controlled deletions
+REVOKE DELETE ON TABLE public.leagues FROM service_role;
+REVOKE DELETE ON TABLE public.league_code_registry FROM service_role;
 
 REVOKE EXECUTE ON FUNCTION public.generate_unique_league_code() FROM PUBLIC, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION public.create_league_with_owner(UUID, VARCHAR, INT) FROM PUBLIC, anon, authenticated;
@@ -517,12 +620,12 @@ REVOKE EXECUTE ON FUNCTION public.join_league_by_code(UUID, VARCHAR) FROM PUBLIC
 REVOKE EXECUTE ON FUNCTION public.leave_lobby_league(UUID, UUID) FROM PUBLIC, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION public.delete_lobby_league(UUID, UUID) FROM PUBLIC, anon, authenticated;
 
--- Grant permissions to backend service_role only
-GRANT ALL ON TABLE public.leagues TO service_role;
-GRANT ALL ON TABLE public.league_code_registry TO service_role;
-GRANT ALL ON TABLE public.league_members TO service_role;
-GRANT ALL ON TABLE public.league_settings TO service_role;
-GRANT ALL ON TABLE public.league_rounds TO service_role;
+-- Grant required permissions to backend service_role
+GRANT SELECT, INSERT, UPDATE ON TABLE public.leagues TO service_role;
+GRANT SELECT, INSERT, UPDATE ON TABLE public.league_code_registry TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.league_members TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.league_settings TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.league_rounds TO service_role;
 
 GRANT EXECUTE ON FUNCTION public.generate_unique_league_code() TO service_role;
 GRANT EXECUTE ON FUNCTION public.create_league_with_owner(UUID, VARCHAR, INT) TO service_role;
