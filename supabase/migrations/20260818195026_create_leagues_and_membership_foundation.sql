@@ -145,7 +145,7 @@ BEGIN
                         EXIT;
                     END IF;
                 END IF;
-            END FOR;
+            END LOOP;
         END LOOP;
 
         IF length(result) <> 6 THEN
