@@ -55,7 +55,7 @@ BEGIN
     END IF;
 
     -- Reject initialization for non-LOBBY league
-    UPDATE public.leagues SET status = 'DRAFTING' WHERE id = v_league_id;
+    UPDATE public.leagues SET status = 'DRAFT_ACTIVE' WHERE id = v_league_id;
     v_caught := FALSE;
     BEGIN
         PERFORM public.initialize_gigants_league_clubs(v_league_id);
@@ -158,7 +158,7 @@ BEGIN
     END IF;
 
     -- Lock league state (Status ACTIVE) -> Selection/Switch/Release must fail
-    UPDATE public.leagues SET status = 'DRAFTING' WHERE id = v_league_id;
+    UPDATE public.leagues SET status = 'DRAFT_ACTIVE' WHERE id = v_league_id;
 
     v_caught := FALSE;
     BEGIN
