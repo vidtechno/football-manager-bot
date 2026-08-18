@@ -23,9 +23,10 @@
   - [x] `.github/workflows/ci.yml` GitHub Actions CI workflow tayyorlangan.
 
 - [ ] **4. Supabase poydevori va migratsiyalar (Supabase foundation and migrations)**
-  - [ ] 45 ta to'liq normalizatsiya qilingan jadvallar loyihasi (`DATABASE_PLAN.md`) asosida SQL migratsiyalari shakllantirilgan.
+  - [x] **4A. Supabase Identity & Access domen migratsiyasi (`create_identity_and_access_schema`):** `managers`, `manager_profiles`, `admin_users`, `manager_blocks`, `admin_audit_logs` jadvallari, RLS va append-only trigger yaratildi.
+  - [ ] 45 ta to'liq normalizatsiya qilingan jadvallar loyihasi (`DATABASE_PLAN.md`) asosida qolgan SQL migratsiyalari shakllantirilgan.
   - [ ] Global shablonlar va liga nusxalari ajratilgan.
-  - [ ] 12 ta ENUM turlari va 14 ta bazaviy Triggers/Stored Functions o me'rnatilgan.
+  - [ ] 12 ta ENUM turlari va 14 ta bazaviy Triggers/Stored Functions o'rnatilgan.
   - [ ] Supabase TypeScript tiplari va mijoz sozlamalari joylashtirilgan.
 
 - [ ] **5. Telegram bot poydevori (Telegram bot foundation)**
