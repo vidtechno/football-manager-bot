@@ -2,6 +2,8 @@
 -- All tests run inside a transaction and ROLLBACK at the end.
 
 BEGIN;
+CREATE EXTENSION IF NOT EXISTS pgtap;
+SELECT plan(1);
 
 -- Setup Test Managers
 INSERT INTO public.managers (id, telegram_user_id, manager_name)
@@ -342,5 +344,8 @@ BEGIN
     END IF;
 END;
 $$;
+
+SELECT pass('Leagues and membership tests completed successfully.');
+SELECT * FROM finish();
 
 ROLLBACK;

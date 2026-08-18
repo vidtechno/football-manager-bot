@@ -2,6 +2,8 @@
 -- All tests run inside a transaction and ROLLBACK at the end.
 
 BEGIN;
+CREATE EXTENSION IF NOT EXISTS pgtap;
+SELECT plan(1);
 
 -- 1. Test managers.telegram_user_id uniqueness & positive constraint
 INSERT INTO public.managers (telegram_user_id, manager_name)
@@ -189,5 +191,8 @@ BEGIN
     END IF;
 END;
 $$;
+
+SELECT pass('Identity and access tests completed successfully.');
+SELECT * FROM finish();
 
 ROLLBACK;
