@@ -406,7 +406,7 @@ CREATE OR REPLACE FUNCTION public.enforce_league_deletion_guard()
 RETURNS TRIGGER AS $$
 BEGIN
     IF OLD.status <> 'LOBBY' THEN
-        RAISE EXCEPTION 'Boshlangan, faol yoki yakunlangan ligalarni bazadan to''g'’ridan-to''g'’ri o''chirish taqiqlangan.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'Boshlangan, faol yoki yakunlangan ligalarni bazadan to''g''ridan-to''g''ri o''chirish taqiqlangan.' USING ERRCODE = 'P0001';
     END IF;
     RETURN OLD;
 END;
