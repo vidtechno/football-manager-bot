@@ -73,7 +73,7 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
 ### [2026-08-18] DEC-009: Transfer Oynalari va Anti-Drain Qoidalari
 
 - **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Transferlar intizomi va bo'sh klublarni talon-taroj qilishdan himoyalash.
+- **Kontekst:** Transferlar intizomi va bo me'sh klublarni talon-taroj qilishdan himoyalash.
 - **Qaror:** Transfer oynalari 1-6 va 17-24 turlarda ochiq bo'ladi. Boshqaruvchisiz klublardan futbolchi sotib olishda 8 ta qat'iy anti-drain qoidalari va atomar tranzaksiyalar qo'llaniladi.
 
 ---
@@ -118,4 +118,18 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
   - Migratsiya dry-run va strict SQL auditidan muvaffaqiyatli o'tdi.
   - Masofaviy Supabase (`cxuqmfvnrzsrafjhoggu`) loyihasiga `20260818193305_create_identity_and_access_schema.sql` muvaffaqiyatli joriy qilindi.
   - Anonim API so'rovlariga `managers` jadvali bo'yicha ruxsat taqiqlandi (Status 401: Permission Denied).
-  - Faqat server-side backend `service_role` ruxsati saqlab qolindi.
+
+---
+
+### [2026-08-19] DEC-015: 4B1-Bosqich Leagues & Membership Poydevori Migratsiyasining Qat'iylashtirilishi (Hardened)
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Ligalar, a'zolik, sozlamalar va turlar poydevori migratsiyasini va testlarini qat'iy xavfsizlik va mantiqiy aniqlik bilan qayta ko'rib chiqish.
+- **Qaror:**
+  - **Noyob Kod Alfavit:** Aniq belgilangan `ABCDEFGHJKMNPQRSTUVWXYZ23456789` (32 belgi) alfaviti va `^[A-HJKMNP-Z2-9]{6}$` regex qo'llandi (`O, 0, I, L, 1` mutlaqo rad etiladi).
+  - **Kriptografik Generatsiya:** `extensions.gen_random_bytes(6)` va mod 32 dan foydalanilib, nol noproporsional mod biasesiz (modulo bias) kriptografik kod generatsiyasi o'rnatildi.
+  - **Atomar Rezervatsiya:** `create_league_with_owner` ichida kodni avval `league_code_registry` ga atomar INSERT va retry sikli orqali rezerv qilish o'rnatildi.
+  - **Reestr Hayot Sikli:** `bound_at` va `released_at` maydonlari qo'shildi. O'chirilgan ligalarning kodlari doimiy saqlanib, qayta ishlatilishi taqiqlandi.
+  - **Bloklangan Menejer Nazorati:** `manager_blocks` jadvalidagi faol bloklar (`unblocked_at IS NULL`) liga yaratish va qo'shilish funksiyalarida hamda triggerlarda qat'iy bloklanishi ta'minlandi.
+  - **To'g'ridan-to'g'ri DML Himoyasi:** `league_members` uchun `trg_enforce_league_members_rules` triggeri qo'shilib, to'g'ridan-to'g'ri INSERT orqali 2 ta liga va 20 ta a'zo limitini chetlab o me'tish taqiqlandi.
+  - **Xavfsiz SQL Test Uslubi:** Barcha testlar `v_caught` boolean bayrog'i yordamida qayta yozildi. 4A testlaridagi o'xshash xatolar tuzatildi.
