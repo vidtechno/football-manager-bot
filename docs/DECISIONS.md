@@ -1,0 +1,105 @@
+# Telegram Football Manager - Qarorlar Jurnali (DECISIONS.md)
+
+Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasdiqlangan mahsulot va texnik qarorlarni qayd etib boradi.
+
+---
+
+## Tasdiqlangan Qarorlar Ro'yxati (Decision Log)
+
+### [2026-08-18] DEC-001: Loyiha Texnologik Stekini Tasdiqlash
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Yuqori unumdorlikka ega serverless Telegram futbol menejeri o'yinini yaratish.
+- **Qaror:** TypeScript, Node.js, grammY, Supabase PostgreSQL, Supabase Cron, Vercel Functions, GitHub, Google Antigravity.
+
+---
+
+### [2026-08-18] DEC-002: Yagona Haqiqat Manbai va Til Standarti
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Hujjatlar va interfeys izchilligini ta'minlash.
+- **Qaror:** `MASTER_SPEC.md` loyihaning yagona haqiqat manbai hisoblanadi. Botning barcha foydalanuvchi interfeysi (matnlar, tugmalar, xabarlar) O'zbek tilida yoziladi. Kod va baza nomlari Ingliz tilida saqlanadi.
+
+---
+
+### [2026-08-18] DEC-003: Telegram Shaxsiy Chat (Private Chat Only) Operatsiyasi
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Botning ishlash muhitini soddalashtirish va foydalanuvchilar bilan bevosita muloqotni ta'minlash.
+- **Qaror:** Bot to'liq shaxsiy chatda ishlaydi. Guruhlarga qo'shish yoki guruh adminlik huquqlari talab qilinmaydi.
+
+---
+
+### [2026-08-18] DEC-004: Dasturlangan O'yin Simulyatsiya Mantiqi (Programmed Game Logic)
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** O'yin natijalari va hodisalarini ishonchli va adolatli simulyatsiya qilish.
+- **Qaror:** O'yin jarayoni to'liq dasturlangan o'yin mantiqiga asoslanadi. Jonli o o'yin davomida hech qanday sun'iy intellekt (AI) modeliga tayanilmaydi.
+
+---
+
+### [2026-08-18] DEC-005: Gigants Mode va 38 Turdan Iborat Mavsum
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Boshlang'ich o'yin rejimi va liga formati.
+- **Qaror:** Dastlabki rejim Evropaning top-20 klubidan iborat Gigants Mode bo'ladi. Mavsum 38 tur, 380 o'yindan iborat uy-mehmon formatida o'tkaziladi. Min 1 ta odam menejer ligani boshlashi mumkin.
+
+---
+
+### [2026-08-18] DEC-006: Noyob 6 Belgili Liga Kodlari
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Ligalarga taklif kodi orqali xavfsiz va oson qo'shilish.
+- **Qaror:** Kodlar 6 belgili bo'lib, `O, 0, I, L, 1` chalg'ituvchi harflarisiz generatsiya qilinadi va bazada doimiy reestri saqlanadi.
+
+---
+
+### [2026-08-18] DEC-007: Bir Menejer Uchun Maksimal 2 Faol Liga Cheklovi
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Server yuklamasini nazorat qilish va adolatli o'yin muhitini ta'minlash.
+- **Qaror:** Bir menejer bir vaqtning o'zida ko'pi bilan 2 ta faol (kutilayotgan yoki aktiv) ligada ishtirok etishi mumkin.
+
+---
+
+### [2026-08-18] DEC-008: Tenglashtiruvchi Boshlang'ich Byudjet Formulasi
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Kuchli va kuchsiz klublar o me'rtasidagi moliyaviy balansni o'rnatish.
+- **Qaror:** Byudjet = €100m + (eng yuqori tarkib qiymati - joriy klub tarkib qiymati) * 35%. Maksimal boshlang'ich byudjet: €400m.
+
+---
+
+### [2026-08-18] DEC-009: Transfer Oynalari va Anti-Drain Qoidalari
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Transferlar intizomi va bo'sh klublarni talon-taroj qilishdan himoyalash.
+- **Qaror:** Transfer oynalari 1-6 va 17-24 turlarda ochiq bo'ladi. Boshqaruvchisiz klublardan futbolchi sotib olishda 8 ta qat'iy anti-drain qoidalari va atomar tranzaksiyalar qo'llaniladi.
+
+---
+
+### [2026-08-18] DEC-010: Idempotent Tur Simulyatsiyasi va Deterministik Random Seed
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Takroriy so'rovlarda duplikat natijalar paydo bo me'lishining oldini olish.
+- **Qaror:** Har bir o'yin deterministik random seed yordamida simulyatsiya qilinadi va Supabase Cron idempotent processing qulflaridan foydalanadi.
+
+---
+
+### [2026-08-18] DEC-011: Owner Admin Panel va O'zgarmas Audit Loglar
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Tizim egasining ma'muriy boshqaruvi hamda xavfsizlik nazorati.
+- **Qaror:** Tizim egasi uchun protected veb admin panel yaratiladi. Har bir ma'muriy amal majburiy sabab bilan `admin_audit_logs` jadvalida saqlanadi.
+
+---
+
+### [2026-08-18] DEC-012: 45 Ta To'liq Normalizatsiya Qilingan Jadvallar va Shablon-Nusxa Ajratilishi
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Bazaviy ma'lumotlar yaxlitligi va masshtablash imkoniyatini audit qilish.
+- **Qaror:**
+  - Ma'lumotlar bazasi 45 ta alohida normalizatsiya qilingan jadvalga bo'lindi.
+  - Global shablonlar (`club_templates`, `player_templates`) va liganing jonli ob'ektlari (`league_clubs`, `league_players`) to'liq ajratildi.
+  - Sub-ob'ektlar (pozitsiyalar, taktik sozlamalar, muzokaralar tarixi, statistika) JSONB belgilarda saqlanmaydi, alohida jadvallar shaklida yoziladi.
+  - 14 ta qat'iy biznes qoidasi PostgreSQL Triggers, Stored Functions va Advisory Locks orqali atomar ta'minlanadi.
