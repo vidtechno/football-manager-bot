@@ -33,7 +33,7 @@ DECLARE
     v_caught BOOLEAN;
 BEGIN
     -- Create test manager & lobby league
-    INSERT INTO public.managers (telegram_id, username) VALUES (888880001, 'owner_4b2') RETURNING id INTO v_owner_id;
+    INSERT INTO public.managers (telegram_user_id, manager_name) VALUES (888880001, 'owner_4b2') RETURNING id INTO v_owner_id;
     INSERT INTO public.leagues (name, code, owner_manager_id, status) VALUES ('4B2 Test League', 'CLB4B2', v_owner_id, 'LOBBY') RETURNING id INTO v_league_id;
 
     -- Initialize 20 club slots
@@ -79,11 +79,11 @@ DECLARE
     v_caught BOOLEAN;
 BEGIN
     -- Setup Managers & League
-    INSERT INTO public.managers (telegram_id, username) VALUES (888880002, 'owner_m1') RETURNING id INTO v_owner_id;
-    INSERT INTO public.managers (telegram_id, username) VALUES (888880003, 'member_m1') RETURNING id INTO v_member1_id;
-    INSERT INTO public.managers (telegram_id, username) VALUES (888880004, 'member_m2') RETURNING id INTO v_member2_id;
-    INSERT INTO public.managers (telegram_id, username) VALUES (888880005, 'non_member') RETURNING id INTO v_non_member_id;
-    INSERT INTO public.managers (telegram_id, username) VALUES (888880006, 'blocked_m') RETURNING id INTO v_blocked_id;
+    INSERT INTO public.managers (telegram_user_id, manager_name) VALUES (888880002, 'owner_m1') RETURNING id INTO v_owner_id;
+    INSERT INTO public.managers (telegram_user_id, manager_name) VALUES (888880003, 'member_m1') RETURNING id INTO v_member1_id;
+    INSERT INTO public.managers (telegram_user_id, manager_name) VALUES (888880004, 'member_m2') RETURNING id INTO v_member2_id;
+    INSERT INTO public.managers (telegram_user_id, manager_name) VALUES (888880005, 'non_member') RETURNING id INTO v_non_member_id;
+    INSERT INTO public.managers (telegram_user_id, manager_name) VALUES (888880006, 'blocked_m') RETURNING id INTO v_blocked_id;
 
     -- Block manager
     INSERT INTO public.manager_blocks (manager_id, reason, is_blocked) VALUES (v_blocked_id, 'Violation', TRUE);
@@ -180,8 +180,8 @@ DECLARE
     v_assigned_count INT;
     v_caught BOOLEAN;
 BEGIN
-    INSERT INTO public.managers (telegram_id, username) VALUES (888880007, 'bot_owner') RETURNING id INTO v_owner_id;
-    INSERT INTO public.managers (telegram_id, username) VALUES (888880008, 'bot_member') RETURNING id INTO v_member_id;
+    INSERT INTO public.managers (telegram_user_id, manager_name) VALUES (888880007, 'bot_owner') RETURNING id INTO v_owner_id;
+    INSERT INTO public.managers (telegram_user_id, manager_name) VALUES (888880008, 'bot_member') RETURNING id INTO v_member_id;
 
     INSERT INTO public.leagues (name, code, owner_manager_id, status) VALUES ('Bot Test League', 'BOT4B2', v_owner_id, 'LOBBY') RETURNING id INTO v_league_id;
     INSERT INTO public.league_members (league_id, manager_id, role) VALUES (v_league_id, v_owner_id, 'OWNER');
@@ -261,4 +261,3 @@ SELECT pass('League clubs and bot manager assignments tests completed successful
 SELECT * FROM finish();
 
 ROLLBACK;
-
