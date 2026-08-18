@@ -1,6 +1,6 @@
--- Supabase Migration: Create Leagues and Membership Database Foundation (Hardened)
+-- Supabase Migration: Create Leagues and Membership Database Foundation (Hardened & Corrected)
 -- Target Schema: public
--- Security: RLS Enabled on all tables, Service Role Access Only
+-- Security: RLS Enabled on all tables, Service Role Access Restricted
 
 -- 1. Enums
 CREATE TYPE public.enum_league_status AS ENUM (
@@ -23,11 +23,14 @@ CREATE TYPE public.enum_round_status AS ENUM (
     'FAILED'
 );
 
+-- Note: The approved invitation code alphabet is 'ABCDEFGHJKMNPQRSTUVWXYZ23456789' (exactly 31 characters).
+-- It excludes O, 0, I, L, 1 to prevent user visual confusion.
+
 -- 2. Leagues Table
 CREATE TABLE public.leagues (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(50) NOT NULL CONSTRAINT chk_leagues_name_length CHECK (length(trim(name)) BETWEEN 3 AND 50),
-    code VARCHAR(6) UNIQUE NOT NULL CONSTRAINT chk_leagues_code_format CHECK (code ~ '^[A-HJKMNP-Z2-9]{6}$'),
+    code VARCHAR(6) UNIQUE NOT NULL CONSTRAINT chk_leagues_code_format CHECK (code ~ '^[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{6}$'),
     mode public.enum_league_mode NOT NULL DEFAULT 'GIGANTS',
     status public.enum_league_status NOT NULL DEFAULT 'LOBBY',
     owner_manager_id UUID NOT NULL REFERENCES public.managers(id) ON DELETE RESTRICT,
@@ -47,7 +50,7 @@ CREATE TABLE public.leagues (
 );
 
 COMMENT ON TABLE public.leagues IS 'Primary league instances for multiplayer Football Manager competitions.';
-COMMENT ON COLUMN public.leagues.code IS '6-character invitation code using approved non-confusing charset ABCDEFGHJKMNPQRSTUVWXYZ23456789.';
+COMMENT ON COLUMN public.leagues.code IS '6-character invitation code using approved non-confusing 31-character charset ABCDEFGHJKMNPQRSTUVWXYZ23456789.';
 
 CREATE INDEX idx_leagues_owner_manager_id ON public.leagues (owner_manager_id);
 CREATE INDEX idx_leagues_code ON public.leagues (code);
@@ -60,7 +63,7 @@ CREATE TRIGGER trg_leagues_updated_at
 
 -- 3. Permanent League Code Registry Table
 CREATE TABLE public.league_code_registry (
-    code VARCHAR(6) PRIMARY KEY CONSTRAINT chk_league_code_registry_code_format CHECK (code ~ '^[A-HJKMNP-Z2-9]{6}$'),
+    code VARCHAR(6) PRIMARY KEY CONSTRAINT chk_league_code_registry_code_format CHECK (code ~ '^[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{6}$'),
     league_id UUID UNIQUE REFERENCES public.leagues(id) ON DELETE RESTRICT,
     bound_at TIMESTAMPTZ,
     released_at TIMESTAMPTZ,
@@ -70,22 +73,38 @@ CREATE TABLE public.league_code_registry (
 
 COMMENT ON TABLE public.league_code_registry IS 'Permanent registry preserving created invitation codes to prevent reuse across deleted leagues.';
 
--- Code Registry Immutability Trigger
+-- Code Registry State Lifecycle & Immutability Trigger
 CREATE OR REPLACE FUNCTION public.prevent_code_registry_modification()
 RETURNS TRIGGER AS $$
 BEGIN
     IF TG_OP = 'DELETE' THEN
         RAISE EXCEPTION 'league_code_registry dan kodlarni o''chirish taqiqlangan. Kodlar doimiy saqlanadi.' USING ERRCODE = 'P0001';
     ELSIF TG_OP = 'UPDATE' THEN
+        -- Allow no-op updates
+        IF NEW.code IS NOT DISTINCT FROM OLD.code
+           AND NEW.league_id IS NOT DISTINCT FROM OLD.league_id
+           AND NEW.bound_at IS NOT DISTINCT FROM OLD.bound_at
+           AND NEW.released_at IS NOT DISTINCT FROM OLD.released_at THEN
+            RETURN NEW;
+        END IF;
+
         IF OLD.code <> NEW.code THEN
             RAISE EXCEPTION 'league_code_registry kodini o''zgartirish taqiqlangan.' USING ERRCODE = 'P0001';
         END IF;
-        IF OLD.released_at IS NOT NULL THEN
-            RAISE EXCEPTION 'Bo''shatilgan (released) kod ma''lumotlarini o''zgartirish taqiqlangan.' USING ERRCODE = 'P0001';
+
+        -- Transition A: Reserved -> Bound (OLD.league_id IS NULL -> NEW.league_id IS NOT NULL, NEW.bound_at IS NOT NULL, NEW.released_at IS NULL)
+        IF OLD.league_id IS NULL AND OLD.bound_at IS NULL AND OLD.released_at IS NULL
+           AND NEW.league_id IS NOT NULL AND NEW.bound_at IS NOT NULL AND NEW.released_at IS NULL THEN
+            RETURN NEW;
         END IF;
-        IF OLD.league_id IS NOT NULL AND NEW.league_id IS NOT NULL AND OLD.league_id <> NEW.league_id THEN
-            RAISE EXCEPTION 'league_code_registry vaqtinchalik liga ID si qayta bog''lanishi taqiqlangan.' USING ERRCODE = 'P0001';
+
+        -- Transition B: Bound -> Released (OLD.league_id IS NOT NULL -> NEW.league_id IS NULL, NEW.released_at IS NOT NULL)
+        IF OLD.league_id IS NOT NULL AND OLD.bound_at IS NOT NULL AND OLD.released_at IS NULL
+           AND NEW.league_id IS NULL AND NEW.bound_at = OLD.bound_at AND NEW.released_at IS NOT NULL THEN
+            RETURN NEW;
         END IF;
+
+        RAISE EXCEPTION 'league_code_registry bo''yicha taqiqlangan holat o''tishi.' USING ERRCODE = 'P0001';
     END IF;
     RETURN NEW;
 END;
@@ -95,11 +114,11 @@ CREATE TRIGGER trg_prevent_code_registry_modification
     BEFORE UPDATE OR DELETE ON public.league_code_registry
     FOR EACH ROW EXECUTE FUNCTION public.prevent_code_registry_modification();
 
--- 4. Cryptographic Unique Code Generator Function
+-- 4. Cryptographic Unique Code Generator Function (Unbiased Rejection Sampling)
 CREATE OR REPLACE FUNCTION public.generate_unique_league_code()
 RETURNS VARCHAR(6) AS $$
 DECLARE
-    chars CONSTANT TEXT := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    chars CONSTANT TEXT := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; -- 31 characters
     bytes BYTEA;
     result VARCHAR(6) := '';
     i INT;
@@ -114,12 +133,24 @@ BEGIN
             RAISE EXCEPTION 'Noyob liga kodini generatsiya qilib bo''lmadi. Iltimos qaytadan urinib ko''ring.' USING ERRCODE = 'P0001';
         END IF;
 
-        bytes := extensions.gen_random_bytes(6);
         result := '';
-        FOR i IN 0..5 LOOP
-            byte_val := get_byte(bytes, i);
-            result := result || substr(chars, (byte_val % 32) + 1, 1);
-        END FOR;
+        -- Generate batches of 16 random bytes and perform rejection sampling for 31-char alphabet (reject 248..255)
+        WHILE length(result) < 6 LOOP
+            bytes := extensions.gen_random_bytes(16);
+            FOR i IN 0..15 LOOP
+                byte_val := get_byte(bytes, i);
+                IF byte_val < 248 THEN -- 248 = 31 * 8; rejects byte values 248..255 for uniform 1/31 sampling
+                    result := result || substr(chars, (byte_val % 31) + 1, 1);
+                    IF length(result) = 6 THEN
+                        EXIT;
+                    END IF;
+                END IF;
+            END FOR;
+        END LOOP;
+
+        IF length(result) <> 6 THEN
+            RAISE EXCEPTION 'Generatsiya qilingan kod uzunligi 6 emas.' USING ERRCODE = 'P0001';
+        END IF;
 
         SELECT EXISTS (
             SELECT 1 FROM public.league_code_registry WHERE code = result
@@ -167,10 +198,6 @@ DECLARE
     v_active_leagues_count INT;
     v_active_members_count INT;
 BEGIN
-    IF TG_OP = 'DELETE' THEN
-        RAISE EXCEPTION 'league_members jadvalidan to''g'’ridan-to''g'’ri o''chirish taqiqlangan. left_at maydonidan foydalaning.' USING ERRCODE = 'P0001';
-    END IF;
-
     IF TG_OP = 'INSERT' THEN
         -- Advisory locks in canonical order: manager lock, then league lock
         PERFORM pg_advisory_xact_lock(hashtext('manager_' || NEW.manager_id::text));
@@ -249,7 +276,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 CREATE TRIGGER trg_enforce_league_members_rules
-    BEFORE INSERT OR UPDATE OR DELETE ON public.league_members
+    BEFORE INSERT OR UPDATE ON public.league_members
     FOR EACH ROW EXECUTE FUNCTION public.enforce_league_members_rules();
 
 -- 6. League Settings Table
@@ -276,12 +303,25 @@ DECLARE
     v_league_status public.enum_league_status;
 BEGIN
     SELECT status INTO v_league_status FROM public.leagues WHERE id = NEW.league_id;
-    
-    IF OLD.round_speed <> NEW.round_speed THEN
-        IF OLD.is_speed_locked OR v_league_status <> 'LOBBY' THEN
-            RAISE EXCEPTION 'O''yin tezligini (round_speed) faqat LOBBY holatida va sozlama qulflanmagan bo''lsa o''zgartirish mumkin.' USING ERRCODE = 'P0001';
+
+    -- Prevent unlocking speed settings
+    IF OLD.is_speed_locked AND NOT NEW.is_speed_locked THEN
+        RAISE EXCEPTION 'Qulflangan o''yin sozlamalarini (is_speed_locked) qayta ochish taqiqlangan.' USING ERRCODE = 'P0001';
+    END IF;
+
+    -- Protect fields if league is no longer LOBBY or settings are locked
+    IF OLD.is_speed_locked OR v_league_status <> 'LOBBY' THEN
+        IF OLD.round_speed <> NEW.round_speed THEN
+            RAISE EXCEPTION 'O''yin tezligini (round_speed) faqat LOBBY holatida o''zgartirish mumkin.' USING ERRCODE = 'P0001';
+        END IF;
+        IF OLD.first_round_delay_minutes <> NEW.first_round_delay_minutes THEN
+            RAISE EXCEPTION 'Birinchi tur kechikish vaqtini faqat LOBBY holatida o''zgartirish mumkin.' USING ERRCODE = 'P0001';
+        END IF;
+        IF OLD.max_human_managers <> NEW.max_human_managers THEN
+            RAISE EXCEPTION 'Maksimal menejerlar sonini o''zgartirish taqiqlangan.' USING ERRCODE = 'P0001';
         END IF;
     END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
@@ -391,7 +431,6 @@ DECLARE
     v_code VARCHAR(6);
     v_league_id UUID;
     v_attempts INT := 0;
-    v_reserved BOOLEAN := FALSE;
     v_result JSONB;
 BEGIN
     -- 1. Advisory lock on manager
@@ -413,7 +452,7 @@ BEGIN
         RAISE EXCEPTION 'Bloklangan menejer ligada harakat qila olmaydi.' USING ERRCODE = 'P0001';
     END IF;
 
-    -- 3. Atomic Code Reservation Loop
+    -- 3. Atomic Code Reservation Loop (INSERT candidate into registry with league_id NULL first)
     LOOP
         v_attempts := v_attempts + 1;
         IF v_attempts > 50 THEN
@@ -425,7 +464,6 @@ BEGIN
         BEGIN
             INSERT INTO public.league_code_registry (code, league_id)
             VALUES (v_code, NULL);
-            v_reserved := TRUE;
             EXIT;
         EXCEPTION WHEN unique_violation THEN
             -- Collision retry
@@ -446,7 +484,7 @@ BEGIN
     INSERT INTO public.league_settings (league_id, round_speed, is_speed_locked, max_human_managers)
     VALUES (v_league_id, p_round_speed, FALSE, 20);
 
-    -- 7. Add Owner Membership (triggers will enforce limits)
+    -- 7. Add Owner Membership (triggers enforce rules and active limits)
     INSERT INTO public.league_members (league_id, manager_id, role)
     VALUES (v_league_id, p_owner_manager_id, 'OWNER');
 
@@ -584,7 +622,7 @@ BEGIN
         RAISE EXCEPTION 'Faqat LOBBY holatidagi ligalarni o''chirish mumkin.' USING ERRCODE = 'P0001';
     END IF;
 
-    -- Unbind code in registry to mark as permanently released
+    -- Unbind code in registry to mark as permanently released (Transition B)
     UPDATE public.league_code_registry
     SET league_id = NULL, released_at = NOW()
     WHERE league_id = p_league_id;
@@ -596,7 +634,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
--- 10. Row Level Security (RLS) & Default Grants
+-- 10. Row Level Security (RLS) & Strict Least Privilege Grants
 ALTER TABLE public.leagues ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.league_code_registry ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.league_members ENABLE ROW LEVEL SECURITY;
@@ -610,24 +648,21 @@ REVOKE ALL ON TABLE public.league_members FROM anon, authenticated;
 REVOKE ALL ON TABLE public.league_settings FROM anon, authenticated;
 REVOKE ALL ON TABLE public.league_rounds FROM anon, authenticated;
 
--- Revoke DELETE on leagues and code registry even from service_role to force controlled deletions
-REVOKE DELETE ON TABLE public.leagues FROM service_role;
-REVOKE DELETE ON TABLE public.league_code_registry FROM service_role;
-
-REVOKE EXECUTE ON FUNCTION public.generate_unique_league_code() FROM PUBLIC, anon, authenticated;
+-- Revoke execution of functions from PUBLIC, anon, authenticated
+REVOKE EXECUTE ON FUNCTION public.generate_unique_league_code() FROM PUBLIC, anon, authenticated, service_role;
 REVOKE EXECUTE ON FUNCTION public.create_league_with_owner(UUID, VARCHAR, INT) FROM PUBLIC, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION public.join_league_by_code(UUID, VARCHAR) FROM PUBLIC, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION public.leave_lobby_league(UUID, UUID) FROM PUBLIC, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION public.delete_lobby_league(UUID, UUID) FROM PUBLIC, anon, authenticated;
 
--- Grant required permissions to backend service_role
-GRANT SELECT, INSERT, UPDATE ON TABLE public.leagues TO service_role;
-GRANT SELECT, INSERT, UPDATE ON TABLE public.league_code_registry TO service_role;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.league_members TO service_role;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.league_settings TO service_role;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.league_rounds TO service_role;
+-- Grant minimal necessary table permissions to service_role (mutations boundary enforced via RPC functions)
+GRANT SELECT, UPDATE ON TABLE public.leagues TO service_role;
+GRANT SELECT ON TABLE public.league_code_registry TO service_role;
+GRANT SELECT ON TABLE public.league_members TO service_role;
+GRANT SELECT, UPDATE ON TABLE public.league_settings TO service_role;
+GRANT SELECT, INSERT, UPDATE ON TABLE public.league_rounds TO service_role;
 
-GRANT EXECUTE ON FUNCTION public.generate_unique_league_code() TO service_role;
+-- Grant RPC function execution ONLY to service_role
 GRANT EXECUTE ON FUNCTION public.create_league_with_owner(UUID, VARCHAR, INT) TO service_role;
 GRANT EXECUTE ON FUNCTION public.join_league_by_code(UUID, VARCHAR) TO service_role;
 GRANT EXECUTE ON FUNCTION public.leave_lobby_league(UUID, UUID) TO service_role;
