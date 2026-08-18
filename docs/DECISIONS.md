@@ -169,3 +169,4 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
   - Aniq 12 ta pozitsiya kodi (`enum_player_position`) yaratildi. Har bir faol futbolchida tranzaksiya yakunida kamida bitta asosiy pozitsiya bo'lishi shartiligi deferred constraint trigger orqali tekshiriladi.
   - Shablon versiyalari o'zgarmasdir. Admin Telegram ID lari manba kodiga yoki hujjatlarga qattiq yozilmaydi (`ADMIN_TELEGRAM_ID` server env orqali o'tkaziladi).
   - 5 ta jadvalda RLS yoqildi, `anon` va `authenticated` ruxsatsizlantirildi, `service_role` ga minimal DML va RPC ruxsatlari berildi.
+  - Migratsiya PR #4 orqali `main` ga merge qilindi va masofaviy Supabase loyihasiga (`cxuqmfvnrzsrafjhoggu`) `20260818210748` binosida muvaffaqiyatli joylashtirildi. Anonymous API smoke test barcha 5 ta jadval bo'yicha HTTP 401 ruxsat taqiqini tasdiqladi.
