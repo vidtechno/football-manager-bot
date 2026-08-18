@@ -2,6 +2,8 @@
 -- All tests run inside a transaction and ROLLBACK at the end.
 
 BEGIN;
+CREATE EXTENSION IF NOT EXISTS pgtap;
+SELECT plan(1);
 
 -- 1. Test managers.telegram_user_id uniqueness & positive constraint
 INSERT INTO public.managers (telegram_user_id, manager_name)
@@ -151,7 +153,7 @@ BEGIN
     -- Expect failure on UPDATE
     BEGIN
         UPDATE public.admin_audit_logs SET reason = 'Modified Reason' WHERE id = log_id;
-    EXCEPTION WHEN P0001 THEN
+    EXCEPTION WHEN raise_exception THEN
         v_caught_upd := TRUE;
     END;
 
@@ -162,7 +164,7 @@ BEGIN
     -- Expect failure on DELETE
     BEGIN
         DELETE FROM public.admin_audit_logs WHERE id = log_id;
-    EXCEPTION WHEN P0001 THEN
+    EXCEPTION WHEN raise_exception THEN
         v_caught_del := TRUE;
     END;
 
@@ -189,5 +191,8 @@ BEGIN
     END IF;
 END;
 $$;
+
+SELECT pass('Identity and access tests completed successfully.');
+SELECT * FROM finish();
 
 ROLLBACK;

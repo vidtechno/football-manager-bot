@@ -45,3 +45,35 @@ jobs:
 
       - name: Build production bundle
         run: npm run build
+
+  supabase-migration-test:
+    name: Supabase Local Migration & SQL Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # CRITICAL SAFEGUARD:
+    # All commands in this job target LOCAL Docker-based Supabase stack only.
+    # NEVER connect to remote project, NEVER use --linked flag, NEVER use access tokens or remote credentials.
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start local Supabase stack
+        run: npx supabase start
+
+      - name: Run SQL database tests
+        run: npx supabase test db --local
+
+      - name: Stop local Supabase stack
+        if: always()
+        run: npx supabase stop --no-backup

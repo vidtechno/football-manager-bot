@@ -57,6 +57,17 @@ npm run format:check
 
 ---
 
+## 🔄 CI & Supabase Migratsiyalar Validatsiyasi (CI & Migration Verification)
+
+GitHub Actions CI muhitida avtomatik ravishda ikkita parallel va mustaqil ish (job) bajariladi:
+
+1. **Build, Lint, and Test (`verify`):** Node.js 24 muhitida kod formati (`format:check`), linter (`lint`), TypeScript tiplari (`typecheck`), Vitest birlik testlari (`test`) va build jarayoni tekshiriladi.
+2. **Supabase Local Migration & SQL Tests (`supabase-migration-test`):** GitHub Actions runner'ining mahalliy Docker xizmati orqali to'liq lokal Supabase steki (`npx supabase start`) ishga tushiriladi, barcha SQL migratsiyalari va `supabase/tests/` ichidagi SQL testlar ijro etiladi.
+   - **Xavfsizlik Kafolati:** CI dagi baza testi to'liq ajratilgan lokal Docker konteynerida ishlaydi. U HECH QACHON masofaviy Supabase loyihasiga ulanmaydi, maxfiy kalitlar yoki remote credentials ishlatmaydi va `--linked` bayrog'idan foydalanmaydi.
+   - **O'zgarmaslik Qoidasi:** Masofaviy joylashtirilgan migratsiya fayllari o'zgarmas hisoblanadi. Bazadagi har qanday o'zgartirish faqat yangi forward migratsiyalar orqali amalga oshiriladi.
+
+---
+
 ## 🌿 Ishlab Chiqish Workflow (Development Workflow)
 
 Har bir yangi funksional ustida ishlashda quyidagi tartibga rioya qilinadi:

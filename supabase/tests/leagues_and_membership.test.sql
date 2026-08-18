@@ -2,6 +2,8 @@
 -- All tests run inside a transaction and ROLLBACK at the end.
 
 BEGIN;
+CREATE EXTENSION IF NOT EXISTS pgtap;
+SELECT plan(1);
 
 -- Setup Test Managers
 INSERT INTO public.managers (id, telegram_user_id, manager_name)
@@ -105,7 +107,7 @@ BEGIN
     BEGIN
         INSERT INTO public.leagues (name, code, owner_manager_id)
         VALUES ('Invalid 7', 'ABCDEFG', '11111111-1111-1111-1111-111111111111');
-    EXCEPTION WHEN check_violation THEN v_caught := TRUE;
+    EXCEPTION WHEN check_violation OR string_data_right_truncation THEN v_caught := TRUE;
     END;
     IF NOT v_caught THEN RAISE EXCEPTION 'Test Failed: 7-character code was allowed.'; END IF;
 END;
@@ -125,7 +127,7 @@ BEGIN
         IF v_code !~ '^[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{6}$' THEN
             RAISE EXCEPTION 'Test Failed: Generated code % contains invalid characters.', v_code;
         END IF;
-    END FOR;
+    END LOOP;
 END;
 $$;
 
@@ -139,7 +141,7 @@ BEGIN
     v_caught := FALSE;
     BEGIN
         PERFORM public.create_league_with_owner('44444444-4444-4444-4444-444444444444', 'Blocked League');
-    EXCEPTION WHEN P0001 THEN v_caught := TRUE;
+    EXCEPTION WHEN raise_exception THEN v_caught := TRUE;
     END;
     IF NOT v_caught THEN RAISE EXCEPTION 'Test Failed: Blocked manager created a league.'; END IF;
 
@@ -153,7 +155,7 @@ BEGIN
     v_caught := FALSE;
     BEGIN
         PERFORM public.join_league_by_code('44444444-4444-4444-4444-444444444444', v_res->>'code');
-    EXCEPTION WHEN P0001 THEN v_caught := TRUE;
+    EXCEPTION WHEN raise_exception THEN v_caught := TRUE;
     END;
     IF NOT v_caught THEN RAISE EXCEPTION 'Test Failed: Blocked manager joined a league.'; END IF;
 END;
@@ -185,7 +187,7 @@ BEGIN
     v_caught := FALSE;
     BEGIN
         UPDATE public.league_code_registry SET code = 'XXXXXX' WHERE code = v_code;
-    EXCEPTION WHEN P0001 THEN v_caught := TRUE;
+    EXCEPTION WHEN raise_exception THEN v_caught := TRUE;
     END;
     IF NOT v_caught THEN RAISE EXCEPTION 'Test Failed: UPDATE on registry code succeeded.'; END IF;
 
@@ -193,7 +195,7 @@ BEGIN
     v_caught := FALSE;
     BEGIN
         UPDATE public.league_code_registry SET league_id = gen_random_uuid() WHERE code = v_code;
-    EXCEPTION WHEN P0001 THEN v_caught := TRUE;
+    EXCEPTION WHEN raise_exception THEN v_caught := TRUE;
     END;
     IF NOT v_caught THEN RAISE EXCEPTION 'Test Failed: Rebinding live registry row succeeded.'; END IF;
 
@@ -201,7 +203,7 @@ BEGIN
     v_caught := FALSE;
     BEGIN
         DELETE FROM public.league_code_registry WHERE code = v_code;
-    EXCEPTION WHEN P0001 THEN v_caught := TRUE;
+    EXCEPTION WHEN raise_exception THEN v_caught := TRUE;
     END;
     IF NOT v_caught THEN RAISE EXCEPTION 'Test Failed: Direct DELETE from registry succeeded.'; END IF;
 END;
@@ -243,7 +245,7 @@ BEGIN
     v_caught := FALSE;
     BEGIN
         UPDATE public.league_code_registry SET league_id = gen_random_uuid(), bound_at = NOW(), released_at = NULL WHERE code = v_code;
-    EXCEPTION WHEN P0001 THEN v_caught := TRUE;
+    EXCEPTION WHEN raise_exception THEN v_caught := TRUE;
     END;
     IF NOT v_caught THEN RAISE EXCEPTION 'Test Failed: Rebinding released code succeeded.'; END IF;
 END;
@@ -269,7 +271,7 @@ BEGIN
     v_caught := FALSE;
     BEGIN
         UPDATE public.league_settings SET is_speed_locked = FALSE WHERE league_id = v_league_id;
-    EXCEPTION WHEN P0001 THEN v_caught := TRUE;
+    EXCEPTION WHEN raise_exception THEN v_caught := TRUE;
     END;
     IF NOT v_caught THEN RAISE EXCEPTION 'Test Failed: Unlocking is_speed_locked succeeded.'; END IF;
 
@@ -277,7 +279,7 @@ BEGIN
     v_caught := FALSE;
     BEGIN
         UPDATE public.league_settings SET round_speed = 4 WHERE league_id = v_league_id;
-    EXCEPTION WHEN P0001 THEN v_caught := TRUE;
+    EXCEPTION WHEN raise_exception THEN v_caught := TRUE;
     END;
     IF NOT v_caught THEN RAISE EXCEPTION 'Test Failed: Changing round_speed when locked succeeded.'; END IF;
 
@@ -285,7 +287,7 @@ BEGIN
     v_caught := FALSE;
     BEGIN
         UPDATE public.league_settings SET first_round_delay_minutes = 60 WHERE league_id = v_league_id;
-    EXCEPTION WHEN P0001 THEN v_caught := TRUE;
+    EXCEPTION WHEN raise_exception THEN v_caught := TRUE;
     END;
     IF NOT v_caught THEN RAISE EXCEPTION 'Test Failed: Changing delay when locked succeeded.'; END IF;
 END;
@@ -306,7 +308,7 @@ BEGIN
     v_caught := FALSE;
     BEGIN
         UPDATE public.leagues SET status = 'ACTIVE' WHERE id = v_league_id;
-    EXCEPTION WHEN P0001 THEN v_caught := TRUE;
+    EXCEPTION WHEN raise_exception THEN v_caught := TRUE;
     END;
     IF NOT v_caught THEN RAISE EXCEPTION 'Test Failed: Direct LOBBY -> ACTIVE succeeded.'; END IF;
 
@@ -342,5 +344,8 @@ BEGIN
     END IF;
 END;
 $$;
+
+SELECT pass('Leagues and membership tests completed successfully.');
+SELECT * FROM finish();
 
 ROLLBACK;
