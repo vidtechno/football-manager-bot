@@ -42,7 +42,7 @@ Ushbu hujjat **Telegram Football Manager** loyihasining texnik arxitekturasi, ko
 
 3. **Supabase PostgreSQL (Ma'lumotlar Qatlami - 45 Normalized Tables):**
    - Relatsion ma'lumotlar ombori 45 ta to'liq normalizatsiya qilingan jadvaldan iborat.
-   - Global shablonlar (`club_templates`, `player_templates`) va ularning relatsion versiyalash modellari (`club_template_versions`, `player_template_versions`) hamda pozitsiyalar reestri (`player_template_positions`) to'liq normalizatsiya qilingan. JSONB o'rniga aniq relatsion ustunlar va permanent yosh o'rniga `date_of_birth` ishlatilgan. Global shablonlarning admin yangilanishi allaqachon boshlangan faol ligalarga ta'sir ko'rsatmaydi.
+   - Global shablonlar (`club_templates`, `player_templates`) va ularning relatsion versiyalash modellari (`club_template_versions`, `player_template_versions`) hamda pozitsiyalar reestri (`player_template_positions`) to'liq normalizatsiya qilingan. Liga klublari (`league_clubs`) va bot-menejer tayinlovlari (`bot_manager_assignments`) orqali har bir ligaga 20 ta klub sloti biriktiriladi, tanlanmagan klublarga avtomatik bot-menejer tayinlanishi hamda LOBBY holatidagina klub tanlash va almashtirish huquqi qat'iy bazaviy triggerlar va `pg_advisory_xact_lock` orqali ta'minlanadi. Global shablonlarning admin yangilanishi allaqachon boshlangan faol ligalarga ta'sir ko'rsatmaydi.
    - Serverless mantiq faqat server-side muhitdagi `SUPABASE_SECRET_KEY` orqali bazaga xavfsiz ulanadi.
 
 4. **Supabase Cron (Avtomatlashtirilgan Scheduler):**

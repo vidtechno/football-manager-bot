@@ -118,16 +118,17 @@ Ma me'lumotlar bazasi 9 ta mantiqiy domenga bo'lingan **45 ta alohida jadvaldan*
 
 #### 11. `league_clubs`
 
-- **Vazifasi:** Ligaga biriktirilgan 20 ta klub nusxasi.
+- **Vazifasi:** Ligaga biriktirilgan 20 ta klub nusxasi (Gigants Mode uchun global shablonlarga bog'langan).
 - **PK:** `id UUID`
-- **Ustunlar:** `league_id UUID REFERENCES leagues(id)`, `club_template_id UUID`, `manager_id UUID REFERENCES managers(id) NULLABLE`, `control_type enum_club_control_type DEFAULT 'BOT'`, `name TEXT NOT NULL`, `short_name VARCHAR(3) NOT NULL`
-- **Constraints:** `UNIQUE(league_id, manager_id)` (Bitta menejer ligada ko'pi bilan 1 ta klubni boshqaradi), `UNIQUE(league_id, club_template_id)`
+- **Ustunlar:** `league_id UUID REFERENCES leagues(id) ON DELETE CASCADE`, `club_template_id UUID REFERENCES club_templates(id) ON DELETE RESTRICT`, `human_manager_id UUID REFERENCES managers(id) ON DELETE SET NULL`, `display_name VARCHAR(100) NOT NULL`, `short_code VARCHAR(10) NOT NULL`, `selected_at TIMESTAMPTZ`, `released_at TIMESTAMPTZ`, `created_at TIMESTAMPTZ`, `updated_at TIMESTAMPTZ`
+- **Constraints:** `UNIQUE(league_id, club_template_id)`, partial `UNIQUE(league_id, human_manager_id) WHERE (human_manager_id IS NOT NULL)`, validation trigger enforcing LOBBY-only selection and member/block status.
 
 #### 12. `bot_manager_assignments`
 
-- **Vazifasi:** Bo'sh klublarga biriktirilgan dasturlangan bot-menejerlar sozlamasi.
-- **PK:** `club_id UUID REFERENCES league_clubs(id) ON DELETE CASCADE`
-- **Ustunlar:** `bot_personality TEXT DEFAULT 'BALANCED'`, `aggressiveness INT CHECK (aggressiveness BETWEEN 1 AND 10)`
+- **Vazifasi:** Tanlanmagan bo'sh klublarga biriktirilgan bot-menejerlar boshqaruvi.
+- **PK:** `id UUID`
+- **Ustunlar:** `league_id UUID REFERENCES leagues(id) ON DELETE CASCADE`, `league_club_id UUID REFERENCES league_clubs(id) ON DELETE CASCADE`, `bot_personality VARCHAR(50) DEFAULT 'BALANCED'`, `aggressiveness INT CHECK (1..10)`, `assigned_at TIMESTAMPTZ`, `released_at TIMESTAMPTZ`, `is_active BOOLEAN DEFAULT TRUE`, `created_at TIMESTAMPTZ`, `updated_at TIMESTAMPTZ`
+- **Constraints:** partial `UNIQUE(league_club_id) WHERE (is_active = TRUE)`, cross-table `league_id` consistency trigger, human vs bot mutual exclusion trigger.
 
 ---
 

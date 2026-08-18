@@ -170,3 +170,17 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
   - Shablon versiyalari o'zgarmasdir. Admin Telegram ID lari manba kodiga yoki hujjatlarga qattiq yozilmaydi (`ADMIN_TELEGRAM_ID` server env orqali o'tkaziladi).
   - 5 ta jadvalda RLS yoqildi, `anon` va `authenticated` ruxsatsizlantirildi, `service_role` ga minimal DML va RPC ruxsatlari berildi.
   - Migratsiya PR #4 orqali `main` ga merge qilindi va masofaviy Supabase loyihasiga (`cxuqmfvnrzsrafjhoggu`) `20260818210748` binosida muvaffaqiyatli joylashtirildi. Anonymous API smoke test barcha 5 ta jadval bo'yicha HTTP 401 ruxsat taqiqini tasdiqladi.
+
+---
+
+### [2026-08-19] DEC-019: 4B2-Bosqich Liga Klublari va Bot-Menejer Tayinlovlari Poydevori Shakllantirilishi
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Liga klublari nusxalari (`league_clubs`) va bot-menejer boshqaruvi (`bot_manager_assignments`) jadvallari hamda LOBBY boshqaruvi mexanizmini o'rnatish.
+- **Qaror:**
+  - `league_clubs` va `bot_manager_assignments` jadvallari yaratildi. Aniq 20 ta klub slotlari global `club_templates` ga bog'landi.
+  - LOBBY holatida klub tanlash, almashtirish va bo'shatish uchun atomic RPC funksiyalari (`initialize_gigants_league_clubs`, `select_league_club`, `switch_league_club`, `release_league_club`, `assign_bots_to_unselected_clubs`) amalga oshirildi.
+  - Bir vaqtda takroriy init bo'lishining oldini olish uchun `pg_advisory_xact_lock` qo'llanildi.
+  - Inson menejer va bot menejer bir vaqtda bitta klubni boshqara olmasligi hamda liga LOBBY dan chiqqandan so'ng klub tanlash taqiqlanishi bazaviy validation triggerlar orqali ta'minlandi.
+  - Admin Telegram ID lari manba kodiga va hujjatlarga qattiq yozilmaydi (`ADMIN_TELEGRAM_ID` env orqali beriladi).
+  - Har ikkala jadvalda RLS yoqildi, `anon` va `authenticated` ruxsatlari olib tashlandi, `service_role` ga minimal DML va RPC execution berildi.
