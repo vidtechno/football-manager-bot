@@ -113,7 +113,22 @@ export class IdentityService {
         .map((value) => Number(value.trim()))
         .filter((value) => Number.isSafeInteger(value) && value > 0);
 
-      if (!configuredAdminIds.includes(telegramUserId)) {
+      const { data: managers, count: managerCount, error: managerError } =
+        await supabase
+          .from('managers')
+          .select('telegram_user_id', { count: 'exact' })
+          .limit(2);
+
+      const isSecureBootstrapAdmin =
+        !managerError &&
+        managerCount === 1 &&
+        managers?.length === 1 &&
+        Number(managers[0]?.telegram_user_id) === telegramUserId;
+
+      if (
+        !configuredAdminIds.includes(telegramUserId) &&
+        !isSecureBootstrapAdmin
+      ) {
         return null;
       }
 
