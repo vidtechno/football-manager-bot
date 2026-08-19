@@ -1,0 +1,371 @@
+{
+  "snapshotDate": "2026-08-19",
+  "totalClubs": 20,
+  "totalPlayers": 363,
+  "totalGoalkeepers": 40,
+  "totalLeagueMarketValueEur": 13311750000,
+  "isValid": true,
+  "clubSummaries": [
+    {
+      "slug": "real-madrid",
+      "name": "Real Madrid",
+      "playerCount": 19,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 1352000000,
+      "averageOverallRating": 84.84,
+      "highestRatedPlayer": {
+        "name": "Kylian Mbappé",
+        "rating": 91
+      },
+      "mostValuablePlayer": {
+        "name": "Vinícius Júnior",
+        "valueEur": 200000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "barcelona",
+      "name": "FC Barcelona",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 865000000,
+      "averageOverallRating": 82.44,
+      "highestRatedPlayer": {
+        "name": "Marc-André ter Stegen",
+        "rating": 89
+      },
+      "mostValuablePlayer": {
+        "name": "Lamine Yamal",
+        "valueEur": 150000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "atletico-madrid",
+      "name": "Atlético Madrid",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 483000000,
+      "averageOverallRating": 81.5,
+      "highestRatedPlayer": {
+        "name": "Jan Oblak",
+        "rating": 88
+      },
+      "mostValuablePlayer": {
+        "name": "Julián Alvarez",
+        "valueEur": 75000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "manchester-city",
+      "name": "Manchester City",
+      "playerCount": 19,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 1147000000,
+      "averageOverallRating": 84.42,
+      "highestRatedPlayer": {
+        "name": "Rodri",
+        "rating": 91
+      },
+      "mostValuablePlayer": {
+        "name": "Erling Haaland",
+        "valueEur": 200000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "liverpool",
+      "name": "Liverpool FC",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 801000000,
+      "averageOverallRating": 82.5,
+      "highestRatedPlayer": {
+        "name": "Alisson Becker",
+        "rating": 89
+      },
+      "mostValuablePlayer": {
+        "name": "Luis Díaz",
+        "valueEur": 80000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "arsenal",
+      "name": "Arsenal FC",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 1037500000,
+      "averageOverallRating": 82.94,
+      "highestRatedPlayer": {
+        "name": "Martin Ødegaard",
+        "rating": 89
+      },
+      "mostValuablePlayer": {
+        "name": "Bukayo Saka",
+        "valueEur": 140000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "chelsea",
+      "name": "Chelsea FC",
+      "playerCount": 19,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 810000000,
+      "averageOverallRating": 79.37,
+      "highestRatedPlayer": {
+        "name": "Cole Palmer",
+        "rating": 85
+      },
+      "mostValuablePlayer": {
+        "name": "Cole Palmer",
+        "valueEur": 90000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "manchester-united",
+      "name": "Manchester United",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 719000000,
+      "averageOverallRating": 81.06,
+      "highestRatedPlayer": {
+        "name": "Bruno Fernandes",
+        "rating": 87
+      },
+      "mostValuablePlayer": {
+        "name": "Bruno Fernandes",
+        "valueEur": 65000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "tottenham",
+      "name": "Tottenham Hotspur",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 729500000,
+      "averageOverallRating": 80.33,
+      "highestRatedPlayer": {
+        "name": "Son Heung-min",
+        "rating": 87
+      },
+      "mostValuablePlayer": {
+        "name": "James Maddison",
+        "valueEur": 70000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "bayern-munich",
+      "name": "Bayern Munich",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 768000000,
+      "averageOverallRating": 82.11,
+      "highestRatedPlayer": {
+        "name": "Harry Kane",
+        "rating": 90
+      },
+      "mostValuablePlayer": {
+        "name": "Jamal Musiala",
+        "valueEur": 130000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "borussia-dortmund",
+      "name": "Borussia Dortmund",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 444000000,
+      "averageOverallRating": 79.83,
+      "highestRatedPlayer": {
+        "name": "Gregor Kobel",
+        "rating": 88
+      },
+      "mostValuablePlayer": {
+        "name": "Gregor Kobel",
+        "valueEur": 40000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "bayer-leverkusen",
+      "name": "Bayer Leverkusen",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 580500000,
+      "averageOverallRating": 81.06,
+      "highestRatedPlayer": {
+        "name": "Florian Wirtz",
+        "rating": 88
+      },
+      "mostValuablePlayer": {
+        "name": "Florian Wirtz",
+        "valueEur": 130000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "paris-saint-germain",
+      "name": "Paris Saint-Germain",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 792000000,
+      "averageOverallRating": 81.56,
+      "highestRatedPlayer": {
+        "name": "Gianluigi Donnarumma",
+        "rating": 89
+      },
+      "mostValuablePlayer": {
+        "name": "Bradley Barcola",
+        "valueEur": 65000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "inter",
+      "name": "Inter Milan",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 623500000,
+      "averageOverallRating": 82.44,
+      "highestRatedPlayer": {
+        "name": "Lautaro Martínez",
+        "rating": 89
+      },
+      "mostValuablePlayer": {
+        "name": "Lautaro Martínez",
+        "valueEur": 110000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "ac-milan",
+      "name": "AC Milan",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 502500000,
+      "averageOverallRating": 80.06,
+      "highestRatedPlayer": {
+        "name": "Mike Maignan",
+        "rating": 87
+      },
+      "mostValuablePlayer": {
+        "name": "Rafael Leão",
+        "valueEur": 75000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "juventus",
+      "name": "Juventus",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 531000000,
+      "averageOverallRating": 79.61,
+      "highestRatedPlayer": {
+        "name": "Gleison Bremer",
+        "rating": 86
+      },
+      "mostValuablePlayer": {
+        "name": "Dušan Vlahović",
+        "valueEur": 65000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "napoli",
+      "name": "SSC Napoli",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 382500000,
+      "averageOverallRating": 79.22,
+      "highestRatedPlayer": {
+        "name": "Khvicha Kvaratskhelia",
+        "rating": 85
+      },
+      "mostValuablePlayer": {
+        "name": "Khvicha Kvaratskhelia",
+        "valueEur": 80000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "benfica",
+      "name": "SL Benfica",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 293000000,
+      "averageOverallRating": 77.72,
+      "highestRatedPlayer": {
+        "name": "Ángel Di María",
+        "rating": 83
+      },
+      "mostValuablePlayer": {
+        "name": "António Silva",
+        "valueEur": 45000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "porto",
+      "name": "FC Porto",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 280500000,
+      "averageOverallRating": 76.33,
+      "highestRatedPlayer": {
+        "name": "Diogo Costa",
+        "rating": 84
+      },
+      "mostValuablePlayer": {
+        "name": "Diogo Costa",
+        "valueEur": 45000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    },
+    {
+      "slug": "ajax",
+      "name": "AFC Ajax",
+      "playerCount": 18,
+      "goalkeeperCount": 2,
+      "totalMarketValueEur": 170250000,
+      "averageOverallRating": 74.83,
+      "highestRatedPlayer": {
+        "name": "Steven Berghuis",
+        "rating": 79
+      },
+      "mostValuablePlayer": {
+        "name": "Brian Brobbey",
+        "valueEur": 35000000
+      },
+      "isSquadValid": true,
+      "errors": []
+    }
+  ],
+  "globalErrors": []
+}

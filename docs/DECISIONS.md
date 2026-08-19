@@ -215,3 +215,15 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
   - Forward repair orqali `validate_league_club_human_selection()` funksiyasi `manager_blocks` ustunini `unblocked_at IS NULL` tekshiruviga muvofiqlashtirildi.
   - Anonim API so'rovlari bo'yicha barcha 4 ta yangi jadval uchun HTTP 401 Permission Denied holati qaytarildi.
   - Masofaviy bazaga hech qanday soxta ma'lumot kiritilmadi.
+
+---
+
+### [2026-08-19] DEC-022: 4E-Bosqich Joriy 20 ta Klub Tarkiblari, Narxlari va Baholashlarining Versiyalangan Ma'lumotlar To'plami (Dataset Architecture & Seed Policy)
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** 20 ta Gigants Mode top-klublari uchun 2026-08-19 ma'lumotlar snapshot sanasi bilan joriy birinchi jamoa futbolchilari, bozor narxlari, pozitsiyalari va baholashlarining to'liq, audittan o'tadigan, versiyalangan ma'lumotlar to'plamini shakllantirish.
+- **Qaror:**
+  - Ma'lumotlar to'plami arxitekturasi: `data/football/2026-08-19/` katalogida `clubs.json`, `players.json`, `sources.json` hamda `validation-report.json` fayllari yaratildi.
+  - Generatsiya va validatsiya: `src/data/types.ts` Zod tiplari, `src/data/validate-dataset.ts` deterministik validatsiya dvigateli va `src/data/generate-seed-sql.ts` orqali takrorlanuvchan `supabase/seed.sql` shakllantirildi.
+  - Qoidalar: Har bir klub uchun 18-25 ta futbolchi (kamida 2 ta GK), GK/Outfield atributlarining qat'iy ajratilishi, non-negative EUR narxlari, va takrorlanmas `canonicalKey` belgilandi.
+  - Sinov va xavfsizlik: Vitest orqali 11 ta test muvaffaqiyatli o'tdi. Masofaviy Supabase va avvalgi migratsiyalarga hech qanday o'zgartirish kiritilmadi, maxfiy kalitlar va admin Telegram ID lar sir saqlandi.

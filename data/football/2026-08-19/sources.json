@@ -1,0 +1,23 @@
+[
+  {
+    "id": "src-official-clubs-2026",
+    "name": "Official Club Websites First-Team Roster 2026",
+    "url": "https://www.realmadrid.com/en-US/football/first-team/players",
+    "retrievalDate": "2026-08-19",
+    "category": "OFFICIAL_CLUB"
+  },
+  {
+    "id": "src-transfermarkt-2026",
+    "name": "Transfermarkt Market Values Snapshot 2026-08-19",
+    "url": "https://www.transfermarkt.com",
+    "retrievalDate": "2026-08-19",
+    "category": "TRANSFER_DATABASE"
+  },
+  {
+    "id": "src-ea-fc-2026",
+    "name": "EA Sports FC Player Ratings Database 2026",
+    "url": "https://www.ea.com/games/ea-sports-fc/ratings",
+    "retrievalDate": "2026-08-19",
+    "category": "GAME_DATABASE"
+  }
+]
