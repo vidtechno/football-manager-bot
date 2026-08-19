@@ -25,13 +25,18 @@ export class LeagueService {
   }
 
   /**
-   * Advances a league round via canonical RPC execute_league_round.
+   * Advances a league round via canonical RPC execute_league_round, then processes automatic club income.
    * Enforces 3-round daily limit in Asia/Tashkent calendar day inside its transaction.
    */
   static async executeLeagueRound(
     leagueId: string,
     roundNumber?: number,
-  ): Promise<{ completedRoundNumber: number; completedAt: string }> {
+    eligibleSponsorshipManagerIds: string[] = [],
+  ): Promise<{
+    completedRoundNumber: number;
+    completedAt: string;
+    incomeSettlement?: { clubsProcessed: number; totalCreditedEur: number };
+  }> {
     const supabase = getSupabaseAdminClient();
     const { data, error } = await supabase.rpc('execute_league_round', {
       p_league_id: leagueId,
@@ -42,9 +47,30 @@ export class LeagueService {
       throw new Error(`EXECUTE_LEAGUE_ROUND_FAILED: ${error.message}`);
     }
 
+    const completedRoundNumber = data.completed_round_number;
+    const completedAt = data.completed_at;
+
+    // Process automatic club income (sponsorship, win/draw bonus, stadium income)
+    const { data: incomeData, error: incomeError } = await supabase.rpc(
+      'process_round_settlement_income',
+      {
+        p_league_id: leagueId,
+        p_round_number: completedRoundNumber,
+        p_eligible_sponsorship_manager_ids: eligibleSponsorshipManagerIds,
+      },
+    );
+
+    if (incomeError) {
+      throw new Error(`ROUND_INCOME_SETTLEMENT_FAILED: ${incomeError.message}`);
+    }
+
     return {
-      completedRoundNumber: data.completed_round_number,
-      completedAt: data.completed_at,
+      completedRoundNumber,
+      completedAt,
+      incomeSettlement: {
+        clubsProcessed: incomeData.clubs_processed,
+        totalCreditedEur: incomeData.total_credited_eur,
+      },
     };
   }
 
