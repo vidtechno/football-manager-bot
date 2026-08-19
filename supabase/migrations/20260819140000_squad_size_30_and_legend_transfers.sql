@@ -351,8 +351,8 @@ CREATE POLICY "League legend market readable by league members"
     TO authenticated
     USING (
         EXISTS (
-            SELECT 1 FROM public.league_members lm
-            WHERE lm.league_id = league_legend_market.league_id
-              AND lm.user_id = auth.uid()
+            SELECT 1 FROM public.league_clubs lc
+            WHERE lc.league_id = league_legend_market.league_id
+              AND lc.user_id = auth.uid()
         )
     );
