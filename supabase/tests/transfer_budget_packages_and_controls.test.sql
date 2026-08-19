@@ -104,7 +104,7 @@ BEGIN
     v_order_code := v_create_res->>'order_code';
 
     -- Test 3B: Verify pending request does NOT credit balance prematurely
-    SELECT current_balance INTO v_balance FROM public.club_finances WHERE league_club_id = v_league_club_id;
+    SELECT total_balance INTO v_balance FROM public.club_finances WHERE league_club_id = v_league_club_id;
     IF v_balance <> 100000000.00 THEN
         RAISE EXCEPTION 'Test Failed: Balance credited before admin approval.';
     END IF;
@@ -121,7 +121,7 @@ BEGIN
     END IF;
 
     -- Verify balance increased by €100,000,000 -> €200,000,000
-    SELECT current_balance INTO v_balance FROM public.club_finances WHERE league_club_id = v_league_club_id;
+    SELECT total_balance INTO v_balance FROM public.club_finances WHERE league_club_id = v_league_club_id;
     IF v_balance <> 200000000.00 THEN
         RAISE EXCEPTION 'Test Failed: Balance not credited properly on approval, found %', v_balance;
     END IF;

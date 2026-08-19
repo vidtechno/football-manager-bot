@@ -70,38 +70,44 @@ BEGIN
     INSERT INTO public.club_finances (league_id, league_club_id, total_balance, reserved_balance)
     VALUES (v_league_id, v_league_club_id, 100000000.00, 0.00);
 
-    -- Insert dummy legend template
-    INSERT INTO public.legend_templates (
-        slug,
-        canonical_key,
-        full_name,
-        nationality,
-        date_of_birth,
-        primary_position,
-        secondary_positions,
-        peak_club,
-        peak_period,
-        overall_rating,
-        default_price_eur,
-        is_retired,
-        source_id,
-        outfield_attributes
-    ) VALUES (
-        'cristiano-ronaldo-prime',
-        'cristiano-ronaldo-prime',
-        'Cristiano Ronaldo',
-        'Portugal',
-        '1985-02-05',
-        'LW',
-        ARRAY['ST'::public.enum_player_position],
-        'Real Madrid',
-        '2011-2014',
-        94,
-        50000000.00,
-        FALSE,
-        'src-legend-test',
-        '{"pace": 93, "shooting": 93, "passing": 82, "dribbling": 91, "defending": 33, "physical": 80}'::jsonb
-    ) RETURNING id INTO v_legend_template_id;
+    -- Get or insert legend template
+    SELECT id INTO v_legend_template_id
+    FROM public.legend_templates
+    WHERE slug = 'cristiano-ronaldo-prime';
+
+    IF v_legend_template_id IS NULL THEN
+        INSERT INTO public.legend_templates (
+            slug,
+            canonical_key,
+            full_name,
+            nationality,
+            date_of_birth,
+            primary_position,
+            secondary_positions,
+            peak_club,
+            peak_period,
+            overall_rating,
+            default_price_eur,
+            is_retired,
+            source_id,
+            outfield_attributes
+        ) VALUES (
+            'dummy-legend-test-slug',
+            'dummy-legend-test-key',
+            'Cristiano Ronaldo',
+            'Portugal',
+            '1985-02-05',
+            'LW',
+            ARRAY['ST'::public.enum_player_position],
+            'Real Madrid',
+            '2011-2014',
+            94,
+            50000000.00,
+            FALSE,
+            'src-legend-test',
+            '{"pace": 93, "shooting": 93, "passing": 82, "dribbling": 91, "defending": 33, "physical": 80}'::jsonb
+        ) RETURNING id INTO v_legend_template_id;
+    END IF;
 
     -- Instantiate legend market for the league
     PERFORM public.instantiate_league_legend_market(v_league_id);
