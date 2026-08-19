@@ -156,10 +156,7 @@ export class GameService {
     }));
   }
 
-  static async selectClub(
-    managerId: string,
-    clubId: string,
-  ): Promise<string> {
+  static async selectClub(managerId: string, clubId: string): Promise<string> {
     const db = getSupabaseAdminClient();
     const { data: club, error: clubError } = await db
       .from('league_clubs')
