@@ -2,6 +2,11 @@
 -- Updates instantiate_league_players function to allow squad sizes up to 30 players per club.
 -- Creates global legend_templates, per-league legend_market, transactional purchase RPC, and RLS policies.
 
+-- 0. Expand enum_player_position with LWB, RWB, CF
+ALTER TYPE public.enum_player_position ADD VALUE IF NOT EXISTS 'LWB';
+ALTER TYPE public.enum_player_position ADD VALUE IF NOT EXISTS 'RWB';
+ALTER TYPE public.enum_player_position ADD VALUE IF NOT EXISTS 'CF';
+
 -- 1. Update instantiate_league_players for 18-30 squad size limit
 CREATE OR REPLACE FUNCTION public.instantiate_league_players(p_league_id UUID)
 RETURNS INT AS $$
