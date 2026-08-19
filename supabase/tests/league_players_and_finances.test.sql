@@ -90,8 +90,8 @@ DECLARE
     v_template_id UUID;
     v_club_id UUID := '33333333-3333-3333-3333-333333333333';
 BEGIN
-    INSERT INTO public.managers (id, telegram_id, username)
-    VALUES (v_mgr_id, 999888777, 'test_fin_mgr');
+    INSERT INTO public.managers (id, telegram_user_id, manager_name)
+    VALUES (v_mgr_id, 999888777, 'TestFinMgr');
 
     INSERT INTO public.leagues (id, name, code, status, owner_manager_id)
     VALUES (v_league_id, 'Finances Test League', 'FIN123', 'LOBBY', v_mgr_id);
