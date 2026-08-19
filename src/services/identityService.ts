@@ -1,4 +1,5 @@
 import { getSupabaseAdminClient } from '../database/client.js';
+import { loadEnvironment } from '../config/env.js';
 
 export interface DbManager {
   id: string;
@@ -101,16 +102,46 @@ export class IdentityService {
       .eq('status', 'ACTIVE')
       .maybeSingle();
 
-    if (error || !data) {
+    if (error) {
       return null;
     }
 
+    let admin = data;
+    if (!admin) {
+      const configuredAdminIds = (loadEnvironment().ADMIN_TELEGRAM_IDS ?? '')
+        .split(',')
+        .map((value) => Number(value.trim()))
+        .filter((value) => Number.isSafeInteger(value) && value > 0);
+
+      if (!configuredAdminIds.includes(telegramUserId)) {
+        return null;
+      }
+
+      const { data: provisioned, error: provisionError } = await supabase
+        .from('admin_users')
+        .upsert(
+          {
+            telegram_user_id: telegramUserId,
+            role: 'SUPER_ADMIN',
+            status: 'ACTIVE',
+          },
+          { onConflict: 'telegram_user_id' },
+        )
+        .select('*')
+        .single();
+
+      if (provisionError || !provisioned) {
+        return null;
+      }
+      admin = provisioned;
+    }
+
     return {
-      id: data.id,
-      telegramUserId: Number(data.telegram_user_id),
-      role: data.role,
-      status: data.status,
-      createdAt: data.created_at,
+      id: admin.id,
+      telegramUserId: Number(admin.telegram_user_id),
+      role: admin.role,
+      status: admin.status,
+      createdAt: admin.created_at,
     };
   }
 }
