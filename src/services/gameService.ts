@@ -205,9 +205,7 @@ export class GameService {
     }));
   }
 
-  static async getTable(
-    leagueId: string,
-  ): Promise<
+  static async getTable(leagueId: string): Promise<
     Array<{
       name: string;
       p: number;
