@@ -173,28 +173,32 @@ Ma me'lumotlar bazasi 9 ta mantiqiy domenga bo'lingan **45 ta alohida jadvaldan*
 
 #### 18. `league_players`
 
-- **Vazifasi:** Ligaga nusxalangan jonli futbolchilar va ularning holati.
+- **Vazifasi:** Ligaga nusxalangan jonli futbolchilar, ularning atributlari va tayyorlik holati (snapshot model).
 - **PK:** `id UUID`
-- **Ustunlar:** `league_id UUID REFERENCES leagues(id)`, `club_id UUID REFERENCES league_clubs(id)`, `player_template_id UUID`, `name TEXT NOT NULL`, `age INT NOT NULL`, `frozen_market_value DECIMAL(15,2) NOT NULL`, `overall_rating INT NOT NULL`, `form INT CHECK (form BETWEEN 1 AND 10) DEFAULT 7`, `fitness INT CHECK (fitness BETWEEN 0 AND 100) DEFAULT 100`, `morale INT CHECK (morale BETWEEN 1 AND 10) DEFAULT 7`, `availability enum_player_availability_status DEFAULT 'AVAILABLE'`, `last_transferred_round INT DEFAULT 0`
+- **Ustunlar:** `league_id UUID REFERENCES leagues(id) ON DELETE CASCADE`, `league_club_id UUID REFERENCES league_clubs(id) ON DELETE CASCADE`, `player_template_id UUID REFERENCES player_templates(id)`, `player_template_version_id UUID REFERENCES player_template_versions(id)`, `full_name VARCHAR(150)`, `date_of_birth DATE`, `nationality VARCHAR(100)`, `market_value_eur NUMERIC(15,2)`, `overall_rating INT`, `potential_rating INT`, outfield stats (`pace, shooting, passing, dribbling, defending, physical`), goalkeeper stats (`reflexes, handling, positioning, aerial_ability, distribution, one_on_one`), `availability_status enum_player_availability_status DEFAULT 'AVAILABLE'`, `injury_until TIMESTAMPTZ`, `suspension_matches_remaining INT DEFAULT 0`, `fitness INT DEFAULT 100`, `form INT DEFAULT 7`, `morale INT DEFAULT 7`, `last_transferred_round INT DEFAULT 0`, `created_at TIMESTAMPTZ`, `updated_at TIMESTAMPTZ`
+- **Constraints:** `UNIQUE(league_id, player_template_id)`, availability-injury/suspension consistency checks, cross-table `league_id` validation trigger.
 
 #### 19. `league_player_positions`
 
-- **Vazifasi:** Liganing muayyan futbolchisining pozitsiyalari.
+- **Vazifasi:** Liganing jonli futbolchisining pozitsiyalari (`enum_player_position`).
 - **PK:** `id UUID`
-- **Ustunlar:** `league_player_id UUID REFERENCES league_players(id) ON DELETE CASCADE`, `position_code VARCHAR(5) NOT NULL`, `is_primary BOOLEAN DEFAULT FALSE`
+- **Ustunlar:** `league_player_id UUID REFERENCES league_players(id) ON DELETE CASCADE`, `position_code enum_player_position NOT NULL`, `is_primary BOOLEAN DEFAULT FALSE`, `created_at TIMESTAMPTZ`
+- **Constraints:** `UNIQUE(league_player_id, position_code)`, partial `UNIQUE(league_player_id) WHERE is_primary = TRUE`, deferred constraint trigger enforcing exactly one primary position per player on commit.
 
 #### 20. `club_finances`
 
 - **Vazifasi:** Klublarning jonli moliyaviy balansi va muzlatilgan pullari.
-- **PK:** `club_id UUID REFERENCES league_clubs(id) ON DELETE CASCADE`
-- **Ustunlar:** `total_balance DECIMAL(15,2) NOT NULL`, `reserved_balance DECIMAL(15,2) DEFAULT 0.00`, `available_balance DECIMAL(15,2) GENERATED ALWAYS AS (total_balance - reserved_balance) STORED`, `updated_at TIMESTAMPTZ`
-- **Constraints:** `CHECK (total_balance >= 0)`, `CHECK (reserved_balance >= 0)`, `CHECK (reserved_balance <= total_balance)`
+- **PK:** `id UUID`
+- **Ustunlar:** `league_id UUID REFERENCES leagues(id) ON DELETE CASCADE`, `league_club_id UUID REFERENCES league_clubs(id) ON DELETE CASCADE`, `total_balance NUMERIC(15,2) NOT NULL CHECK (total_balance >= 0)`, `reserved_balance NUMERIC(15,2) DEFAULT 0.00 CHECK (reserved_balance >= 0)`, `available_balance NUMERIC(15,2) GENERATED ALWAYS AS (total_balance - reserved_balance) STORED`, `version INT DEFAULT 1`, `created_at TIMESTAMPTZ`, `updated_at TIMESTAMPTZ`
+- **Constraints:** `UNIQUE(league_club_id)`, `CHECK (reserved_balance <= total_balance)`, cross-table `league_id` validation trigger.
 
 #### 21. `financial_ledger`
 
-- **Vazifasi:** Pul harakatlarining o'zgarmas buxgalteriya jurnali.
+- **Vazifasi:** Pul harakatlarining o'zgarmas buxgalteriya jurnali (append-only ledger).
 - **PK:** `id UUID`
-- **Ustunlar:** `club_id UUID REFERENCES league_clubs(id)`, `league_id UUID REFERENCES leagues(id)`, `amount DECIMAL(15,2) NOT NULL`, `transaction_type enum_financial_transaction_type NOT NULL`, `reference_id UUID`, `description TEXT`, `created_at TIMESTAMPTZ DEFAULT NOW()`
+- **Ustunlar:** `league_id UUID REFERENCES leagues(id) ON DELETE CASCADE`, `league_club_id UUID REFERENCES league_clubs(id) ON DELETE CASCADE`, `transaction_type enum_financial_transaction_type NOT NULL`, `amount_eur NUMERIC(15,2) NOT NULL CHECK (amount_eur <> 0)`, `balance_before NUMERIC(15,2)`, `balance_after NUMERIC(15,2)`, `reserved_before NUMERIC(15,2)`, `reserved_after NUMERIC(15,2)`, `related_entity_type VARCHAR(50)`, `related_entity_id UUID`, `idempotency_key VARCHAR(100)`, `description TEXT`, `created_at TIMESTAMPTZ DEFAULT NOW()`
+- **Convention:** Ishorali summa: musbat `amount_eur` (>0) = kredit, manfiy `amount_eur` (<0) = debet.
+- **Constraints:** `UNIQUE(league_club_id, idempotency_key)`, immutability guard trigger blocking `UPDATE` and `DELETE`.
 
 ---
 

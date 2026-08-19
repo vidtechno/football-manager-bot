@@ -1,9 +1,9 @@
 -- SQL pgTAP Test Suite: Phase 4D - League Players and Club Finances Database Foundation
--- Tests table structures, constraints, triggers, starting budget policy, RPC functions, idempotency, ledger immutability, and RLS privilege isolation.
+-- Tests table structures, constraints, triggers, starting budget policy, RPC functions, idempotency, ledger immutability, error contracts, and RLS privilege isolation.
 
 BEGIN;
 
-SELECT plan(38);
+SELECT plan(42);
 
 -- 1. Table & Enum Existence Tests
 SELECT has_enum('public', 'enum_player_availability_status', ARRAY['AVAILABLE', 'INJURED', 'SUSPENDED'], 'enum_player_availability_status exists');
@@ -28,38 +28,64 @@ SELECT col_type_is('public', 'club_finances', 'available_balance', 'numeric(15,2
 SELECT col_is_generated('public', 'club_finances', 'available_balance', 'club_finances.available_balance is generated stored column');
 SELECT col_type_is('public', 'financial_ledger', 'amount_eur', 'numeric(15,2)', 'financial_ledger.amount_eur uses NUMERIC(15,2)');
 
--- 4. Starting Budget Policy Function Tests
+-- 4. Starting Budget Policy Function Tests (Shared Reference Max = €1,000,000,000)
 SELECT results_eq(
-    'SELECT public.calculate_club_starting_budget(500000000.00, 500000000.00)',
+    'SELECT public.calculate_club_starting_budget(1000000000.00, 1000000000.00)',
     ARRAY[100000000.00::numeric],
-    'Elite club with max squad value receives €100m starting budget'
+    'Elite club with max squad value (€1b) receives €100m starting budget'
 );
 
 SELECT results_eq(
-    'SELECT public.calculate_club_starting_budget(300000000.00, 500000000.00)',
-    ARRAY[170000000.00::numeric],
-    'Middle club with €200m gap receives €100m + €70m = €170m starting budget'
+    'SELECT public.calculate_club_starting_budget(600000000.00, 1000000000.00)',
+    ARRAY[240000000.00::numeric],
+    'Middle club with €600m squad value (€400m gap) receives €100m + €140m = €240m starting budget'
+);
+
+SELECT results_eq(
+    'SELECT public.calculate_club_starting_budget(200000000.00, 1000000000.00)',
+    ARRAY[380000000.00::numeric],
+    'Weaker club with €200m squad value (€800m gap) receives €100m + €280m = €380m starting budget'
 );
 
 SELECT results_eq(
     'SELECT public.calculate_club_starting_budget(50000000.00, 1000000000.00)',
     ARRAY[400000000.00::numeric],
-    'Weaker club calculation is capped at maximum €400m starting budget'
+    'Very weak club calculation is capped at maximum €400m starting budget'
 );
 
--- 5. Empty Template / Unseeded Fixture Safety Tests
+SELECT results_eq(
+    'SELECT public.calculate_club_starting_budget(1200000000.00, 1000000000.00)',
+    ARRAY[100000000.00::numeric],
+    'Club value above reference maximum clamps gap to 0 and returns €100m baseline'
+);
+
+SELECT throws_ok(
+    'SELECT public.calculate_club_starting_budget(-100.00, 1000.00)',
+    'P0001',
+    'INVALID_PARAM',
+    'Negative squad value input is rejected'
+);
+
+SELECT throws_ok(
+    'SELECT public.calculate_club_starting_budget(NULL, 1000.00)',
+    'P0001',
+    'INVALID_PARAM',
+    'NULL squad value input is rejected'
+);
+
+-- 5. Empty Template / Unseeded Error Contract Tests
 SELECT throws_ok(
     'SELECT public.instantiate_league_players_from_templates(''00000000-0000-0000-0000-000000000001''::uuid)',
     'P0001',
-    'Liga topilmadi.',
-    'instantiate_league_players_from_templates rejects non-existent league'
+    'LEAGUE_NOT_INITIALIZABLE',
+    'instantiate_league_players_from_templates fails with LEAGUE_NOT_INITIALIZABLE for missing league'
 );
 
 SELECT throws_ok(
     'SELECT public.initialize_club_finances(''00000000-0000-0000-0000-000000000001''::uuid)',
     'P0001',
-    'Liga topilmadi.',
-    'initialize_club_finances rejects non-existent league'
+    'LEAGUE_NOT_INITIALIZABLE',
+    'initialize_club_finances fails with LEAGUE_NOT_INITIALIZABLE for missing league'
 );
 
 -- 6. Setup Test Fixtures (Manager, League, League Club)
@@ -70,18 +96,14 @@ DECLARE
     v_template_id UUID;
     v_club_id UUID := '33333333-3333-3333-3333-333333333333';
 BEGIN
-    -- Create test manager
     INSERT INTO public.managers (id, telegram_id, username)
     VALUES (v_mgr_id, 999888777, 'test_fin_mgr');
 
-    -- Create test league
     INSERT INTO public.leagues (id, name, code, status, owner_manager_id)
     VALUES (v_league_id, 'Finances Test League', 'FIN123', 'LOBBY', v_mgr_id);
 
-    -- Get a real club template
     SELECT id INTO v_template_id FROM public.club_templates WHERE slug = 'real-madrid';
 
-    -- Create test league club
     INSERT INTO public.league_clubs (id, league_id, club_template_id, display_name, short_code)
     VALUES (v_club_id, v_league_id, v_template_id, 'Real Madrid FT', 'RMA');
 END;
@@ -132,8 +154,8 @@ SELECT results_eq(
 SELECT throws_ok(
     'SELECT public.record_financial_transaction(''33333333-3333-3333-3333-333333333333''::uuid, ''22222222-2222-2222-2222-222222222222''::uuid, -200000000.00, ''FEE''::public.enum_financial_transaction_type, ''TX_OVERDRAW_1'', NULL, NULL, ''Excessive fee'')',
     'P0001',
-    'Klubda tranzaksiya uchun mavjud mablag'' yetarli emas.',
-    'record_financial_transaction rejects debit exceeding available balance'
+    'INSUFFICIENT_AVAILABLE_FUNDS',
+    'record_financial_transaction fails with INSUFFICIENT_AVAILABLE_FUNDS'
 );
 
 -- 8. Fund Reservation Lifecycle Tests (Reserve -> Release / Capture)
@@ -170,22 +192,21 @@ SELECT results_eq(
     'total_balance is 100m, reserved is 0m, available is 100m'
 );
 
--- 9. Ledger Immutability Tests
+-- 9. Ledger Immutability & Accounting Reconciliation Tests
 SELECT throws_ok(
     'UPDATE public.financial_ledger SET description = ''Hacked'' WHERE idempotency_key = ''TX_PRIZE_1''',
     'P0001',
-    'Moliyaviy tranzaksiyalar jurnalini o''zgartirish taqiqlangan.',
-    'financial_ledger UPDATE is blocked by trigger'
+    'LEDGER_IMMUTABLE',
+    'financial_ledger UPDATE fails with LEDGER_IMMUTABLE'
 );
 
 SELECT throws_ok(
     'DELETE FROM public.financial_ledger WHERE idempotency_key = ''TX_PRIZE_1''',
     'P0001',
-    'Moliyaviy tranzaksiyalar jurnalini o''chirish taqiqlangan.',
-    'financial_ledger DELETE is blocked by trigger'
+    'LEDGER_IMMUTABLE',
+    'financial_ledger DELETE fails with LEDGER_IMMUTABLE'
 );
 
--- 10. Ledger Balance Reconciliation Test
 SELECT results_eq(
     'SELECT COUNT(*) FROM public.financial_ledger WHERE league_club_id = ''33333333-3333-3333-3333-333333333333''',
     ARRAY[4::bigint],

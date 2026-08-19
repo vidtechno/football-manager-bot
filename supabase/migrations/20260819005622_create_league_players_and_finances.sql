@@ -1,7 +1,7 @@
 -- SQL Migration: Phase 4D - League Players and Club Finances Database Foundation
 -- Creates league_players, league_player_positions, club_finances, financial_ledger tables,
 -- domain ENUMs, validation triggers, equalizing starting budget policy function, RPC functions,
--- RLS policies, and service_role privilege bounds.
+-- RLS policies, and service_role privilege bounds with stable machine-readable error contracts.
 
 -- 1. Domain ENUM Types
 
@@ -108,7 +108,7 @@ BEGIN
     WHERE id = NEW.league_club_id;
 
     IF v_club_league_id IS NULL OR v_club_league_id <> NEW.league_id THEN
-        RAISE EXCEPTION 'Menejer biriktirilgan klub mos keladigan ligaga tegishli emas.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'CONSISTENCY_MISMATCH' USING ERRCODE = 'P0001';
     END IF;
 
     -- 2. Validate player_template_version_id matches player_template_id
@@ -117,7 +117,7 @@ BEGIN
     WHERE id = NEW.player_template_version_id;
 
     IF v_version_template_id IS NULL OR v_version_template_id <> NEW.player_template_id THEN
-        RAISE EXCEPTION 'Futbolchi shabloni versiyasi mos keluvchi shablonga tegishli emas.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'CONSISTENCY_MISMATCH' USING ERRCODE = 'P0001';
     END IF;
 
     RETURN NEW;
@@ -169,7 +169,7 @@ BEGIN
         ) INTO v_has_primary;
 
         IF NOT v_has_primary THEN
-            RAISE EXCEPTION 'Har bir faol futbolchi kamida bitta asosiy (primary) pozitsiyaga ega bo''lishi shart.' USING ERRCODE = 'P0001';
+            RAISE EXCEPTION 'PRIMARY_POSITION_REQUIRED' USING ERRCODE = 'P0001';
         END IF;
     END IF;
 
@@ -218,7 +218,7 @@ BEGIN
     WHERE id = NEW.league_club_id;
 
     IF v_club_league_id IS NULL OR v_club_league_id <> NEW.league_id THEN
-        RAISE EXCEPTION 'Moliya hisobi biriktirilgan klub ko''rsatilgan ligaga tegishli emas.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'CONSISTENCY_MISMATCH' USING ERRCODE = 'P0001';
     END IF;
 
     RETURN NEW;
@@ -260,9 +260,9 @@ CREATE OR REPLACE FUNCTION public.prevent_financial_ledger_modification()
 RETURNS TRIGGER AS $$
 BEGIN
     IF TG_OP = 'DELETE' THEN
-        RAISE EXCEPTION 'Moliyaviy tranzaksiyalar jurnalini o''chirish taqiqlangan.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'LEDGER_IMMUTABLE' USING ERRCODE = 'P0001';
     ELSIF TG_OP = 'UPDATE' THEN
-        RAISE EXCEPTION 'Moliyaviy tranzaksiyalar jurnalini o''zgartirish taqiqlangan.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'LEDGER_IMMUTABLE' USING ERRCODE = 'P0001';
     END IF;
     RETURN NEW;
 END;
@@ -274,7 +274,7 @@ CREATE TRIGGER trg_prevent_financial_ledger_modification
 
 
 -- 6. Starting Budget Balancing Policy Function
--- Formula: €100,000,000 + (max_squad_value - club_squad_value) * 35%, capped at €400,000,000.
+-- Formula: €100,000,000 + 35% * (p_max_squad_value - p_base_squad_value), clamped between €100m and €400m.
 CREATE OR REPLACE FUNCTION public.calculate_club_starting_budget(
     p_base_squad_value NUMERIC,
     p_max_squad_value NUMERIC
@@ -282,14 +282,22 @@ CREATE OR REPLACE FUNCTION public.calculate_club_starting_budget(
 RETURNS NUMERIC AS $$
 DECLARE
     v_raw_budget NUMERIC;
+    v_gap NUMERIC;
+    v_floor NUMERIC := 100000000.00;
     v_cap NUMERIC := 400000000.00;
 BEGIN
-    IF p_base_squad_value IS NULL OR p_max_squad_value IS NULL OR p_base_squad_value < 0 OR p_max_squad_value < 0 THEN
-        RAISE EXCEPTION 'Tarkib qiymati parametrlari noto''g''ri.' USING ERRCODE = 'P0001';
+    IF p_base_squad_value IS NULL OR p_max_squad_value IS NULL THEN
+        RAISE EXCEPTION 'INVALID_PARAM' USING ERRCODE = 'P0001';
     END IF;
 
-    v_raw_budget := 100000000.00 + (p_max_squad_value - p_base_squad_value) * 0.35;
-    RETURN LEAST(v_cap, ROUND(v_raw_budget, 2));
+    IF p_base_squad_value < 0 OR p_max_squad_value < 0 THEN
+        RAISE EXCEPTION 'INVALID_PARAM' USING ERRCODE = 'P0001';
+    END IF;
+
+    v_gap := GREATEST(0.00, p_max_squad_value - p_base_squad_value);
+    v_raw_budget := v_floor + (v_gap * 0.35);
+
+    RETURN LEAST(v_cap, GREATEST(v_floor, ROUND(v_raw_budget, 2)));
 END;
 $$ LANGUAGE plpgsql IMMUTABLE SECURITY DEFINER SET search_path = public;
 
@@ -318,12 +326,8 @@ BEGIN
     FROM public.leagues
     WHERE id = p_league_id;
 
-    IF v_league_status IS NULL THEN
-        RAISE EXCEPTION 'Liga topilmadi.' USING ERRCODE = 'P0001';
-    END IF;
-
-    IF v_league_status <> 'LOBBY' THEN
-        RAISE EXCEPTION 'Futbolchilar nusxalari faqat LOBBY holatidagi ligada yaratilishi mumkin.' USING ERRCODE = 'P0001';
+    IF v_league_status IS NULL OR v_league_status <> 'LOBBY' THEN
+        RAISE EXCEPTION 'LEAGUE_NOT_INITIALIZABLE' USING ERRCODE = 'P0001';
     END IF;
 
     -- Advisory lock on league_id
@@ -344,7 +348,7 @@ BEGIN
     WHERE is_active = TRUE;
 
     IF v_active_template_count = 0 THEN
-        RAISE EXCEPTION 'Futbolchi shablonlari bazasi bo''sh. Futbolchilar nusxalari yaratilmadi.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'PLAYER_TEMPLATES_EMPTY' USING ERRCODE = 'P0001';
     END IF;
 
     -- Iterate through each league club in the league
@@ -359,7 +363,7 @@ BEGIN
         WHERE pt.current_club_template_id = v_club.club_template_id AND pt.is_active = TRUE;
 
         IF v_club_player_count < 18 OR v_club_player_count > 25 THEN
-            RAISE EXCEPTION 'Klub shablonida futbolchilar soni talabga mos emas (topildi: %, kutilgan: 18-25).', v_club_player_count USING ERRCODE = 'P0001';
+            RAISE EXCEPTION 'INVALID_SQUAD_SIZE' USING ERRCODE = 'P0001';
         END IF;
 
         -- Check goalkeeper count (must be >= 2)
@@ -371,7 +375,7 @@ BEGIN
           AND ptp.position_code = 'GK';
 
         IF v_club_gk_count < 2 THEN
-            RAISE EXCEPTION 'Klub shablonida kamida 2 ta darvozabon (GK) bo''lishi shart.' USING ERRCODE = 'P0001';
+            RAISE EXCEPTION 'INSUFFICIENT_GOALKEEPERS' USING ERRCODE = 'P0001';
         END IF;
 
         -- Copy players for this club
@@ -470,12 +474,8 @@ BEGIN
     FROM public.leagues
     WHERE id = p_league_id;
 
-    IF v_league_status IS NULL THEN
-        RAISE EXCEPTION 'Liga topilmadi.' USING ERRCODE = 'P0001';
-    END IF;
-
-    IF v_league_status <> 'LOBBY' THEN
-        RAISE EXCEPTION 'Klub moliyasi faqat LOBBY holatidagi ligalar uchun yaratilishi mumkin.' USING ERRCODE = 'P0001';
+    IF v_league_status IS NULL OR v_league_status <> 'LOBBY' THEN
+        RAISE EXCEPTION 'LEAGUE_NOT_INITIALIZABLE' USING ERRCODE = 'P0001';
     END IF;
 
     -- Advisory lock on league_id
@@ -489,7 +489,7 @@ BEGIN
     IF v_existing_count = 20 THEN
         RETURN 20;
     ELSIF v_existing_count > 0 THEN
-        RAISE EXCEPTION 'Liga moliya hisoblari qisman yaratilgan me''yorsiz holatda (topildi: %).', v_existing_count USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'FINANCES_ALREADY_INITIALIZED' USING ERRCODE = 'P0001';
     END IF;
 
     -- Verify league has exactly 20 clubs
@@ -498,7 +498,7 @@ BEGIN
     WHERE league_id = p_league_id;
 
     IF v_club_count <> 20 THEN
-        RAISE EXCEPTION 'Liga klublari soni aniq 20 ta emas (topildi: %).', v_club_count USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'LEAGUE_NOT_INITIALIZABLE' USING ERRCODE = 'P0001';
     END IF;
 
     -- Verify active club_template_versions exist for all 20 club templates
@@ -508,7 +508,7 @@ BEGIN
     WHERE lc.league_id = p_league_id;
 
     IF v_versions_count <> 20 THEN
-        RAISE EXCEPTION 'Klub shablonlari versiyalari bazasi to''liq emas. Boshlang''ich byudjet yaratilmadi.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'CLUB_TEMPLATE_VERSIONS_INCOMPLETE' USING ERRCODE = 'P0001';
     END IF;
 
     -- Calculate maximum base_squad_value among the 20 clubs in the league
@@ -595,11 +595,11 @@ DECLARE
 BEGIN
     -- Input validations
     IF p_amount_eur IS NULL OR p_amount_eur = 0 THEN
-        RAISE EXCEPTION 'Tranzaksiya summasi nol bo''lishi mumkin emas.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INVALID_PARAM' USING ERRCODE = 'P0001';
     END IF;
 
     IF p_idempotency_key IS NULL OR char_length(trim(p_idempotency_key)) = 0 THEN
-        RAISE EXCEPTION 'Idempotentlik kaliti ko''rsatilmadi.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INVALID_PARAM' USING ERRCODE = 'P0001';
     END IF;
 
     -- Check idempotency: if already processed, return existing ledger id
@@ -618,18 +618,18 @@ BEGIN
     WHERE league_club_id = p_club_id AND league_id = p_league_id FOR UPDATE;
 
     IF v_fin_id IS NULL THEN
-        RAISE EXCEPTION 'Klub moliyaviy hisobi topilmadi.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INVALID_PARAM' USING ERRCODE = 'P0001';
     END IF;
 
     -- Validate funds for debit operations (p_amount_eur < 0)
     IF p_amount_eur < 0 AND (v_current_available + p_amount_eur < 0) THEN
-        RAISE EXCEPTION 'Klubda tranzaksiya uchun mavjud mablag'' yetarli emas.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INSUFFICIENT_AVAILABLE_FUNDS' USING ERRCODE = 'P0001';
     END IF;
 
     v_new_total := v_current_total + p_amount_eur;
 
     IF v_new_total < 0 THEN
-        RAISE EXCEPTION 'Klub balansi manfiy bo''lib qolishi mumkin emas.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INSUFFICIENT_AVAILABLE_FUNDS' USING ERRCODE = 'P0001';
     END IF;
 
     -- Update total_balance in club_finances
@@ -694,7 +694,7 @@ DECLARE
     v_new_ledger_id UUID;
 BEGIN
     IF p_amount_eur IS NULL OR p_amount_eur <= 0 THEN
-        RAISE EXCEPTION 'Muzlatish summasi musbat bo''lishi shart.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INVALID_RESERVATION_OPERATION' USING ERRCODE = 'P0001';
     END IF;
 
     -- Check idempotency
@@ -713,11 +713,11 @@ BEGIN
     WHERE league_club_id = p_club_id AND league_id = p_league_id FOR UPDATE;
 
     IF v_fin_id IS NULL THEN
-        RAISE EXCEPTION 'Klub moliyaviy hisobi topilmadi.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INVALID_PARAM' USING ERRCODE = 'P0001';
     END IF;
 
     IF v_current_available < p_amount_eur THEN
-        RAISE EXCEPTION 'Muzlatish uchun mavjud mablag'' yetarli emas.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INSUFFICIENT_AVAILABLE_FUNDS' USING ERRCODE = 'P0001';
     END IF;
 
     v_new_reserved := v_current_reserved + p_amount_eur;
@@ -783,7 +783,7 @@ DECLARE
     v_new_ledger_id UUID;
 BEGIN
     IF p_amount_eur IS NULL OR p_amount_eur <= 0 THEN
-        RAISE EXCEPTION 'Muzlatishdan chiqarish summasi musbat bo''lishi shart.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INVALID_RESERVATION_OPERATION' USING ERRCODE = 'P0001';
     END IF;
 
     -- Check idempotency
@@ -802,11 +802,11 @@ BEGIN
     WHERE league_club_id = p_club_id AND league_id = p_league_id FOR UPDATE;
 
     IF v_fin_id IS NULL THEN
-        RAISE EXCEPTION 'Klub moliyaviy hisobi topilmadi.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INVALID_PARAM' USING ERRCODE = 'P0001';
     END IF;
 
     IF v_current_reserved < p_amount_eur THEN
-        RAISE EXCEPTION 'Muzlatilgan mablag'' yetarli emas.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INVALID_RESERVATION_OPERATION' USING ERRCODE = 'P0001';
     END IF;
 
     v_new_reserved := v_current_reserved - p_amount_eur;
@@ -873,7 +873,7 @@ DECLARE
     v_new_ledger_id UUID;
 BEGIN
     IF p_amount_eur IS NULL OR p_amount_eur <= 0 THEN
-        RAISE EXCEPTION 'Muzlatilgan pulni o me''chirish summasi musbat bo''lishi shart.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INVALID_RESERVATION_OPERATION' USING ERRCODE = 'P0001';
     END IF;
 
     -- Check idempotency
@@ -892,11 +892,11 @@ BEGIN
     WHERE league_club_id = p_club_id AND league_id = p_league_id FOR UPDATE;
 
     IF v_fin_id IS NULL THEN
-        RAISE EXCEPTION 'Klub moliyaviy hisobi topilmadi.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INVALID_PARAM' USING ERRCODE = 'P0001';
     END IF;
 
     IF v_current_reserved < p_amount_eur OR v_current_total < p_amount_eur THEN
-        RAISE EXCEPTION 'Yechib olish uchun muzlatilgan mablag'' yetarli emas.' USING ERRCODE = 'P0001';
+        RAISE EXCEPTION 'INVALID_RESERVATION_OPERATION' USING ERRCODE = 'P0001';
     END IF;
 
     v_new_total := v_current_total - p_amount_eur;
