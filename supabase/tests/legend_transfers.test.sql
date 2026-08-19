@@ -73,7 +73,7 @@ BEGIN
     -- Get or insert legend template
     SELECT id INTO v_legend_template_id
     FROM public.legend_templates
-    WHERE slug = 'cristiano-ronaldo-prime';
+    WHERE slug = 'leg-cristiano-ronaldo-prime';
 
     IF v_legend_template_id IS NULL THEN
         INSERT INTO public.legend_templates (
