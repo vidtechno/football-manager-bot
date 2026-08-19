@@ -64,7 +64,7 @@ DECLARE
     v_ledger_id UUID;
 BEGIN
     -- Verify approving admin exists and has valid role
-    SELECT * INTO v_admin FROM public.admin_users WHERE id = p_admin_id AND role IN ('SUPER_ADMIN', 'ADMIN');
+    SELECT * INTO v_admin FROM public.admin_users WHERE id = p_admin_id AND role IN ('SUPER_ADMIN', 'SYSTEM_ADMIN');
     IF NOT FOUND THEN
         RAISE EXCEPTION 'UNAUTHORIZED_ADMIN' USING ERRCODE = 'P0001';
     END IF;
@@ -93,9 +93,9 @@ BEGIN
         RAISE EXCEPTION 'CLUB_FINANCES_NOT_FOUND' USING ERRCODE = 'P0001';
     END IF;
 
-    -- 1. Increase current balance
+    -- 1. Increase total balance
     UPDATE public.club_finances
-    SET current_balance = current_balance + v_req.requested_eur_amount,
+    SET total_balance = total_balance + v_req.requested_eur_amount,
         updated_at = NOW()
     WHERE league_club_id = v_req.league_club_id;
 
@@ -110,7 +110,7 @@ BEGIN
         v_req.league_club_id,
         'TRANSFER_PURCHASE',
         v_req.requested_eur_amount,
-        v_finance.current_balance + v_req.requested_eur_amount,
+        v_finance.total_balance + v_req.requested_eur_amount,
         'Transfer Budget Purchase [' || v_req.order_code || ']: +' || v_req.requested_eur_amount::text || ' EUR (' || v_req.uzs_price::text || ' UZS)'
     ) RETURNING id INTO v_ledger_id;
 
@@ -128,7 +128,7 @@ BEGIN
         'request_id', p_request_id,
         'order_code', v_req.order_code,
         'added_eur_amount', v_req.requested_eur_amount,
-        'new_balance', v_finance.current_balance + v_req.requested_eur_amount,
+        'new_balance', v_finance.total_balance + v_req.requested_eur_amount,
         'ledger_id', v_ledger_id
     );
 END;
@@ -146,7 +146,7 @@ DECLARE
     v_admin RECORD;
     v_req RECORD;
 BEGIN
-    SELECT * INTO v_admin FROM public.admin_users WHERE id = p_admin_id AND role IN ('SUPER_ADMIN', 'ADMIN');
+    SELECT * INTO v_admin FROM public.admin_users WHERE id = p_admin_id AND role IN ('SUPER_ADMIN', 'SYSTEM_ADMIN');
     IF NOT FOUND THEN
         RAISE EXCEPTION 'UNAUTHORIZED_ADMIN' USING ERRCODE = 'P0001';
     END IF;

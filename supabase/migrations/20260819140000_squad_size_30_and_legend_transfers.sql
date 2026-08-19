@@ -292,7 +292,7 @@ BEGIN
         RAISE EXCEPTION 'CLUB_FINANCES_NOT_FOUND' USING ERRCODE = 'P0001';
     END IF;
 
-    IF v_finance_rec.current_balance < v_market_rec.price_eur THEN
+    IF v_finance_rec.total_balance < v_market_rec.price_eur THEN
         RAISE EXCEPTION 'INSUFFICIENT_FUNDS' USING ERRCODE = 'P0001';
     END IF;
 
@@ -303,7 +303,7 @@ BEGIN
 
     -- 1. Deduct balance from club finances
     UPDATE public.club_finances
-    SET current_balance = current_balance - v_market_rec.price_eur,
+    SET total_balance = total_balance - v_market_rec.price_eur,
         updated_at = NOW()
     WHERE league_club_id = p_league_club_id;
 
@@ -326,7 +326,7 @@ BEGIN
         p_league_club_id,
         'TRANSFER_PURCHASE',
         -v_market_rec.price_eur,
-        v_finance_rec.current_balance - v_market_rec.price_eur,
+        v_finance_rec.total_balance - v_market_rec.price_eur,
         'Legend Purchase: ' || v_legend_template.full_name
     ) RETURNING id INTO v_transaction_id;
 
@@ -335,7 +335,7 @@ BEGIN
         'league_legend_id', p_league_legend_id,
         'league_club_id', p_league_club_id,
         'price_eur', v_market_rec.price_eur,
-        'new_balance', v_finance_rec.current_balance - v_market_rec.price_eur,
+        'new_balance', v_finance_rec.total_balance - v_market_rec.price_eur,
         'transaction_id', v_transaction_id
     );
 END;
