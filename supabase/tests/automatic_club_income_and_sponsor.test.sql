@@ -40,7 +40,7 @@ BEGIN
 
     -- Setup league
     INSERT INTO public.leagues (name, code, owner_manager_id)
-    VALUES ('Income Test League', 'INC777', v_human_mgr_id) RETURNING id INTO v_league_id;
+    VALUES ('Income Test League', 'ABCDEF', v_human_mgr_id) RETURNING id INTO v_league_id;
 
     INSERT INTO public.league_members (league_id, manager_id, role)
     VALUES (v_league_id, v_human_mgr_id, 'OWNER');
