@@ -43,6 +43,17 @@ interface DbTransferListingRow {
 }
 
 export class TransferService {
+  static async getListingLeagueId(listingId: string): Promise<string> {
+    const supabase = getSupabaseAdminClient();
+    const { data, error } = await supabase
+      .from('league_transfer_listings')
+      .select('league_id')
+      .eq('id', listingId)
+      .single();
+    if (error) throw new Error(`LISTING_NOT_FOUND: ${error.message}`);
+    return data.league_id;
+  }
+
   /**
    * Creates a new player transfer listing via RPC create_player_transfer_listing.
    */
