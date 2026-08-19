@@ -52,21 +52,15 @@ BEGIN
     INSERT INTO public.managers (telegram_user_id, manager_name)
     VALUES (7770003, 'other_mgr') RETURNING id INTO v_other_user_id;
 
-    -- Setup dummy league
+    -- Setup dummy league (v_seller_user_id is automatically added as OWNER in league_members by trigger)
     INSERT INTO public.leagues (name, code, owner_manager_id)
     VALUES ('Transfer Test League', 'TRFX77', v_seller_user_id) RETURNING id INTO v_league_id;
 
     INSERT INTO public.league_members (league_id, manager_id, role)
-    VALUES (v_league_id, v_seller_user_id, 'OWNER')
-    ON CONFLICT (league_id, manager_id) DO NOTHING;
+    VALUES (v_league_id, v_buyer_user_id, 'MEMBER');
 
     INSERT INTO public.league_members (league_id, manager_id, role)
-    VALUES (v_league_id, v_buyer_user_id, 'MEMBER')
-    ON CONFLICT (league_id, manager_id) DO NOTHING;
-
-    INSERT INTO public.league_members (league_id, manager_id, role)
-    VALUES (v_league_id, v_other_user_id, 'MEMBER')
-    ON CONFLICT (league_id, manager_id) DO NOTHING;
+    VALUES (v_league_id, v_other_user_id, 'MEMBER');
 
     -- Club Template
     SELECT id INTO v_club_template_id FROM public.club_templates LIMIT 1;
