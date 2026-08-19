@@ -78,11 +78,28 @@ export class LeagueService {
    * Purchases a legend player for a league club via RPC purchase_league_legend.
    */
   static async purchaseLeagueLegend(
-    leagueLegendId: string,
+    leagueLegendIdOrSlug: string,
     leagueClubId: string,
     userId: string,
   ): Promise<{ remainingBudget: number }> {
     const supabase = getSupabaseAdminClient();
+    let leagueLegendId = leagueLegendIdOrSlug;
+    if (!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(leagueLegendIdOrSlug)) {
+      const { data: template, error: templateError } = await supabase
+        .from('legend_templates')
+        .select('id')
+        .eq('slug', leagueLegendIdOrSlug)
+        .single();
+      if (templateError) throw new Error(`LEGEND_NOT_FOUND: ${templateError.message}`);
+      const { data: market, error: marketError } = await supabase
+        .from('league_legend_market')
+        .select('id')
+        .eq('legend_template_id', template.id)
+        .eq('status', 'AVAILABLE')
+        .single();
+      if (marketError) throw new Error(`LEAGUE_LEGEND_NOT_AVAILABLE: ${marketError.message}`);
+      leagueLegendId = market.id;
+    }
     const { data, error } = await supabase.rpc('purchase_league_legend', {
       p_league_legend_id: leagueLegendId,
       p_league_club_id: leagueClubId,
@@ -94,7 +111,7 @@ export class LeagueService {
     }
 
     return {
-      remainingBudget: data.remaining_budget,
+      remainingBudget: Number(data.remaining_budget ?? data.new_balance),
     };
   }
 
@@ -105,15 +122,15 @@ export class LeagueService {
     const supabase = getSupabaseAdminClient();
     const { data, error } = await supabase
       .from('league_clubs')
-      .select('user_id')
+      .select('human_manager_id')
       .eq('league_id', leagueId)
-      .not('user_id', 'is', null);
+      .not('human_manager_id', 'is', null);
 
     if (error) {
       throw new Error(`GET_HUMAN_COUNT_FAILED: ${error.message}`);
     }
 
-    const uniqueUsers = new Set(data.map((row) => row.user_id));
+    const uniqueUsers = new Set(data.map((row) => row.human_manager_id));
     return uniqueUsers.size;
   }
 }
