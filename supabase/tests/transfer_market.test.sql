@@ -23,7 +23,9 @@ DECLARE
     v_seller_club_id UUID;
     v_buyer_club_id UUID;
     v_bot_club_id UUID;
-    v_club_template_id UUID;
+    v_club_template1_id UUID;
+    v_club_template2_id UUID;
+    v_club_template3_id UUID;
 
     v_player_ids UUID[];
     v_player_id UUID;
@@ -65,24 +67,37 @@ BEGIN
     INSERT INTO public.league_members (league_id, manager_id, role)
     VALUES (v_league_id, v_other_user_id, 'MEMBER');
 
-    -- Club Template
-    SELECT id INTO v_club_template_id FROM public.club_templates LIMIT 1;
-    IF v_club_template_id IS NULL THEN
+    -- Club Templates
+    SELECT id INTO v_club_template1_id FROM public.club_templates ORDER BY created_at LIMIT 1 OFFSET 0;
+    SELECT id INTO v_club_template2_id FROM public.club_templates ORDER BY created_at LIMIT 1 OFFSET 1;
+    SELECT id INTO v_club_template3_id FROM public.club_templates ORDER BY created_at LIMIT 1 OFFSET 2;
+
+    IF v_club_template1_id IS NULL THEN
         INSERT INTO public.club_templates (slug, name, short_code, country)
-        VALUES ('trf-fc', 'Trf FC', 'TFC', 'Spain') RETURNING id INTO v_club_template_id;
+        VALUES ('trf-fc-1', 'Trf FC 1', 'TF1', 'Spain') RETURNING id INTO v_club_template1_id;
+    END IF;
+
+    IF v_club_template2_id IS NULL THEN
+        INSERT INTO public.club_templates (slug, name, short_code, country)
+        VALUES ('trf-fc-2', 'Trf FC 2', 'TF2', 'Spain') RETURNING id INTO v_club_template2_id;
+    END IF;
+
+    IF v_club_template3_id IS NULL THEN
+        INSERT INTO public.club_templates (slug, name, short_code, country)
+        VALUES ('trf-fc-3', 'Trf FC 3', 'TF3', 'Spain') RETURNING id INTO v_club_template3_id;
     END IF;
 
     -- Setup seller club (human)
     INSERT INTO public.league_clubs (league_id, club_template_id, display_name, short_code, human_manager_id)
-    VALUES (v_league_id, v_club_template_id, 'Seller FC', 'SFC', v_seller_user_id) RETURNING id INTO v_seller_club_id;
+    VALUES (v_league_id, v_club_template1_id, 'Seller FC', 'SFC', v_seller_user_id) RETURNING id INTO v_seller_club_id;
 
     -- Setup buyer club (human)
     INSERT INTO public.league_clubs (league_id, club_template_id, display_name, short_code, human_manager_id)
-    VALUES (v_league_id, v_club_template_id, 'Buyer FC', 'BFC', v_buyer_user_id) RETURNING id INTO v_buyer_club_id;
+    VALUES (v_league_id, v_club_template2_id, 'Buyer FC', 'BFC', v_buyer_user_id) RETURNING id INTO v_buyer_club_id;
 
     -- Setup bot club (bot, human_manager_id IS NULL)
     INSERT INTO public.league_clubs (league_id, club_template_id, display_name, short_code, human_manager_id)
-    VALUES (v_league_id, v_club_template_id, 'Bot FC', 'BOT', NULL) RETURNING id INTO v_bot_club_id;
+    VALUES (v_league_id, v_club_template3_id, 'Bot FC', 'BOT', NULL) RETURNING id INTO v_bot_club_id;
 
     -- Finances (€100M each)
     INSERT INTO public.club_finances (league_id, league_club_id, total_balance, reserved_balance)
