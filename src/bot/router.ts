@@ -37,39 +37,68 @@ import { GameService, type LeagueSummary } from '../services/gameService.js';
 
 type PendingInput =
   | { type: 'CREATE_LEAGUE' | 'JOIN_LEAGUE'; managerId: string }
-  | { type: 'SELL_PRICE'; managerId: string; leagueId: string; playerId: string; marketValue: number };
+  | {
+      type: 'SELL_PRICE';
+      managerId: string;
+      leagueId: string;
+      playerId: string;
+      marketValue: number;
+    };
 const pendingInputs = new Map<number, PendingInput>();
 
 function money(value: number): string {
   return `€${(value / 1_000_000).toFixed(value % 1_000_000 === 0 ? 0 : 1)} mln`;
 }
 
-async function leagueContext(ctx: Context, leagueId: string): Promise<{managerId:string; league:LeagueSummary}> {
+async function leagueContext(
+  ctx: Context,
+  leagueId: string,
+): Promise<{ managerId: string; league: LeagueSummary }> {
   if (!ctx.from) throw new Error('Telegram foydalanuvchisi aniqlanmadi.');
-  const manager = await IdentityService.getOrCreateManager(ctx.from.id, ctx.from.first_name);
-  return { managerId: manager.id, league: await GameService.getLeague(manager.id, leagueId) };
+  const manager = await IdentityService.getOrCreateManager(
+    ctx.from.id,
+    ctx.from.first_name,
+  );
+  return {
+    managerId: manager.id,
+    league: await GameService.getLeague(manager.id, leagueId),
+  };
 }
 
 function mainKeyboard(leagues: LeagueSummary[], isAdmin: boolean) {
-  const rows: InlineKeyboardButton[][] = leagues.map((league) => [{
-    text: `${league.status === 'LOBBY' ? '🟡' : '🟢'} ${league.name}${league.clubName ? ` — ${league.clubName}` : ''}`,
-    callback_data: `league_menu:${league.id}`,
-  }]);
-  rows.push([{ text: '➕ Liga yaratish', callback_data: 'league_create' }, { text: '🔗 Ligaga qo‘shilish', callback_data: 'league_join' }]);
+  const rows: InlineKeyboardButton[][] = leagues.map((league) => [
+    {
+      text: `${league.status === 'LOBBY' ? '🟡' : '🟢'} ${league.name}${league.clubName ? ` — ${league.clubName}` : ''}`,
+      callback_data: `league_menu:${league.id}`,
+    },
+  ]);
+  rows.push([
+    { text: '➕ Liga yaratish', callback_data: 'league_create' },
+    { text: '🔗 Ligaga qo‘shilish', callback_data: 'league_join' },
+  ]);
   rows.push([{ text: '📢 Homiylik', callback_data: 'sp_user_menu' }]);
-  if (isAdmin) rows.push([{ text: '🛡 Admin panel', callback_data: 'admin_main' }]);
+  if (isAdmin)
+    rows.push([{ text: '🛡 Admin panel', callback_data: 'admin_main' }]);
   return rows;
 }
 
 async function showMainMenu(ctx: Context, edit = false): Promise<void> {
   if (!ctx.from) return;
-  const manager = await IdentityService.getOrCreateManager(ctx.from.id, ctx.from.first_name);
+  const manager = await IdentityService.getOrCreateManager(
+    ctx.from.id,
+    ctx.from.first_name,
+  );
   const [leagues, admin] = await Promise.all([
-    GameService.getManagerLeagues(manager.id), IdentityService.getAdminUser(ctx.from.id),
+    GameService.getManagerLeagues(manager.id),
+    IdentityService.getAdminUser(ctx.from.id),
   ]);
   const text = `⚽ *Football Manager*\n\nMenejer: *${manager.managerName}*\nLigalar: *${leagues.length}*\n\nDavom etish uchun bo‘limni tanlang:`;
-  const options = { parse_mode: 'Markdown' as const, reply_markup: { inline_keyboard: mainKeyboard(leagues, Boolean(admin)) } };
-  if (edit && ctx.callbackQuery?.message) await ctx.editMessageText(text, options);
+  const options = {
+    parse_mode: 'Markdown' as const,
+    reply_markup: { inline_keyboard: mainKeyboard(leagues, Boolean(admin)) },
+  };
+  if (edit && ctx.callbackQuery?.message)
+    await ctx.editMessageText(text, options);
   else await ctx.reply(text, options);
 }
 
@@ -87,29 +116,88 @@ export function registerBotRoutes(bot: Bot<Context>): void {
     try {
       if (pending.type === 'CREATE_LEAGUE') {
         const name = ctx.message.text.trim();
-        if (name.length < 3 || name.length > 50) throw new Error('Liga nomi 3–50 belgidan iborat bo‘lsin.');
+        if (name.length < 3 || name.length > 50)
+          throw new Error('Liga nomi 3–50 belgidan iborat bo‘lsin.');
         const league = await GameService.createLeague(pending.managerId, name);
         pendingInputs.delete(ctx.from.id);
-        await ctx.reply(`✅ *${league.name}* yaratildi.\n🔑 Taklif kodi: \`${league.code}\`\n\nEndi klubingizni tanlang.`, {
-          parse_mode: 'Markdown', reply_markup: { inline_keyboard: [[{ text: '⚽ Klub tanlash', callback_data: `club_list:${league.id}:1` }]] },
-        });
+        await ctx.reply(
+          `✅ *${league.name}* yaratildi.\n🔑 Taklif kodi: \`${league.code}\`\n\nEndi klubingizni tanlang.`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: '⚽ Klub tanlash',
+                    callback_data: `club_list:${league.id}:1`,
+                  },
+                ],
+              ],
+            },
+          },
+        );
       } else if (pending.type === 'JOIN_LEAGUE') {
-        const league = await GameService.joinLeague(pending.managerId, ctx.message.text);
+        const league = await GameService.joinLeague(
+          pending.managerId,
+          ctx.message.text,
+        );
         pendingInputs.delete(ctx.from.id);
-        await ctx.reply(`✅ *${league.name}* ligasiga qo‘shildingiz. Endi klub tanlang.`, {
-          parse_mode: 'Markdown', reply_markup: { inline_keyboard: [[{ text: '⚽ Klub tanlash', callback_data: `club_list:${league.id}:1` }]] },
-        });
+        await ctx.reply(
+          `✅ *${league.name}* ligasiga qo‘shildingiz. Endi klub tanlang.`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: '⚽ Klub tanlash',
+                    callback_data: `club_list:${league.id}:1`,
+                  },
+                ],
+              ],
+            },
+          },
+        );
       } else {
-        const priceMln = Number(ctx.message.text.replace(',', '.').replace(/[^0-9.]/g, ''));
+        const priceMln = Number(
+          ctx.message.text.replace(',', '.').replace(/[^0-9.]/g, ''),
+        );
         const price = Math.round(priceMln * 1_000_000);
-        if (!Number.isFinite(priceMln) || price <= 0) throw new Error('Narxni million yevroda raqam bilan kiriting. Masalan: 85');
-        if (price > pending.marketValue * 3) throw new Error('Sotuv narxi bozor qiymatining 3 baravaridan oshmasin.');
-        await TransferService.createListing(pending.playerId, price, pending.managerId);
+        if (!Number.isFinite(priceMln) || price <= 0)
+          throw new Error(
+            'Narxni million yevroda raqam bilan kiriting. Masalan: 85',
+          );
+        if (price > pending.marketValue * 3)
+          throw new Error(
+            'Sotuv narxi bozor qiymatining 3 baravaridan oshmasin.',
+          );
+        await TransferService.createListing(
+          pending.playerId,
+          price,
+          pending.managerId,
+        );
         pendingInputs.delete(ctx.from.id);
-        await ctx.reply(`✅ Futbolchi *${money(price)}* narxda transferga qo‘yildi.`, { parse_mode:'Markdown', reply_markup:{inline_keyboard:[[{text:'🔄 Transferlar',callback_data:`tr_menu:${pending.leagueId}`}]]} });
+        await ctx.reply(
+          `✅ Futbolchi *${money(price)}* narxda transferga qo‘yildi.`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: '🔄 Transferlar',
+                    callback_data: `tr_menu:${pending.leagueId}`,
+                  },
+                ],
+              ],
+            },
+          },
+        );
       }
     } catch (error) {
-      await ctx.reply(`❌ ${error instanceof Error ? error.message : String(error)}\n\nQayta kiriting yoki /start bosing.`);
+      await ctx.reply(
+        `❌ ${error instanceof Error ? error.message : String(error)}\n\nQayta kiriting yoki /start bosing.`,
+      );
     }
   });
 
@@ -117,7 +205,10 @@ export function registerBotRoutes(bot: Bot<Context>): void {
   bot.command('admin', async (ctx) => {
     try {
       const admin = await IdentityService.getAdminUser(ctx.from.id);
-      if (!admin) { await ctx.reply('❌ Sizda admin huquqi yo‘q.'); return; }
+      if (!admin) {
+        await ctx.reply('❌ Sizda admin huquqi yo‘q.');
+        return;
+      }
       const orders = await PurchaseService.getPendingOrders();
       const { text, keyboard } = handleAdminPendingOrdersList(orders);
       await ctx.reply(text, {
@@ -135,62 +226,325 @@ export function registerBotRoutes(bot: Bot<Context>): void {
     const data = ctx.callbackQuery.data;
 
     try {
-      if (data === 'main_menu') { await showMainMenu(ctx, true); await ctx.answerCallbackQuery(); return; }
+      if (data === 'main_menu') {
+        await showMainMenu(ctx, true);
+        await ctx.answerCallbackQuery();
+        return;
+      }
       if (data === 'league_create' || data === 'league_join') {
-        const manager = await IdentityService.getOrCreateManager(ctx.from.id, ctx.from.first_name);
-        pendingInputs.set(ctx.from.id, { type: data === 'league_create' ? 'CREATE_LEAGUE' : 'JOIN_LEAGUE', managerId: manager.id });
-        await ctx.editMessageText(data === 'league_create' ? '📝 Yangi liga nomini yuboring (3–50 belgi):' : '🔑 6 belgili liga taklif kodini yuboring:', {
-          reply_markup: { inline_keyboard: [[{ text: '❌ Bekor qilish', callback_data: 'main_menu' }]] },
-        }); await ctx.answerCallbackQuery(); return;
+        const manager = await IdentityService.getOrCreateManager(
+          ctx.from.id,
+          ctx.from.first_name,
+        );
+        pendingInputs.set(ctx.from.id, {
+          type: data === 'league_create' ? 'CREATE_LEAGUE' : 'JOIN_LEAGUE',
+          managerId: manager.id,
+        });
+        await ctx.editMessageText(
+          data === 'league_create'
+            ? '📝 Yangi liga nomini yuboring (3–50 belgi):'
+            : '🔑 6 belgili liga taklif kodini yuboring:',
+          {
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '❌ Bekor qilish', callback_data: 'main_menu' }],
+              ],
+            },
+          },
+        );
+        await ctx.answerCallbackQuery();
+        return;
       }
       if (data.startsWith('league_menu:')) {
-        const leagueId=data.split(':')[1]!; const manager=await IdentityService.getOrCreateManager(ctx.from.id,ctx.from.first_name);
-        const league=await GameService.getLeague(manager.id,leagueId);
-        const rows: InlineKeyboardButton[][] = league.clubId ? [
-          [{text:'👥 Tarkib',callback_data:`squad:${leagueId}`} ,{text:'📊 Jadval',callback_data:`table:${leagueId}`}],
-          [{text:'🔄 Transferlar',callback_data:`tr_menu:${leagueId}`},{text:'⭐ Legendalar',callback_data:`legend_market:${leagueId}`}],
-          [{text:'💰 Budjet',callback_data:`buy_pkg_list:${leagueId}`},{text:'📢 Homiylik',callback_data:'sp_user_menu'}],
-        ] : [[{text:'⚽ Klub tanlash',callback_data:`club_list:${leagueId}:1`}]];
-        if(league.role==='OWNER'&&league.status==='LOBBY') rows.push([{text:'🚀 Ligani boshlash',callback_data:`league_start:${leagueId}`}]);
-        if(league.role==='OWNER'&&league.status==='ACTIVE') rows.push([{text:'▶️ Keyingi tur',callback_data:`advance_round:${leagueId}`}]);
-        rows.push([{text:'⬅️ Bosh menyu',callback_data:'main_menu'}]);
-        await ctx.editMessageText(`🏆 *${league.name}*\n🔑 Kod: \`${league.code}\`\nHolat: *${league.status}*\nKlub: *${league.clubName ?? 'tanlanmagan'}*\nBudjet: *${money(league.budget)}*`,{parse_mode:'Markdown',reply_markup:{inline_keyboard:rows}});
-        await ctx.answerCallbackQuery(); return;
+        const leagueId = data.split(':')[1]!;
+        const manager = await IdentityService.getOrCreateManager(
+          ctx.from.id,
+          ctx.from.first_name,
+        );
+        const league = await GameService.getLeague(manager.id, leagueId);
+        const rows: InlineKeyboardButton[][] = league.clubId
+          ? [
+              [
+                { text: '👥 Tarkib', callback_data: `squad:${leagueId}` },
+                { text: '📊 Jadval', callback_data: `table:${leagueId}` },
+              ],
+              [
+                {
+                  text: '🔄 Transferlar',
+                  callback_data: `tr_menu:${leagueId}`,
+                },
+                {
+                  text: '⭐ Legendalar',
+                  callback_data: `legend_market:${leagueId}`,
+                },
+              ],
+              [
+                {
+                  text: '💰 Budjet',
+                  callback_data: `buy_pkg_list:${leagueId}`,
+                },
+                { text: '📢 Homiylik', callback_data: 'sp_user_menu' },
+              ],
+            ]
+          : [
+              [
+                {
+                  text: '⚽ Klub tanlash',
+                  callback_data: `club_list:${leagueId}:1`,
+                },
+              ],
+            ];
+        if (league.role === 'OWNER' && league.status === 'LOBBY')
+          rows.push([
+            {
+              text: '🚀 Ligani boshlash',
+              callback_data: `league_start:${leagueId}`,
+            },
+          ]);
+        if (league.role === 'OWNER' && league.status === 'ACTIVE')
+          rows.push([
+            {
+              text: '▶️ Keyingi tur',
+              callback_data: `advance_round:${leagueId}`,
+            },
+          ]);
+        rows.push([{ text: '⬅️ Bosh menyu', callback_data: 'main_menu' }]);
+        await ctx.editMessageText(
+          `🏆 *${league.name}*\n🔑 Kod: \`${league.code}\`\nHolat: *${league.status}*\nKlub: *${league.clubName ?? 'tanlanmagan'}*\nBudjet: *${money(league.budget)}*`,
+          { parse_mode: 'Markdown', reply_markup: { inline_keyboard: rows } },
+        );
+        await ctx.answerCallbackQuery();
+        return;
       }
-      if(data.startsWith('club_list:')){
-        const [,leagueId,pageRaw]=data.split(':'); const page=Math.max(1,Number(pageRaw)||1); const clubs=await GameService.getAvailableClubs(leagueId!); const size=10; const slice=clubs.slice((page-1)*size,page*size);
-        const rows=slice.map(c=>[{text:`${c.taken?'🔒':'⚽'} ${c.name}`,callback_data:c.taken?'noop':`club_select:${leagueId}:${c.id}`}]);
-        const nav=[]; if(page>1)nav.push({text:'⬅️',callback_data:`club_list:${leagueId}:${page-1}`}); if(page*size<clubs.length)nav.push({text:'➡️',callback_data:`club_list:${leagueId}:${page+1}`}); if(nav.length)rows.push(nav); rows.push([{text:'⬅️ Liga',callback_data:`league_menu:${leagueId}`}]);
-        await ctx.editMessageText('⚽ *Klubingizni tanlang*\n\n🔒 — band klub',{parse_mode:'Markdown',reply_markup:{inline_keyboard:rows}}); await ctx.answerCallbackQuery(); return;
+      if (data.startsWith('club_list:')) {
+        const [, leagueId, pageRaw] = data.split(':');
+        const page = Math.max(1, Number(pageRaw) || 1);
+        const clubs = await GameService.getAvailableClubs(leagueId!);
+        const size = 10;
+        const slice = clubs.slice((page - 1) * size, page * size);
+        const rows = slice.map((c) => [
+          {
+            text: `${c.taken ? '🔒' : '⚽'} ${c.name}`,
+            callback_data: c.taken ? 'noop' : `club_select:${leagueId}:${c.id}`,
+          },
+        ]);
+        const nav = [];
+        if (page > 1)
+          nav.push({
+            text: '⬅️',
+            callback_data: `club_list:${leagueId}:${page - 1}`,
+          });
+        if (page * size < clubs.length)
+          nav.push({
+            text: '➡️',
+            callback_data: `club_list:${leagueId}:${page + 1}`,
+          });
+        if (nav.length) rows.push(nav);
+        rows.push([
+          { text: '⬅️ Liga', callback_data: `league_menu:${leagueId}` },
+        ]);
+        await ctx.editMessageText(
+          '⚽ *Klubingizni tanlang*\n\n🔒 — band klub',
+          { parse_mode: 'Markdown', reply_markup: { inline_keyboard: rows } },
+        );
+        await ctx.answerCallbackQuery();
+        return;
       }
-      if(data.startsWith('club_select:')){
-        const [,leagueId,clubId]=data.split(':'); const manager=await IdentityService.getOrCreateManager(ctx.from.id,ctx.from.first_name); await GameService.selectClub(manager.id,leagueId!,clubId!);
-        await ctx.answerCallbackQuery({text:'Klub tanlandi ✅'}); const league=await GameService.getLeague(manager.id,leagueId!); await ctx.editMessageText(`✅ Siz *${league.clubName}* klubini tanladingiz.`,{parse_mode:'Markdown',reply_markup:{inline_keyboard:[[{text:'🏆 Liga menyusi',callback_data:`league_menu:${leagueId}`}]]}}); return;
+      if (data.startsWith('club_select:')) {
+        const [, leagueId, clubId] = data.split(':');
+        const manager = await IdentityService.getOrCreateManager(
+          ctx.from.id,
+          ctx.from.first_name,
+        );
+        await GameService.selectClub(manager.id, leagueId!, clubId!);
+        await ctx.answerCallbackQuery({ text: 'Klub tanlandi ✅' });
+        const league = await GameService.getLeague(manager.id, leagueId!);
+        await ctx.editMessageText(
+          `✅ Siz *${league.clubName}* klubini tanladingiz.`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: '🏆 Liga menyusi',
+                    callback_data: `league_menu:${leagueId}`,
+                  },
+                ],
+              ],
+            },
+          },
+        );
+        return;
       }
-      if(data.startsWith('league_start:')){
-        const leagueId=data.split(':')[1]!; const manager=await IdentityService.getOrCreateManager(ctx.from.id,ctx.from.first_name); await ctx.answerCallbackQuery({text:'Liga tayyorlanmoqda…'}); await GameService.startLeague(manager.id,leagueId);
-        await ctx.editMessageText('🚀 *Liga boshlandi!*\n\n20 klub, 38 tur, tarkiblar va transfer budjetlari tayyor.',{parse_mode:'Markdown',reply_markup:{inline_keyboard:[[{text:'🏆 Liga menyusi',callback_data:`league_menu:${leagueId}`}]]}}); return;
+      if (data.startsWith('league_start:')) {
+        const leagueId = data.split(':')[1]!;
+        const manager = await IdentityService.getOrCreateManager(
+          ctx.from.id,
+          ctx.from.first_name,
+        );
+        await ctx.answerCallbackQuery({ text: 'Liga tayyorlanmoqda…' });
+        await GameService.startLeague(manager.id, leagueId);
+        await ctx.editMessageText(
+          '🚀 *Liga boshlandi!*\n\n20 klub, 38 tur, tarkiblar va transfer budjetlari tayyor.',
+          {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: '🏆 Liga menyusi',
+                    callback_data: `league_menu:${leagueId}`,
+                  },
+                ],
+              ],
+            },
+          },
+        );
+        return;
       }
-      if(data.startsWith('squad:')){
-        const leagueId=data.split(':')[1]!; const manager=await IdentityService.getOrCreateManager(ctx.from.id,ctx.from.first_name); const league=await GameService.getLeague(manager.id,leagueId); if(!league.clubId)throw new Error('Avval klub tanlang.'); const squad=await GameService.getSquad(league.clubId);
-        const lines=squad.map((p,i)=>`${i+1}. ${p.position} — *${p.name}* (${p.rating}) · ${money(p.value)}`); await ctx.editMessageText(`👥 *${league.clubName} tarkibi* (${squad.length})\n\n${lines.join('\n')||'Tarkib liga boshlanganda yaratiladi.'}`,{parse_mode:'Markdown',reply_markup:{inline_keyboard:[[{text:'⬅️ Liga',callback_data:`league_menu:${leagueId}`}]]}}); await ctx.answerCallbackQuery(); return;
+      if (data.startsWith('squad:')) {
+        const leagueId = data.split(':')[1]!;
+        const manager = await IdentityService.getOrCreateManager(
+          ctx.from.id,
+          ctx.from.first_name,
+        );
+        const league = await GameService.getLeague(manager.id, leagueId);
+        if (!league.clubId) throw new Error('Avval klub tanlang.');
+        const squad = await GameService.getSquad(league.clubId);
+        const lines = squad.map(
+          (p, i) =>
+            `${i + 1}. ${p.position} — *${p.name}* (${p.rating}) · ${money(p.value)}`,
+        );
+        await ctx.editMessageText(
+          `👥 *${league.clubName} tarkibi* (${squad.length})\n\n${lines.join('\n') || 'Tarkib liga boshlanganda yaratiladi.'}`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '⬅️ Liga', callback_data: `league_menu:${leagueId}` }],
+              ],
+            },
+          },
+        );
+        await ctx.answerCallbackQuery();
+        return;
       }
-      if(data.startsWith('table:')){
-        const leagueId=data.split(':')[1]!; const table=await GameService.getTable(leagueId); const lines=table.map((x,i)=>`${i+1}. *${x.name}* — ${x.p} | ${x.w}-${x.d}-${x.l} | ${x.gd>=0?'+':''}${x.gd} | *${x.pts}*`); await ctx.editMessageText(`📊 *Liga jadvali*\n\n${lines.join('\n')}`,{parse_mode:'Markdown',reply_markup:{inline_keyboard:[[{text:'⬅️ Liga',callback_data:`league_menu:${leagueId}`}]]}}); await ctx.answerCallbackQuery(); return;
+      if (data.startsWith('table:')) {
+        const leagueId = data.split(':')[1]!;
+        const table = await GameService.getTable(leagueId);
+        const lines = table.map(
+          (x, i) =>
+            `${i + 1}. *${x.name}* — ${x.p} | ${x.w}-${x.d}-${x.l} | ${x.gd >= 0 ? '+' : ''}${x.gd} | *${x.pts}*`,
+        );
+        await ctx.editMessageText(`📊 *Liga jadvali*\n\n${lines.join('\n')}`, {
+          parse_mode: 'Markdown',
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '⬅️ Liga', callback_data: `league_menu:${leagueId}` }],
+            ],
+          },
+        });
+        await ctx.answerCallbackQuery();
+        return;
       }
-      if(data.startsWith('tr_sell_select:')){
-        const [,leagueId,pageRaw]=data.split(':'); const page=Math.max(1,Number(pageRaw)||1); const {league}=await leagueContext(ctx,leagueId!); if(!league.clubId)throw new Error('Avval klub tanlang.');
-        const [squad,listings]=await Promise.all([GameService.getSquad(league.clubId),TransferService.getClubActiveListings(league.clubId)]); if(listings.length>=4)throw new Error('Bir vaqtda maksimum 4 ta faol e’lon mumkin.');
-        const listed=new Set(listings.map(x=>x.leaguePlayerId)); const available=squad.filter(x=>!listed.has(x.id)); const size=8; const slice=available.slice((page-1)*size,page*size);
-        const rows=slice.map(p=>[{text:`${p.position} ${p.name} (${p.rating}) · ${money(p.value)}`,callback_data:`tr_sell_player:${leagueId}:${p.id}`}]); const nav=[]; if(page>1)nav.push({text:'⬅️',callback_data:`tr_sell_select:${leagueId}:${page-1}`}); if(page*size<available.length)nav.push({text:'➡️',callback_data:`tr_sell_select:${leagueId}:${page+1}`}); if(nav.length)rows.push(nav); rows.push([{text:'⬅️ Transferlar',callback_data:`tr_menu:${leagueId}`}]);
-        await ctx.editMessageText(`🏷 *Sotuvga qo‘yish*\n\nFaol e’lonlar: *${listings.length}/4*\nFutbolchini tanlang:`,{parse_mode:'Markdown',reply_markup:{inline_keyboard:rows}}); await ctx.answerCallbackQuery(); return;
+      if (data.startsWith('tr_sell_select:')) {
+        const [, leagueId, pageRaw] = data.split(':');
+        const page = Math.max(1, Number(pageRaw) || 1);
+        const { league } = await leagueContext(ctx, leagueId!);
+        if (!league.clubId) throw new Error('Avval klub tanlang.');
+        const [squad, listings] = await Promise.all([
+          GameService.getSquad(league.clubId),
+          TransferService.getClubActiveListings(league.clubId),
+        ]);
+        if (listings.length >= 4)
+          throw new Error('Bir vaqtda maksimum 4 ta faol e’lon mumkin.');
+        const listed = new Set(listings.map((x) => x.leaguePlayerId));
+        const available = squad.filter((x) => !listed.has(x.id));
+        const size = 8;
+        const slice = available.slice((page - 1) * size, page * size);
+        const rows = slice.map((p) => [
+          {
+            text: `${p.position} ${p.name} (${p.rating}) · ${money(p.value)}`,
+            callback_data: `tr_sell_player:${leagueId}:${p.id}`,
+          },
+        ]);
+        const nav = [];
+        if (page > 1)
+          nav.push({
+            text: '⬅️',
+            callback_data: `tr_sell_select:${leagueId}:${page - 1}`,
+          });
+        if (page * size < available.length)
+          nav.push({
+            text: '➡️',
+            callback_data: `tr_sell_select:${leagueId}:${page + 1}`,
+          });
+        if (nav.length) rows.push(nav);
+        rows.push([
+          { text: '⬅️ Transferlar', callback_data: `tr_menu:${leagueId}` },
+        ]);
+        await ctx.editMessageText(
+          `🏷 *Sotuvga qo‘yish*\n\nFaol e’lonlar: *${listings.length}/4*\nFutbolchini tanlang:`,
+          { parse_mode: 'Markdown', reply_markup: { inline_keyboard: rows } },
+        );
+        await ctx.answerCallbackQuery();
+        return;
       }
-      if(data.startsWith('tr_sell_player:')){
-        const [,leagueId,playerId]=data.split(':'); const {managerId,league}=await leagueContext(ctx,leagueId!); if(!league.clubId)throw new Error('Avval klub tanlang.'); const player=(await GameService.getSquad(league.clubId)).find(x=>x.id===playerId); if(!player)throw new Error('Futbolchi topilmadi.');
-        pendingInputs.set(ctx.from.id,{type:'SELL_PRICE',managerId,leagueId:leagueId!,playerId:player.id,marketValue:player.value}); await ctx.editMessageText(`💶 *${player.name}* uchun sotuv narxini million yevroda yuboring.\n\nBozor qiymati: *${money(player.value)}*\nBot xaridi uchun tavsiya: maksimum *${money(player.value*1.2)}*`,{parse_mode:'Markdown',reply_markup:{inline_keyboard:[[{text:'❌ Bekor qilish',callback_data:`tr_menu:${leagueId}`}]]}}); await ctx.answerCallbackQuery(); return;
+      if (data.startsWith('tr_sell_player:')) {
+        const [, leagueId, playerId] = data.split(':');
+        const { managerId, league } = await leagueContext(ctx, leagueId!);
+        if (!league.clubId) throw new Error('Avval klub tanlang.');
+        const player = (await GameService.getSquad(league.clubId)).find(
+          (x) => x.id === playerId,
+        );
+        if (!player) throw new Error('Futbolchi topilmadi.');
+        pendingInputs.set(ctx.from.id, {
+          type: 'SELL_PRICE',
+          managerId,
+          leagueId: leagueId!,
+          playerId: player.id,
+          marketValue: player.value,
+        });
+        await ctx.editMessageText(
+          `💶 *${player.name}* uchun sotuv narxini million yevroda yuboring.\n\nBozor qiymati: *${money(player.value)}*\nBot xaridi uchun tavsiya: maksimum *${money(player.value * 1.2)}*`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: '❌ Bekor qilish',
+                    callback_data: `tr_menu:${leagueId}`,
+                  },
+                ],
+              ],
+            },
+          },
+        );
+        await ctx.answerCallbackQuery();
+        return;
       }
-      if(data==='admin_main'){ const admin=await IdentityService.getAdminUser(ctx.from.id); if(!admin)throw new Error('Admin huquqi talab etiladi.'); await ctx.editMessageText('🛡 *Admin panel*',{parse_mode:'Markdown',reply_markup:{inline_keyboard:[[{text:'💳 Buyurtmalar',callback_data:'adm_pending_orders'}],[{text:'📢 Homiy kanal',callback_data:'sp_admin_menu'}],[{text:'⬅️ Bosh menyu',callback_data:'main_menu'}]]}}); await ctx.answerCallbackQuery(); return; }
-      if(data==='noop'){await ctx.answerCallbackQuery();return;}
+      if (data === 'admin_main') {
+        const admin = await IdentityService.getAdminUser(ctx.from.id);
+        if (!admin) throw new Error('Admin huquqi talab etiladi.');
+        await ctx.editMessageText('🛡 *Admin panel*', {
+          parse_mode: 'Markdown',
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '💳 Buyurtmalar', callback_data: 'adm_pending_orders' }],
+              [{ text: '📢 Homiy kanal', callback_data: 'sp_admin_menu' }],
+              [{ text: '⬅️ Bosh menyu', callback_data: 'main_menu' }],
+            ],
+          },
+        });
+        await ctx.answerCallbackQuery();
+        return;
+      }
+      if (data === 'noop') {
+        await ctx.answerCallbackQuery();
+        return;
+      }
       // 3A. Package Menu View (buy_pkg_list:leagueId)
       if (data.startsWith('buy_pkg_list:')) {
         const leagueId = data.split(':')[1]!;
@@ -220,7 +574,12 @@ export function registerBotRoutes(bot: Bot<Context>): void {
         if (!league.clubId) throw new Error('Avval klub tanlang.');
         const pkg = PurchaseService.getPackageById(packageId);
         if (!pkg) throw new Error('Paket topilmadi.');
-        const order = await PurchaseService.createPurchaseRequest({ telegramUserId, leagueId, leagueClubId: league.clubId, pkg });
+        const order = await PurchaseService.createPurchaseRequest({
+          telegramUserId,
+          leagueId,
+          leagueClubId: league.clubId,
+          pkg,
+        });
 
         const { text, keyboard } = handlePackageSelect({
           packageId,
@@ -591,7 +950,8 @@ export function registerBotRoutes(bot: Bot<Context>): void {
       if (data.startsWith('advance_round:')) {
         const leagueId = data.split(':')[1]!;
         const { league } = await leagueContext(ctx, leagueId);
-        if (league.role !== 'OWNER') throw new Error('Faqat liga egasi turni o‘tkaza oladi.');
+        if (league.role !== 'OWNER')
+          throw new Error('Faqat liga egasi turni o‘tkaza oladi.');
         try {
           const res = await LeagueService.executeLeagueRound(leagueId);
           await ctx.reply(

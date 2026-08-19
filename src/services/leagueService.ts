@@ -90,14 +90,16 @@ export class LeagueService {
         .select('id')
         .eq('slug', leagueLegendIdOrSlug)
         .single();
-      if (templateError) throw new Error(`LEGEND_NOT_FOUND: ${templateError.message}`);
+      if (templateError)
+        throw new Error(`LEGEND_NOT_FOUND: ${templateError.message}`);
       const { data: market, error: marketError } = await supabase
         .from('league_legend_market')
         .select('id')
         .eq('legend_template_id', template.id)
         .eq('status', 'AVAILABLE')
         .single();
-      if (marketError) throw new Error(`LEAGUE_LEGEND_NOT_AVAILABLE: ${marketError.message}`);
+      if (marketError)
+        throw new Error(`LEAGUE_LEGEND_NOT_AVAILABLE: ${marketError.message}`);
       leagueLegendId = market.id;
     }
     const { data, error } = await supabase.rpc('purchase_league_legend', {
