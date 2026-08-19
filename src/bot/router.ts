@@ -36,7 +36,8 @@ import { TransferService } from '../services/transferService.js';
 import { GameService, type LeagueSummary } from '../services/gameService.js';
 
 type PendingInput =
-  | { type: 'CREATE_LEAGUE' | 'JOIN_LEAGUE'; managerId: string }
+  | { type: 'CREATE_LEAGUE'; managerId: string }
+  | { type: 'JOIN_LEAGUE'; managerId: string }
   | {
       type: 'SELL_PRICE';
       managerId: string;
@@ -105,6 +106,7 @@ async function showMainMenu(ctx: Context, edit = false): Promise<void> {
 export function registerBotRoutes(bot: Bot<Context>): void {
   // 1. Command: /start
   bot.command('start', async (ctx) => {
+    if (!ctx.from) return;
     pendingInputs.delete(ctx.from.id);
     await showMainMenu(ctx);
   });
@@ -204,6 +206,7 @@ export function registerBotRoutes(bot: Bot<Context>): void {
   // 2. Command: /admin
   bot.command('admin', async (ctx) => {
     try {
+      if (!ctx.from) return;
       const admin = await IdentityService.getAdminUser(ctx.from.id);
       if (!admin) {
         await ctx.reply('❌ Sizda admin huquqi yo‘q.');
