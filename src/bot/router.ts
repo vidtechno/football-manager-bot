@@ -469,7 +469,7 @@ export function registerBotRoutes(bot: Bot<Context>): void {
         const rows = slice.map((p) => [
           {
             text: `${p.position} ${p.name} (${p.rating}) · ${money(p.value)}`,
-            callback_data: `tr_sell_player:${leagueId}:${p.id}`,
+            callback_data: `tr_sell_player:${p.id}`,
           },
         ]);
         const nav = [];
@@ -495,8 +495,16 @@ export function registerBotRoutes(bot: Bot<Context>): void {
         return;
       }
       if (data.startsWith('tr_sell_player:')) {
-        const [, leagueId, playerId] = data.split(':');
-        const { managerId, league } = await leagueContext(ctx, leagueId!);
+        const [, playerId] = data.split(':');
+        const manager = await IdentityService.getOrCreateManager(
+          ctx.from.id,
+          ctx.from.first_name,
+        );
+        const leagueId = await GameService.getOwnedPlayerLeagueId(
+          manager.id,
+          playerId!,
+        );
+        const { managerId, league } = await leagueContext(ctx, leagueId);
         if (!league.clubId) throw new Error('Avval klub tanlang.');
         const player = (await GameService.getSquad(league.clubId)).find(
           (x) => x.id === playerId,
@@ -1190,10 +1198,3 @@ export function registerBotRoutes(bot: Bot<Context>): void {
 
       // Default answer callback query to clear Telegram loading spinner
       await ctx.answerCallbackQuery();
-    } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      await ctx.reply(`❌ Xatolik yuz berdi: ${errMsg}`);
-      await ctx.answerCallbackQuery();
-    }
-  });
-}
