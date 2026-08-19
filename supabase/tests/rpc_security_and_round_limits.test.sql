@@ -60,6 +60,23 @@ BEGIN
     VALUES (v_league_id, v_club_template_id, 'Security Club', 'SEC', v_user_id)
     RETURNING id INTO v_league_club_id;
 
+    INSERT INTO public.league_clubs (
+        league_id,
+        club_template_id,
+        display_name,
+        short_code
+    )
+    SELECT
+        v_league_id,
+        ct.id,
+        ct.name,
+        ct.short_code
+    FROM public.club_templates ct
+    WHERE ct.id <> v_club_template_id
+    ORDER BY ct.id
+    LIMIT 19;
+
+
     UPDATE public.leagues
     SET status = 'STARTING'
     WHERE id = v_league_id;
