@@ -191,25 +191,27 @@ export class TransferService {
 
     const totalPages = Math.ceil((count || 0) / pageSize) || 1;
 
-    const listings: TransferListing[] = (data || []).map((row: DbTransferListingRow) => ({
-      id: row.id,
-      leagueId: row.league_id,
-      sellerClubId: row.seller_club_id,
-      leaguePlayerId: row.league_player_id,
-      playerNameSnapshot: row.player_name_snapshot,
-      positionCode: row.position_code,
-      overallRating: row.overall_rating,
-      originalMarketValueEur: Number(row.original_market_value_eur),
-      askingPriceEur: Number(row.asking_price_eur),
-      status: row.status,
-      buyerClubId: row.buyer_club_id,
-      buyerType: row.buyer_type,
-      listedAt: row.listed_at,
-      botEligibleAt: row.bot_eligible_at,
-      completedAt: row.completed_at,
-      cancelledAt: row.cancelled_at,
-      sellerClubName: row.seller_club?.display_name || 'Noma‘lum Klub',
-    }));
+    const listings: TransferListing[] = (data || []).map(
+      (row: DbTransferListingRow) => ({
+        id: row.id,
+        leagueId: row.league_id,
+        sellerClubId: row.seller_club_id,
+        leaguePlayerId: row.league_player_id,
+        playerNameSnapshot: row.player_name_snapshot,
+        positionCode: row.position_code,
+        overallRating: row.overall_rating,
+        originalMarketValueEur: Number(row.original_market_value_eur),
+        askingPriceEur: Number(row.asking_price_eur),
+        status: row.status,
+        buyerClubId: row.buyer_club_id,
+        buyerType: row.buyer_type,
+        listedAt: row.listed_at,
+        botEligibleAt: row.bot_eligible_at,
+        completedAt: row.completed_at,
+        cancelledAt: row.cancelled_at,
+        sellerClubName: row.seller_club?.display_name || 'Noma‘lum Klub',
+      }),
+    );
 
     return { listings, totalPages, page };
   }
@@ -306,26 +308,28 @@ export class TransferService {
 
     const totalPages = Math.ceil((count || 0) / pageSize) || 1;
 
-    const listings: TransferListing[] = (data || []).map((row: DbTransferListingRow) => ({
-      id: row.id,
-      leagueId: row.league_id,
-      sellerClubId: row.seller_club_id,
-      leaguePlayerId: row.league_player_id,
-      playerNameSnapshot: row.player_name_snapshot,
-      positionCode: row.position_code,
-      overallRating: row.overall_rating,
-      originalMarketValueEur: Number(row.original_market_value_eur),
-      askingPriceEur: Number(row.asking_price_eur),
-      status: row.status,
-      buyerClubId: row.buyer_club_id,
-      buyerType: row.buyer_type,
-      listedAt: row.listed_at,
-      botEligibleAt: row.bot_eligible_at,
-      completedAt: row.completed_at,
-      cancelledAt: row.cancelled_at,
-      sellerClubName: row.seller_club?.display_name || 'Noma‘lum Klub',
-      buyerClubName: row.buyer_club?.display_name || 'Noma‘lum Klub',
-    }));
+    const listings: TransferListing[] = (data || []).map(
+      (row: DbTransferListingRow) => ({
+        id: row.id,
+        leagueId: row.league_id,
+        sellerClubId: row.seller_club_id,
+        leaguePlayerId: row.league_player_id,
+        playerNameSnapshot: row.player_name_snapshot,
+        positionCode: row.position_code,
+        overallRating: row.overall_rating,
+        originalMarketValueEur: Number(row.original_market_value_eur),
+        askingPriceEur: Number(row.asking_price_eur),
+        status: row.status,
+        buyerClubId: row.buyer_club_id,
+        buyerType: row.buyer_type,
+        listedAt: row.listed_at,
+        botEligibleAt: row.bot_eligible_at,
+        completedAt: row.completed_at,
+        cancelledAt: row.cancelled_at,
+        sellerClubName: row.seller_club?.display_name || 'Noma‘lum Klub',
+        buyerClubName: row.buyer_club?.display_name || 'Noma‘lum Klub',
+      }),
+    );
 
     return { listings, totalPages, page };
   }
@@ -374,25 +378,27 @@ export class TransferService {
 
     const totalPages = Math.ceil((count || 0) / pageSize) || 1;
 
-    const listings: TransferListing[] = (data || []).map((row: DbTransferListingRow) => ({
-      id: row.id,
-      leagueId: row.league_id,
-      sellerClubId: row.seller_club_id,
-      leaguePlayerId: row.league_player_id,
-      playerNameSnapshot: row.player_name_snapshot,
-      positionCode: row.position_code,
-      overallRating: row.overall_rating,
-      originalMarketValueEur: Number(row.original_market_value_eur),
-      askingPriceEur: Number(row.asking_price_eur),
-      status: row.status,
-      buyerClubId: row.buyer_club_id,
-      buyerType: row.buyer_type,
-      listedAt: row.listed_at,
-      botEligibleAt: row.bot_eligible_at,
-      completedAt: row.completed_at,
-      cancelledAt: row.cancelled_at,
-      sellerClubName: row.seller_club?.display_name || 'Noma‘lum Klub',
-    }));
+    const listings: TransferListing[] = (data || []).map(
+      (row: DbTransferListingRow) => ({
+        id: row.id,
+        leagueId: row.league_id,
+        sellerClubId: row.seller_club_id,
+        leaguePlayerId: row.league_player_id,
+        playerNameSnapshot: row.player_name_snapshot,
+        positionCode: row.position_code,
+        overallRating: row.overall_rating,
+        originalMarketValueEur: Number(row.original_market_value_eur),
+        askingPriceEur: Number(row.asking_price_eur),
+        status: row.status,
+        buyerClubId: row.buyer_club_id,
+        buyerType: row.buyer_type,
+        listedAt: row.listed_at,
+        botEligibleAt: row.bot_eligible_at,
+        completedAt: row.completed_at,
+        cancelledAt: row.cancelled_at,
+        sellerClubName: row.seller_club?.display_name || 'Noma‘lum Klub',
+      }),
+    );
 
     return { listings, totalPages, page };
   }

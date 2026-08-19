@@ -35,13 +35,16 @@ export async function handleTransferBrowseList(
   const maxPrice = filter === 'AFFORDABLE' ? currentBudgetEur : undefined;
   const posFilter = filter === 'AFFORDABLE' ? 'ALL' : filter;
 
-  const { listings, totalPages, page: safePage } =
-    await TransferService.getActiveListings(leagueId, {
-      position: posFilter,
-      ...(maxPrice !== undefined ? { maxPrice } : {}),
-      page,
-      pageSize: 5,
-    });
+  const {
+    listings,
+    totalPages,
+    page: safePage,
+  } = await TransferService.getActiveListings(leagueId, {
+    position: posFilter,
+    ...(maxPrice !== undefined ? { maxPrice } : {}),
+    page,
+    pageSize: 5,
+  });
 
   let text = `🛒 *Futbolchilar Bozori*\n\n`;
   text += `🏦 *Klubingiz budjeti:* ${formatEur(currentBudgetEur)}\n`;
