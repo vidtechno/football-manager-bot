@@ -3,7 +3,7 @@
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
-SELECT plan(12);
+SELECT plan(13);
 
 -- 1. Test Tables Exist
 SELECT has_table('transfer_budget_packages', 'transfer_budget_packages table exists');
@@ -25,6 +25,7 @@ DECLARE
     v_league_id UUID;
     v_solo_league_id UUID;
     v_club_template_id UUID;
+    v_other_club_template_id UUID;
     v_league_club_id UUID;
     v_solo_club_id UUID;
     v_other_club_id UUID;
@@ -60,12 +61,18 @@ BEGIN
     INSERT INTO public.league_members (league_id, manager_id, role)
     VALUES (v_league_id, v_other_user_id, 'MEMBER');
 
-    -- Get a club template
-    SELECT id INTO v_club_template_id FROM public.club_templates LIMIT 1;
+    -- Get club templates
+    SELECT id INTO v_club_template_id FROM public.club_templates ORDER BY id ASC LIMIT 1;
+    SELECT id INTO v_other_club_template_id FROM public.club_templates WHERE id != v_club_template_id ORDER BY id DESC LIMIT 1;
     IF v_club_template_id IS NULL THEN
         INSERT INTO public.club_templates (slug, name, short_code, country)
         VALUES ('pkg-fc', 'Package FC', 'PFC', 'England')
         RETURNING id INTO v_club_template_id;
+    END IF;
+    IF v_other_club_template_id IS NULL THEN
+        INSERT INTO public.club_templates (slug, name, short_code, country)
+        VALUES ('pkg-fc-2', 'Package FC 2', 'PF2', 'England')
+        RETURNING id INTO v_other_club_template_id;
     END IF;
 
     -- Insert league clubs
@@ -74,12 +81,11 @@ BEGIN
     RETURNING id INTO v_league_club_id;
 
     INSERT INTO public.league_clubs (league_id, club_template_id, display_name, short_code, human_manager_id)
-    VALUES (v_league_id, v_club_template_id, 'Package Club 2', 'PK2', v_other_user_id)
+    VALUES (v_league_id, v_other_club_template_id, 'Package Club 2', 'PK2', v_other_user_id)
     RETURNING id INTO v_other_club_id;
 
     -- Initialize finances (€100,000,000)
-    INSERT INTO public.club_finances (league_club_id, current_balance)
-    VALUES (v_league_club_id, 100000000.00);
+    PERFORM public.initialize_club_finances(v_league_id, v_league_club_id, 100000000.00);
 
     -- Test 3A: Create Transfer Budget Purchase Request
     v_create_res := public.create_transfer_budget_purchase_request(

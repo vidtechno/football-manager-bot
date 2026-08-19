@@ -67,8 +67,7 @@ BEGIN
     RETURNING id INTO v_league_club_id;
 
     -- Setup club finances (€100,000,000)
-    INSERT INTO public.club_finances (league_club_id, current_balance)
-    VALUES (v_league_club_id, 100000000.00);
+    PERFORM public.initialize_club_finances(v_league_id, v_league_club_id, 100000000.00);
 
     -- Insert dummy legend template
     INSERT INTO public.legend_templates (
@@ -131,7 +130,7 @@ BEGIN
     END IF;
 
     -- Verify updated balance (€100,000,000 - €50,000,000 = €50,000,000)
-    SELECT current_balance INTO v_finance_balance
+    SELECT total_balance INTO v_finance_balance
     FROM public.club_finances
     WHERE league_club_id = v_league_club_id;
 

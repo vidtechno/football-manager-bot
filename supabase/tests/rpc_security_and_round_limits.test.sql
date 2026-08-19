@@ -3,7 +3,7 @@
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
-SELECT plan(11);
+SELECT plan(9);
 
 -- 1. Test Function Existence & Security Schema
 SELECT has_function('delete_solo_league', ARRAY['uuid', 'uuid'], 'delete_solo_league RPC exists');
