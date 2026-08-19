@@ -15,7 +15,7 @@ export function formatUzs(amount: number): string {
 }
 
 export interface DeepLinkParams {
-  adminUsername?: string;
+  adminUsername?: string | undefined;
   eurDisplay: string;
   leagueName: string;
   clubName: string;

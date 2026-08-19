@@ -256,3 +256,18 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
   - Solo liga egasi (1 inson menejer, 19 bot) uchun ligani butunlay tranzaktsiyaviy o'chirish RPC funksiyasi (`delete_solo_league`) shakllantirildi. Ko'p insonli ligalarda o'chirish taqiqlandi.
   - Telegram matnlari va URL deep link generatori (`buildAdminPaymentDeepLink`) O'zbek tilidagi qat'iy uslubiy qoidalarga muvofiqlashtirildi.
   - Vitest (25 test) va pgTAP SQL testlari to'liq yozildi va o'tdi.
+
+---
+
+### [2026-08-19] DEC-025: 4H-Bosqich Telegram Bot Ishga Tushirish Integratsiyasi va Xavfsizlikni Kuchaytirish (Security Hardening & Runtime UI Integration)
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** RPC funksiyalari xavfsizligini oshirish (`EXECUTE` huquqlarini `service_role` uchun cheklash, `SET search_path = public`), Telegram bot menyulari, tugmalari va deep-link interfeysini to'liq ulash, kanonik tur o'tkazish tranzaksiyasiga Toshkent vaqti bo'yicha kunlik 3-tur limitini integratsiyalash, hamda solo ligani o'chirishning 2 bosqichli Telegram UI oqimini taqdim etish.
+- **Qaror:**
+  - Migratsiya `20260819160000_harden_rpc_security_and_round_limits.sql` yaratildi: nozik RPC funksiyalaridan (`delete_solo_league`, `approve_transfer_budget_purchase_request`, `reject_transfer_budget_purchase_request`, `purchase_league_legend`, `create_transfer_budget_purchase_request`, `execute_league_round`) `anon` va `authenticated` bajarish huquqlari bekor qilindi, faqat `service_role` ga berildi.
+  - Kanonik tur o'tkazish funksiyasi `execute_league_round` yaratildi: u o'z tranzaksiyasi ichida birinchi bo'lib `check_daily_round_limit(p_league_id)` chaqiruvini bajaradi (Toshkent vaqti bo'yicha kuniga ko'pi bilan 3 tur).
+  - Telegram bot xabarlari `src/bot/messages/templates.ts`, klaviaturalari `src/bot/keyboards/menus.ts`, xizmatlari `src/services/purchaseService.ts` va handlerlari `src/bot/handlers/` yaratildi.
+  - `buildAdminPaymentDeepLink` generatori `https://t.me/diyorbek_anorboyev?text=...` URL shaklida kodlangan deep link havola yaratadi.
+  - Solo liganing 2 bosqichli o'chirilishi `handleSoloLeagueDeleteStep1` va `handleSoloLeagueDeleteStep2` orqali ta'minlandi (ko'p insonli ligada taqiqlandi).
+  - Bo'sh afsonalar bozori uchun `buildEmptyLegendsMarketMessage` (`ℹ️ Legendalar bozori hozircha tayyorlanmoqda.`) o'rnatildi.
+  - Vitest test to'plami `tests/bot-runtime-integration.test.ts` va pgTAP SQL test to'plami `supabase/tests/rpc_security_and_round_limits.test.sql` muvaffaqiyatli o'tdi.

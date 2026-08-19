@@ -1,4 +1,4 @@
--- Reprodusibl Phase 4E Seed Data generated on 2026-08-19T08:34:24.640Z
+-- Reprodusibl Phase 4E Seed Data generated on 2026-08-19T08:43:48.600Z
 -- Snapshot Date: 2026-08-19
 -- Total Clubs: 20, Total Players: 567, Total Value: €16,750,950,000
 
