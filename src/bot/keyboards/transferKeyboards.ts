@@ -76,7 +76,7 @@ export function buildTransferBrowseKeyboard(
     keyboard.push([
       {
         text: `👤 ${listing.playerNameSnapshot} (${listing.positionCode} ${listing.overallRating}) - €${priceMln}M`,
-        callback_data: `tr_buy_det:${leagueId}:${listing.id}`,
+        callback_data: `tr_buy_det:${listing.id}`,
       },
     ]);
   });
@@ -128,14 +128,14 @@ export function buildListingDetailKeyboard(
     keyboard.push([
       {
         text: '❌ E’lonni bekor qilish',
-        callback_data: `tr_cancel:${leagueId}:${listingId}`,
+        callback_data: `tr_cancel:${listingId}`,
       },
     ]);
   } else if (canAfford) {
     keyboard.push([
       {
         text: '✅ Sotib olish',
-        callback_data: `tr_buy_confirm:${leagueId}:${listingId}`,
+        callback_data: `tr_buy_confirm:${listingId}`,
       },
     ]);
   } else {
@@ -165,13 +165,13 @@ export function buildListingConfirmKeyboard(
     [
       {
         text: '✅ Ha, sotib olaman',
-        callback_data: `tr_buy_exec:${leagueId}:${listingId}`,
+        callback_data: `tr_buy_exec:${listingId}`,
       },
     ],
     [
       {
         text: '❌ Bekor qilish',
-        callback_data: `tr_buy_det:${leagueId}:${listingId}`,
+        callback_data: `tr_buy_det:${listingId}`,
       },
     ],
   ];
@@ -188,7 +188,7 @@ export function buildMyListingsKeyboard(
     keyboard.push([
       {
         text: `❌ ${listing.playerNameSnapshot} (€${priceMln}M) - Bekor qilish`,
-        callback_data: `tr_cancel:${leagueId}:${listing.id}`,
+        callback_data: `tr_cancel:${listing.id}`,
       },
     ]);
   });
