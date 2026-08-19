@@ -158,16 +158,23 @@ export class GameService {
 
   static async selectClub(
     managerId: string,
-    leagueId: string,
     clubId: string,
-  ): Promise<void> {
+  ): Promise<string> {
     const db = getSupabaseAdminClient();
+    const { data: club, error: clubError } = await db
+      .from('league_clubs')
+      .select('league_id')
+      .eq('id', clubId)
+      .single();
+    if (clubError) throw new Error(clubError.message);
+    const leagueId = club.league_id;
     const { error } = await db.rpc('select_league_club', {
       p_manager_id: managerId,
       p_league_id: leagueId,
       p_league_club_id: clubId,
     });
     if (error) throw new Error(error.message);
+    return leagueId;
   }
 
   static async startLeague(managerId: string, leagueId: string): Promise<void> {
