@@ -50,13 +50,17 @@ describe('Phase 4H Telegram Bot Runtime Integration Suite', () => {
     // Button 0 row 0 is 💬 Admin bilan bog‘lanish URL button
     const adminBtn = res.keyboard[0]![0]!;
     expect(adminBtn.text).toBe('💬 Admin bilan bog‘lanish');
-    expect(adminBtn.url).toBeDefined();
-    expect(adminBtn.url!).toContain('https://t.me/diyorbek_anorboyev?text=');
-    const decodedUrl = decodeURIComponent(adminBtn.url!);
-    expect(decodedUrl).toContain('TBP-TEST01');
-    expect(decodedUrl).toContain('Paket: €100 million');
-    expect(decodedUrl).toContain('Liga: Gigants League 1');
-    expect(decodedUrl).toContain('Klub: Real Madrid');
+    if ('url' in adminBtn) {
+      expect(adminBtn.url).toBeDefined();
+      expect(adminBtn.url).toContain('https://t.me/diyorbek_anorboyev?text=');
+      const decodedUrl = decodeURIComponent(adminBtn.url);
+      expect(decodedUrl).toContain('TBP-TEST01');
+      expect(decodedUrl).toContain('Paket: €100 million');
+      expect(decodedUrl).toContain('Liga: Gigants League 1');
+      expect(decodedUrl).toContain('Klub: Real Madrid');
+    } else {
+      throw new Error('Expected UrlButton but received callback button');
+    }
   });
 
   it('3. should render Admin Pending Orders List and Details screens', () => {
@@ -131,5 +135,21 @@ describe('Phase 4H Telegram Bot Runtime Integration Suite', () => {
     const text = buildEmptyLegendsMarketMessage();
     expect(text).toContain('Legendalar Bozori');
     expect(text).toContain('hozircha tayyorlanmoqda');
+  });
+
+  it('7. should initialize Bot router cleanly with environment variables', async () => {
+    process.env['SUPABASE_PROJECT_ID'] = 'test-proj';
+    process.env['SUPABASE_URL'] = 'https://test-proj.supabase.co';
+    process.env['SUPABASE_ANON_KEY'] = 'anon-key-test';
+    process.env['SUPABASE_SECRET_KEY'] = 'service-role-test';
+    process.env['TELEGRAM_BOT_TOKEN'] = '123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ';
+    process.env['TELEGRAM_BOT_USERNAME'] = 'football_manager_test_bot';
+    process.env['TELEGRAM_WEBHOOK_SECRET'] = 'wh-secret-test';
+    process.env['CRON_SECRET'] = 'cron-secret-test';
+
+    const { createBot } = await import('../src/bot/bot.js');
+    const bot = createBot();
+    expect(bot).toBeDefined();
+    expect(bot.api).toBeDefined();
   });
 });

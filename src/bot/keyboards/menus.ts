@@ -1,17 +1,12 @@
+import type { InlineKeyboardButton } from 'grammy/types';
 import { TransferBudgetPackage } from '../../config/packages.js';
 import { formatUzs } from '../../utils/formatters.js';
-
-export interface InlineButton {
-  text: string;
-  callback_data?: string;
-  url?: string;
-}
 
 export function buildPackageSelectionKeyboard(
   packages: TransferBudgetPackage[],
   leagueId: string,
-): InlineButton[][] {
-  const keyboard: InlineButton[][] = [];
+): InlineKeyboardButton[][] {
+  const keyboard: InlineKeyboardButton[][] = [];
 
   for (const pkg of packages) {
     keyboard.push([
@@ -42,7 +37,7 @@ export function buildPackageSelectionKeyboard(
 export function buildOrderConfirmationKeyboard(
   deepLinkUrl: string,
   leagueId: string,
-): InlineButton[][] {
+): InlineKeyboardButton[][] {
   return [
     [
       {
@@ -63,9 +58,7 @@ export function buildOrderConfirmationKeyboard(
   ];
 }
 
-export function buildSoloLeagueDeleteStep1Keyboard(
-  leagueId: string,
-): InlineButton[][] {
+export function buildSoloLeagueDeleteStep1Keyboard(leagueId: string): InlineKeyboardButton[][] {
   return [
     [
       {
@@ -80,9 +73,7 @@ export function buildSoloLeagueDeleteStep1Keyboard(
   ];
 }
 
-export function buildSoloLeagueDeleteStep2Keyboard(
-  leagueId: string,
-): InlineButton[][] {
+export function buildSoloLeagueDeleteStep2Keyboard(leagueId: string): InlineKeyboardButton[][] {
   return [
     [
       {
@@ -99,8 +90,8 @@ export function buildSoloLeagueDeleteStep2Keyboard(
 
 export function buildAdminPendingOrdersKeyboard(
   requests: Array<{ id: string; orderCode: string }>,
-): InlineButton[][] {
-  const keyboard: InlineButton[][] = [];
+): InlineKeyboardButton[][] {
+  const keyboard: InlineKeyboardButton[][] = [];
 
   for (const req of requests) {
     keyboard.push([
@@ -121,9 +112,7 @@ export function buildAdminPendingOrdersKeyboard(
   return keyboard;
 }
 
-export function buildAdminOrderActionKeyboard(
-  requestId: string,
-): InlineButton[][] {
+export function buildAdminOrderActionKeyboard(requestId: string): InlineKeyboardButton[][] {
   return [
     [
       {
