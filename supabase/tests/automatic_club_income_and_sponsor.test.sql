@@ -31,12 +31,12 @@ DECLARE
 BEGIN
     -- Setup test admin
     INSERT INTO public.admin_users (id, telegram_user_id, role)
-    VALUES (v_admin_id, 8880001, 'SUPER_ADMIN')
+    VALUES (v_admin_id, 9998001, 'SUPER_ADMIN')
     ON CONFLICT (id) DO NOTHING;
 
     -- Setup human manager
     INSERT INTO public.managers (telegram_user_id, manager_name)
-    VALUES (8880002, 'income_mgr') RETURNING id INTO v_human_mgr_id;
+    VALUES (9998002, 'income_mgr') RETURNING id INTO v_human_mgr_id;
 
     -- Setup league
     INSERT INTO public.leagues (name, code, owner_manager_id)
@@ -45,12 +45,9 @@ BEGIN
     INSERT INTO public.league_members (league_id, manager_id, role)
     VALUES (v_league_id, v_human_mgr_id, 'OWNER');
 
-    -- Setup club templates
-    INSERT INTO public.club_templates (slug, name, short_code, country)
-    VALUES ('inc-human-fc', 'Inc Human FC', 'IHF', 'Spain') RETURNING id INTO v_tpl1_id;
-
-    INSERT INTO public.club_templates (slug, name, short_code, country)
-    VALUES ('inc-bot-fc', 'Inc Bot FC', 'IBF', 'England') RETURNING id INTO v_tpl2_id;
+    -- Select existing club templates (do not insert new templates to preserve seed count = 20)
+    SELECT id INTO v_tpl1_id FROM public.club_templates ORDER BY created_at ASC LIMIT 1;
+    SELECT id INTO v_tpl2_id FROM public.club_templates ORDER BY created_at ASC LIMIT 1 OFFSET 1;
 
     -- Setup clubs
     INSERT INTO public.league_clubs (league_id, club_template_id, display_name, short_code, human_manager_id)
