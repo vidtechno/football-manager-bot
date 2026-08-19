@@ -1,58 +1,65 @@
-# Telegram Football Manager - Transfer Tizimi Rejasi (TRANSFER_SYSTEM_PLAN.md)
+# Transfer Budget & Purchase Packages Specification
 
-Ushbu hujjat **Telegram Football Manager** o'yinidagi transfer oynalari, menejerlar o me'rtasidagi hamda boshqaruvchisiz klublar bilan transfer amallari mantiqini belgilaydi.
+## 1. Executive Summary & Purpose
 
----
+The **Transfer Budget System** manages club financial balances (`club_finances.current_balance`) used for player transfers, legend acquisitions, and team upgrades.
 
-## 1. Transfer Oynalari Jadvali (Transfer Windows)
-
-38 turdan iborat mavsum davomida transfer oynalari `transfer_window_states` jadvali orqali boshqariladi:
-
-- **1-Transfer Oynasi (Ochiq):** 1-turdan 6-turgacha. (7-tur boshlanishi bilan yopiladi).
-- **1-Yopiq Davr:** 7-turdan 16-turgacha.
-- **2-Transfer Oynasi (Ochiq):** 17-turdan 24-turgacha. (16-tur tugagach ochiladi, 25-tur boshlanishi bilan yopiladi).
-- **2-Yopiq Davr:** 25-turdan 38-turgacha.
-
-**Telegram Eslatmalari:** Transfer oynasi ochilganda, yopilishiga 1 tur qolganda hamda yopilgan paytda barcha menejerlarga shaxsiy chatda O'zbek tilida bildirishnoma yuboriladi.
+To allow users to expand their transfer budget for specific competitive leagues, the system provides **5 Configurable Real-Payment Packages** coordinated through Telegram.
 
 ---
 
-## 2. Menejerlar O'rtasidagi Transferlar (Manager-to-Manager Transfers)
+## 2. Transfer Budget Packages
 
-1. **Taklif Yuborish:** Haridor menejer futbolchining muzlatilgan bozor qiymatining (`frozen_market_value`) **kamida 50%** qismidan boshlab taklif kiritishi mumkin.
-2. **Pullarni Muzlatish (`club_finances`, `financial_ledger` & RPC Helpers):** Taklif yuborilgach, taklif qilingan summa `reserve_club_funds` RPC funksiyasi orqali klubning `reserved_balance` balansiga atomar qo'shiladi va `available_balance` mos ravishda kamayadi. Pul harakati `financial_ledger` jadvalida ishorali manfiy debet yozuvi sifatida qayd etiladi. Taklif rad etilsa `release_club_reserved_funds` orqali pul qaytariladi, taklif qabul qilinsa `capture_club_reserved_funds` orqali mablag' atomar yechib olinadi.
+Packages are configured in a single database source of truth (`transfer_budget_packages`):
 
-3. **Qarshi Takliflar va Muzokaralar Tarixi (`transfer_offer_history`):**
-   - Sotuvchi taklifni qabul qilishi (`ACCEPT`), rad etishi (`REJECT`) yoki qarshi narx taklif qilishi (`COUNTER`) mumkin.
-   - Original taklif ustiga urib yozilmaydi; har bir qarshi taklif `transfer_offer_history` jadvalida saqlanadi.
-4. **Taklif Holatlari (`enum_transfer_offer_status`):**
-   - `PENDING`, `ACCEPTED`, `REJECTED`, `COUNTERED`, `CANCELLED`, `EXPIRED`, `FAILED`, `COMPLETED`.
-5. **Atomar Bajarilish (Atomic Execution):**
-   - Haridor balansidan pul yechiladi -> Sotuvchi balansiga o'tkaziladi -> `reserved_funds` o me me me'chirilib pul yechimdan chiqariladi -> Futbolchi `club_id`si yangilanadi -> `player_transfer_history` va `financial_ledger` yoziladi -> Ikkala menejerga O'zbekcha xabar yuboriladi.
-6. **Cheklovlar:**
-   - Bitta futbolchi bitta transfer oynasi davomida 1 martadan ko'p sotilishi taqiqlanadi (`last_transferred_round` orqali tekshiriladi).
-   - Bozor qiymatining 70% idan past takliflar admin ko me'rib chiqishi uchun belgilab qo'yiladi (`is_suspicious_flag`).
+| Package ID | Display Name | EUR Budget Amount | UZS Price    | Sort Order |
+| ---------- | ------------ | ----------------- | ------------ | ---------- |
+| `pkg_10m`  | €10 million  | €10,000,000       | 5 000 so‘m   | 1          |
+| `pkg_50m`  | €50 million  | €50,000,000       | 20 000 so‘m  | 2          |
+| `pkg_100m` | €100 million | €100,000,000      | 35 000 so‘m  | 3          |
+| `pkg_250m` | €250 million | €250,000,000      | 75 000 so‘m  | 4          |
+| `pkg_500m` | €500 million | €500,000,000      | 125 000 so‘m | 5          |
+
+### Important Per-League Warning
+
+> ⚠️ **Muhim:** sotib olingan transfer mablag‘i faqat shu ligada va shu klub uchun amal qiladi. Mablag‘ boshqa ligaga yoki boshqa klubga avtomatik ko‘chirilmaydi.
 
 ---
 
-## 3. Boshqaruvchisiz Klublar Transferi va Anti-Drain Qoidalari (Unmanaged-Club Transfers)
+## 3. User Order Flow & Admin Verification
 
-### 3.1. Liga Boshlanishidan Oldingi Takliflar
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as User (Club Manager)
+    participant Bot as Telegram Bot / UI
+    participant RPC as create_transfer_budget_purchase_request()
+    participant AdminLink as Admin Telegram Deep Link
+    actor Admin as System Admin
+    participant ApproveRPC as approve_transfer_budget_purchase_request()
+    participant Finances as club_finances
+    participant Ledger as financial_ledger
 
-- Liga lobbi holatidaligi paytida bo'sh klublarga yuborilgan takliflar `PENDING` holatida turadi va pul muzlatiladi. Futbolchi darhol ko'chib o me'tmaydi.
-- **Liga lock bo'lganda:**
-  - Agar klubga odam menejer kelib qo'shilgan bo'lsa: bot-taklif bekor qilinadi, muzlatilgan pul yechiladi va haridorga O'zbekcha bildirishnoma yuboriladi.
-  - Agar klub bo'sh (unmanaged) bo'lib qolgan bo'lsa: taklif o'z kuchida qoladi va 1-tur boshlanishidan oldin ko'rib chiqiladi.
+    User->>Bot: Select Package (e.g. €100 mln)
+    Bot->>RPC: create_transfer_budget_purchase_request(league_id, club_id, package_id)
+    RPC-->>Bot: Return Pending Order (Code: TBP-A1B2C3D4)
+    Bot-->>User: Show Confirmation & 💬 Admin bilan bog'lanish button
+    User->>AdminLink: Click prefilled Telegram link to @diyorbek_anorboyev
+    AdminLink-->>Admin: Receives message with order code TBP-A1B2C3D4
+    Admin->>Admin: Verify manual UZS payment (e.g. 35 000 so'm)
+    Admin->>ApproveRPC: approve_transfer_budget_purchase_request(request_id, admin_id)
+    ApproveRPC->>Finances: Lock & UPDATE current_balance = current_balance + 100m
+    ApproveRPC->>Ledger: INSERT transaction (type: TRANSFER_PURCHASE, amount: +100m)
+    ApproveRPC-->>Admin: Return success JSON & mark APPROVED
+```
 
-### 3.2. Boshqaruvchisiz Klublar Qoidalari va Anti-Drain Triggers
+---
 
-- Bo'sh klublar uchun minimal taklif narxi **bozor qiymatining 100% qismi** hisoblanadi.
-- Talabga javob beradigan takliflar avtomatik qabul qilinadi.
-- **Qat'iy Anti-Drain Trigger Cheklovlari (Database Level):**
-  1. Bir menejer bitta oynada jami bo'sh klublardan maksimal **3 ta futbolchi** sotib olishi mumkin;
-  2. Bir menejer bitta oynada bitta bo'sh klubdan maksimal **1 ta futbolchi** sotib olishi mumkin;
-  3. Bitta bo me'sh klub bitta oynada maksimal **3 ta futbolchi** sotishi mumkin;
-  4. Sotuvchi bo'sh klub tarkibida **kamida 18 ta futbolchi** qolishi shart (`trg_validate_transfer_anti_drain`);
-  5. Pozitsiyaviy minimal ko me'rsatkichlar saqlanishi shart (2 GK, 6 DEF, 6 MID, 4 FWD);
-  6. Ushbu pozitsiya guruhidagi oxirgi majburiy futbolchilar sotilishi taqiqlanadi;
-  7. Sotib olingan futbolchi kamida 3 tur davomida qayta sotilishi mumkin emas.
+## 4. Financial Ledger Auditing
+
+Every approved transfer budget purchase creates a clean `financial_ledger` record:
+
+- **Transaction Type:** `TRANSFER_PURCHASE`
+- **Amount:** `+requested_eur_amount` (e.g. `+100000000.00`)
+- **Description:** `Transfer Budget Purchase [TBP-A1B2C3D4]: +100000000 EUR (35000 UZS)`
+- **Immutability:** Financial ledger records cannot be deleted or modified.

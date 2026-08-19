@@ -42,7 +42,12 @@ The completed dataset must contain historical peak stats for at least the follow
 - **Andrés Iniesta**
 
 > [!IMPORTANT]
-> **Data Quality Rule:** Active legends (e.g. Cristiano Ronaldo, Lionel Messi, Luka Modrić) must be represented by their historical peak attributes, ratings, and valuation, rather than their current-age active ratings.
+> **Data Quality & Pricing Policy:**
+>
+> - **Price Bounds:** Legend prices range strictly between **€100,000,000 and €500,000,000**.
+> - **Peak Messi & Ronaldo:** Peak Cristiano Ronaldo and peak Lionel Messi must cost **exactly €500,000,000**.
+> - **Transfer Budget Source of Truth:** Legend purchases strictly deduct from the purchasing club's transfer budget (`club_finances.current_balance`). No separate currency or Manager Coins column is used.
+> - **Peak Attributes:** Active legends (e.g. Cristiano Ronaldo, Lionel Messi, Luka Modrić) must be represented by their historical peak attributes, ratings, and valuation, rather than their current-age active ratings.
 
 ### Dataset Completeness Gate
 

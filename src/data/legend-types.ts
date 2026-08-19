@@ -31,13 +31,30 @@ export const LegendSeedSchema = z
     peakOverallRating: z.number().int().min(1).max(99),
     outfieldAttributes: OutfieldAttributesSchema.optional(),
     goalkeeperAttributes: GoalkeeperAttributesSchema.optional(),
-    legendCoinPriceEur: z.number().min(0),
+    legendTransferPriceEur: z
+      .number()
+      .int()
+      .min(100_000_000, 'Minimum legend price is €100,000,000')
+      .max(500_000_000, 'Maximum legend price is €500,000,000'),
     status: LegendStatusSchema,
     sourceId: z.string().min(1),
     ratingMethodology: z.string().min(1),
     historicalStats: z.record(z.string(), z.unknown()).optional(),
   })
   .superRefine((data, ctx) => {
+    if (
+      (data.canonicalKey === 'cristiano-ronaldo-prime' ||
+        data.canonicalKey === 'lionel-messi-prime') &&
+      data.legendTransferPriceEur !== 500_000_000
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          'Peak Cristiano Ronaldo and Lionel Messi must cost exactly €500,000,000',
+        path: ['legendTransferPriceEur'],
+      });
+    }
+
     if (data.primaryPosition === 'GK') {
       if (!data.goalkeeperAttributes) {
         ctx.addIssue({

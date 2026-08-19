@@ -5,8 +5,8 @@ import {
   ALL_SUPPORTED_POSITIONS,
 } from '../src/data/validate-legends.js';
 
-describe('Phase 4F Legend Transfers Infrastructure Test Suite', () => {
-  it('1. should validate legend seed schema correctly for valid outfield legend', () => {
+describe('Phase 4G Legend Transfers Infrastructure & Pricing Suite', () => {
+  it('1. should validate legend seed schema correctly for peak Ronaldo at €500m', () => {
     const sampleLegend = {
       legendId: 'leg-cristiano-ronaldo-prime',
       canonicalKey: 'cristiano-ronaldo-prime',
@@ -26,7 +26,7 @@ describe('Phase 4F Legend Transfers Infrastructure Test Suite', () => {
         defending: 33,
         physical: 80,
       },
-      legendCoinPriceEur: 150000000,
+      legendTransferPriceEur: 500_000_000,
       status: 'ACTIVE',
       sourceId: 'src-legend-research-2026',
       ratingMethodology:
@@ -57,7 +57,7 @@ describe('Phase 4F Legend Transfers Infrastructure Test Suite', () => {
         distribution: 78,
         oneOnOne: 91,
       },
-      legendCoinPriceEur: 80000000,
+      legendTransferPriceEur: 250_000_000,
       status: 'RETIRED',
       sourceId: 'src-legend-research-2026',
       ratingMethodology:
@@ -68,8 +68,8 @@ describe('Phase 4F Legend Transfers Infrastructure Test Suite', () => {
     expect(parsed.success).toBe(true);
   });
 
-  it('3. should reject outfield legends attempting to use goalkeeper attributes', () => {
-    const invalidOutfield = {
+  it('3. should reject peak Messi or Ronaldo if price is not exactly €500,000,000', () => {
+    const invalidMessi = {
       legendId: 'leg-lionel-messi-prime',
       canonicalKey: 'lionel-messi-prime',
       fullName: 'Lionel Messi',
@@ -80,51 +80,54 @@ describe('Phase 4F Legend Transfers Infrastructure Test Suite', () => {
       peakClub: 'FC Barcelona',
       peakPeriod: '2011-2012',
       peakOverallRating: 94,
-      goalkeeperAttributes: {
-        reflexes: 50,
-        handling: 50,
-        positioning: 50,
-        aerialAbility: 50,
-        distribution: 50,
-        oneOnOne: 50,
+      outfieldAttributes: {
+        pace: 92,
+        shooting: 92,
+        passing: 91,
+        dribbling: 96,
+        defending: 30,
+        physical: 68,
       },
-      legendCoinPriceEur: 150000000,
+      legendTransferPriceEur: 300_000_000, // Invalid: must be €500m
       status: 'ACTIVE',
       sourceId: 'src-legend-research-2026',
       ratingMethodology: 'Peak career analysis',
     };
 
-    const parsed = LegendSeedSchema.safeParse(invalidOutfield);
+    const parsed = LegendSeedSchema.safeParse(invalidMessi);
     expect(parsed.success).toBe(false);
+    if (!parsed.success) {
+      expect(parsed.error.message).toContain('must cost exactly €500,000,000');
+    }
   });
 
-  it('4. should reject legend IDs that do not follow stable leg- prefix convention', () => {
-    const invalidIdLegend = {
-      legendId: 'cristiano-ronaldo', // missing leg- prefix
-      canonicalKey: 'cristiano-ronaldo-prime',
-      fullName: 'Cristiano Ronaldo',
-      nationality: 'Portugal',
-      dateOfBirth: '1985-02-05',
-      primaryPosition: 'LW',
-      secondaryPositions: [],
-      peakClub: 'Real Madrid',
-      peakPeriod: '2011-2014',
-      peakOverallRating: 94,
+  it('4. should reject legend prices outside the €100m - €500m range', () => {
+    const cheapLegend = {
+      legendId: 'leg-xavi-prime',
+      canonicalKey: 'xavi-prime',
+      fullName: 'Xavi Hernández',
+      nationality: 'Spain',
+      dateOfBirth: '1980-01-25',
+      primaryPosition: 'CM',
+      secondaryPositions: ['CAM'],
+      peakClub: 'FC Barcelona',
+      peakPeriod: '2008-2012',
+      peakOverallRating: 92,
       outfieldAttributes: {
-        pace: 93,
-        shooting: 93,
-        passing: 82,
-        dribbling: 91,
-        defending: 33,
-        physical: 80,
+        pace: 75,
+        shooting: 78,
+        passing: 95,
+        dribbling: 90,
+        defending: 72,
+        physical: 68,
       },
-      legendCoinPriceEur: 150000000,
-      status: 'ACTIVE',
+      legendTransferPriceEur: 50_000_000, // Invalid: below €100m minimum
+      status: 'RETIRED',
       sourceId: 'src-legend-research-2026',
       ratingMethodology: 'Peak career analysis',
     };
 
-    const parsed = LegendSeedSchema.safeParse(invalidIdLegend);
+    const parsed = LegendSeedSchema.safeParse(cheapLegend);
     expect(parsed.success).toBe(false);
   });
 
@@ -138,8 +141,6 @@ describe('Phase 4F Legend Transfers Infrastructure Test Suite', () => {
 
   it('6. [Final-Dataset Gate] should verify ALL 15 positions have at least 3 legends when dataset is populated', () => {
     const report = validateLegends();
-    // During infrastructure phase, dataset is empty draft, so isFinalDatasetReady MUST be false.
-    // When populated in later phase, this gate will verify dataset completeness.
     expect(ALL_SUPPORTED_POSITIONS.length).toBe(15);
     if (report.totalLegends === 0) {
       expect(report.isFinalDatasetReady).toBe(false);

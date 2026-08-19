@@ -241,3 +241,18 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
   - Tranzaktsiyaviy xarid PL/pgSQL funksiyasi (`purchase_league_legend`) yaratildi: `FOR UPDATE` qulfi, ligaga tegishlilik, menejer muvofiqligi, mablag' yetarliligi tekshiruvi, balansdan ayirish hamda `financial_ledger` jurnaliga yozish atomar ravishda ta'minlandi.
   - Zod validator `src/data/validate-legends.ts` hamda loyiha arxitekturasi hujjati `docs/LEGEND_TRANSFERS_PLAN.md` shakllantirildi.
   - Vitest va pgTAP test to'plamlari muvaffaqiyatli o'tdi. Masofaviy Supabase va avvalgi migratsiyalarga o'zgartirish kiritilmadi.
+
+---
+
+### [2026-08-19] DEC-024: 4G-Bosqich Transfer Budjeti Paketlari, Admin Tasdiqlashi, Kunlik 3-Tur Limiti va Solo Liganing Butunlay O'chirilishi
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Afsonalarni faqat klub transfer budjeti (`club_finances.current_balance`) orqali xarid qilishni belgilash, narx diapazonini €100m-€500m ga (peak Messi va Ronaldo uchun €500m) muvofiqlashtirish, 5 ta real to'lov paketi va admin tasdiqlash oqimini shakllantirish, kunlik tur limitini 3 ta turga tushirish, hamda solo ligani o'chirish tranzaktsion imkoniyatini taqdim etish.
+- **Qaror:**
+  - `legend_templates` jadvaliga `CHECK (default_price_eur BETWEEN 100000000 AND 500000000)` cheklovi o'rnatildi. Peak Messi va Ronaldo narxi qat'iy €500m ga belgilandi.
+  - 5 ta sozlanadigan paketlar `transfer_budget_packages` va buyurtma so'rovlari `transfer_budget_purchase_requests` jadvallari shakllantirildi (20260819150000).
+  - Admin tasdiqlashi `approve_transfer_budget_purchase_request` atomar va idempotent qilindi (`FOR UPDATE` qulfi, balansga qo'shish va `TRANSFER_PURCHASE` moliyaviy jurnal yozuvi).
+  - Kunlik tur limiti Toshkent vaqti (`Asia/Tashkent`) bo'yicha ko'pi bilan 3 ta tur etib belgilandi (`check_daily_round_limit`).
+  - Solo liga egasi (1 inson menejer, 19 bot) uchun ligani butunlay tranzaktsiyaviy o'chirish RPC funksiyasi (`delete_solo_league`) shakllantirildi. Ko'p insonli ligalarda o'chirish taqiqlandi.
+  - Telegram matnlari va URL deep link generatori (`buildAdminPaymentDeepLink`) O'zbek tilidagi qat'iy uslubiy qoidalarga muvofiqlashtirildi.
+  - Vitest (25 test) va pgTAP SQL testlari to'liq yozildi va o'tdi.
