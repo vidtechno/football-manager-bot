@@ -189,7 +189,7 @@ export function validateLegends(
 
   // Write validation report JSON
   const reportPath = path.join(baseDir, 'validation-report.json');
-  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2), 'utf-8');
+  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n', 'utf-8');
 
   return report;
 }

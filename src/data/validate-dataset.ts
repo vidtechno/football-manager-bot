@@ -261,7 +261,7 @@ export function validateDataset(
 
   fs.writeFileSync(
     path.join(baseDir, 'validation-report.json'),
-    JSON.stringify(report, null, 2),
+    JSON.stringify(report, null, 2) + '\n',
   );
 
   return report;
