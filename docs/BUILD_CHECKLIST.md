@@ -29,7 +29,6 @@
   - [x] **4B2. Supabase League Clubs va Bot Tayinlovlari migratsiyasi (`create_league_clubs_and_bot_assignments`):** Tayyorlash va remote masofaviy Supabase loyihasiga (`cxuqmfvnrzsrafjhoggu`) muvaffaqiyatli push qilish yakunlandi (20260818212213). `league_clubs` va `bot_manager_assignments` jadvallari, LOBBY-only klub tanlash/almashtirish hamda bot biriktirish operatsiyalari uchun tranzaktsiyaviy RPC funksiyalari shakllantirildi.
   - [x] **4D. Supabase League Players va Club Finances migratsiyasi (`create_league_players_and_finances`):** Tayyorlash va remote masofaviy Supabase loyihasiga (`cxuqmfvnrzsrafjhoggu`) muvaffaqiyatli push qilish yakunlandi (20260819005622). `league_players`, `league_player_positions`, `club_finances`, hamda `financial_ledger` jadvallari, ishorali moliyaviy jurnal modellari, tenglashtiruvchi boshlang'ich byudjet va atomar moliya RPC funksiyalari joylashtirildi. RLS taqiqlari barcha 4 ta jadval bo'yicha sinovdan o'tdi.
 
-
   - [ ] 45 ta to'liq normalizatsiya qilingan jadvallar loyihasi (`DATABASE_PLAN.md`) asosida qolgan SQL migratsiyalari shakllantirilgan.
   - [ ] Global shablonlar va liga nusxalari ajratilgan.
   - [ ] 12 ta ENUM turlari va 14 ta bazaviy Triggers/Stored Functions o'rnatilgan.
