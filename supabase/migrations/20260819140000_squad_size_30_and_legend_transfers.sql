@@ -277,7 +277,7 @@ BEGIN
     END IF;
 
     -- Verify requesting user owns/manages the club
-    IF v_club_rec.user_id <> p_user_id THEN
+    IF v_club_rec.human_manager_id IS NULL OR (v_club_rec.human_manager_id <> p_user_id AND NOT EXISTS (SELECT 1 FROM public.managers WHERE id = v_club_rec.human_manager_id AND user_id = p_user_id)) THEN
         RAISE EXCEPTION 'UNAUTHORIZED_MANAGER' USING ERRCODE = 'P0001';
     END IF;
 

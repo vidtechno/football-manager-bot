@@ -11,6 +11,7 @@ DECLARE
     v_league RECORD;
     v_human_count INT;
     v_effective_user_id UUID;
+    v_requesting_manager_id UUID;
 BEGIN
     -- Derive effective user identity
     v_effective_user_id := COALESCE(auth.uid(), p_user_id);
@@ -24,15 +25,24 @@ BEGIN
         RAISE EXCEPTION 'LEAGUE_NOT_FOUND' USING ERRCODE = 'P0001';
     END IF;
 
+    -- Resolve manager ID for effective user identity if applicable
+    SELECT id INTO v_requesting_manager_id
+    FROM public.managers
+    WHERE id = v_effective_user_id OR user_id = v_effective_user_id;
+
+    IF v_requesting_manager_id IS NULL THEN
+        v_requesting_manager_id := v_effective_user_id;
+    END IF;
+
     -- Verify requesting user is the league creator/owner
-    IF v_league.created_by_user_id <> v_effective_user_id THEN
+    IF v_league.owner_manager_id <> v_requesting_manager_id THEN
         RAISE EXCEPTION 'UNAUTHORIZED_LEAGUE_OWNER' USING ERRCODE = 'P0001';
     END IF;
 
     -- Verify human count is EXACTLY 1 (the owner)
-    SELECT COUNT(DISTINCT user_id) INTO v_human_count
+    SELECT COUNT(DISTINCT human_manager_id) INTO v_human_count
     FROM public.league_clubs
-    WHERE league_id = p_league_id AND user_id IS NOT NULL;
+    WHERE league_id = p_league_id AND human_manager_id IS NOT NULL;
 
     IF v_human_count > 1 THEN
         RAISE EXCEPTION 'CANNOT_DELETE_MULTI_PLAYER_LEAGUE' USING ERRCODE = 'P0001';
