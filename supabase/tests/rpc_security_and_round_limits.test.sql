@@ -47,14 +47,6 @@ BEGIN
     INSERT INTO public.league_members (league_id, manager_id, role)
     VALUES (v_league_id, v_user_id, 'OWNER');
 
-    UPDATE public.leagues
-    SET status = 'STARTING'
-    WHERE id = v_league_id;
-
-    UPDATE public.leagues
-    SET status = 'ACTIVE'
-    WHERE id = v_league_id;
-
     -- Get a club template
     SELECT id INTO v_club_template_id FROM public.club_templates LIMIT 1;
     IF v_club_template_id IS NULL THEN
@@ -67,6 +59,15 @@ BEGIN
     INSERT INTO public.league_clubs (league_id, club_template_id, display_name, short_code, human_manager_id)
     VALUES (v_league_id, v_club_template_id, 'Security Club', 'SEC', v_user_id)
     RETURNING id INTO v_league_club_id;
+
+    UPDATE public.leagues
+    SET status = 'STARTING'
+    WHERE id = v_league_id;
+
+    UPDATE public.leagues
+    SET status = 'ACTIVE'
+    WHERE id = v_league_id;
+
 
     -- Test 2A: Verify non-admin ID rejection in approve_transfer_budget_purchase_request
     v_caught := FALSE;
