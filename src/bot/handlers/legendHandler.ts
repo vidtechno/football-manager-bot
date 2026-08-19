@@ -74,6 +74,9 @@ export function handleLegendMarketList(
 
   const keyboard = buildLegendMarketKeyboard(
     pageLegends,
+    pageLegends.map((legend) =>
+      allLegends.findIndex((entry) => entry.legendId === legend.legendId),
+    ),
     positionFilter,
     safePage,
     totalPages,
@@ -129,7 +132,8 @@ export function handleLegendDetails(
     );
   }
 
-  const keyboard = buildLegendDetailKeyboard(legendId, leagueId, canAfford);
+  const legendIndex = allLegends.findIndex((entry) => entry.legendId === legendId);
+  const keyboard = buildLegendDetailKeyboard(legendIndex, leagueId, canAfford);
 
   return { text, keyboard };
 }
