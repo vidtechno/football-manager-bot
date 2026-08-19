@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   handlePackageView,
   handlePackageSelect,
@@ -201,5 +201,16 @@ describe('Phase 4H Telegram Bot Runtime Integration Suite', () => {
     const bot = createBot();
     expect(bot).toBeDefined();
     expect(bot.api).toBeDefined();
+  });
+
+  it('10. should verify production entrypoint main() is async and calls startBot()', async () => {
+    const botModule = await import('../src/bot/bot.js');
+    const startBotSpy = vi.spyOn(botModule, 'startBot').mockResolvedValue();
+
+    const { main } = await import('../src/index.js');
+    expect(typeof main).toBe('function');
+
+    await main();
+    expect(startBotSpy).toHaveBeenCalledTimes(1);
   });
 });

@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "Telegram Football Manager Bot",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "engines": {
     "node": ">=20.0.0"
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js",
-    "worker:bot-transfers": "node dist/jobs/runBotTransferWorkerCli.js",
+    "start": "node dist/src/index.js",
+    "worker:bot-transfers": "node dist/src/jobs/runBotTransferWorkerCli.js",
     "data:validate": "tsx src/data/validate-dataset.ts",
     "data:validate-legends": "tsx src/data/validate-legends.ts",
     "data:generate-seed": "tsx src/data/generate-seed-sql.ts",
