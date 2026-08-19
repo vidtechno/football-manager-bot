@@ -10,7 +10,6 @@ export function createBot(): Bot<Context> {
   const env = loadEnvironment();
   botInstance = new Bot<Context>(env.TELEGRAM_BOT_TOKEN);
 
-  // Centralized Error Handling
   botInstance.catch((err) => {
     const ctx = err.ctx;
     console.error(
@@ -19,7 +18,6 @@ export function createBot(): Bot<Context> {
     );
   });
 
-  // Register Canonical Bot Routes
   registerBotRoutes(botInstance);
 
   return botInstance;
@@ -35,7 +33,7 @@ export async function stopBot(): Promise<void> {
 
 export async function startBot(): Promise<void> {
   const bot = createBot();
-  console.log('🤖 Telegram bot polling rejimida ishga tushirilmoqda...');
+  console.log('🤖 Telegram bot tekshirilmoqda...');
 
   const handleSignal = async (signal: string) => {
     console.log(`\n[SIGNAL] ${signal} qabul qilindi. Bot to‘xtatilyapti...`);
@@ -43,8 +41,25 @@ export async function startBot(): Promise<void> {
     process.exit(0);
   };
 
-  process.once('SIGINT', () => handleSignal('SIGINT'));
-  process.once('SIGTERM', () => handleSignal('SIGTERM'));
+  process.once('SIGINT', () => {
+    void handleSignal('SIGINT');
+  });
+  process.once('SIGTERM', () => {
+    void handleSignal('SIGTERM');
+  });
 
-  await bot.start();
+  await bot.init();
+  console.log(`✅ Telegram token tasdiqlandi: @${bot.botInfo.username}`);
+
+  const webhookInfo = await bot.api.getWebhookInfo();
+  if (webhookInfo.url) {
+    console.log('⚙️ Eski Telegram webhook o‘chirilmoqda...');
+    await bot.api.deleteWebhook({ drop_pending_updates: false });
+  }
+
+  console.log('🤖 Telegram bot polling rejimida ishga tushdi.');
+  await bot.start({
+    drop_pending_updates: false,
+    allowed_updates: ['message', 'callback_query'],
+  });
 }
