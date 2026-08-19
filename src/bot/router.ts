@@ -27,6 +27,7 @@ import {
   handleTransferHistoryView,
 } from './handlers/transferHandler.js';
 import { SponsorHandler } from './handlers/sponsorHandler.js';
+import { IdentityService } from '../services/identityService.js';
 import { buildOrderStatusViewMessage } from './messages/templates.js';
 import { PurchaseService } from '../services/purchaseService.js';
 import { LeagueService } from '../services/leagueService.js';
@@ -494,13 +495,24 @@ export function registerBotRoutes(bot: Bot<Context>): void {
 
       // 3K. Admin Order Approval (adm_app_req:requestId)
       if (data.startsWith('adm_app_req:')) {
+        const telegramUserId = ctx.from?.id;
+        if (!telegramUserId) return;
+        const admin = await IdentityService.getAdminUser(telegramUserId);
+        if (!admin) {
+          await ctx.answerCallbackQuery({
+            text: '❌ Ushbu amal uchun admin huquqi talab etiladi.',
+            show_alert: true,
+          });
+          return;
+        }
+
         const requestId = data.split(':')[1]!;
         await ctx.answerCallbackQuery({ text: 'Tasdiqlanmoqda...' });
 
         // Execute atomic approval
         const res = await PurchaseService.approvePurchaseRequest(
           requestId,
-          '00000000-0000-0000-0000-000000000001', // Admin ID resolved server-side
+          admin.id,
           'Telegram Admin Panel orqali tasdiqlandi',
         );
 
@@ -527,13 +539,24 @@ export function registerBotRoutes(bot: Bot<Context>): void {
 
       // 3L. Admin Order Rejection (adm_rej_req:requestId)
       if (data.startsWith('adm_rej_req:')) {
+        const telegramUserId = ctx.from?.id;
+        if (!telegramUserId) return;
+        const admin = await IdentityService.getAdminUser(telegramUserId);
+        if (!admin) {
+          await ctx.answerCallbackQuery({
+            text: '❌ Ushbu amal uchun admin huquqi talab etiladi.',
+            show_alert: true,
+          });
+          return;
+        }
+
         const requestId = data.split(':')[1]!;
         await ctx.answerCallbackQuery({ text: 'Rad etilmoqda...' });
 
         // Execute rejection
         await PurchaseService.rejectPurchaseRequest(
           requestId,
-          '00000000-0000-0000-0000-000000000001',
+          admin.id,
           'Telegram Admin Panel orqali rad etildi',
         );
 
@@ -558,59 +581,94 @@ export function registerBotRoutes(bot: Bot<Context>): void {
 
       // 3M. Sponsor User Menu (sp_user_menu)
       if (data === 'sp_user_menu') {
-        await ctx.answerCallbackQuery();
-        await SponsorHandler.renderUserSponsorMenu(
-          ctx,
-          '00000000-0000-0000-0000-000000000001',
+        const telegramUserId = ctx.from?.id;
+        if (!telegramUserId) return;
+        const manager = await IdentityService.getOrCreateManager(
+          telegramUserId,
+          ctx.from?.first_name,
         );
+
+        await ctx.answerCallbackQuery();
+        await SponsorHandler.renderUserSponsorMenu(ctx, manager.id);
         return;
       }
 
       // 3N. Sponsor Check Subscription (sp_check_sub)
       if (data === 'sp_check_sub') {
-        await SponsorHandler.handleCheckSubscription(
-          ctx,
-          '00000000-0000-0000-0000-000000000001',
+        const telegramUserId = ctx.from?.id;
+        if (!telegramUserId) return;
+        const manager = await IdentityService.getOrCreateManager(
+          telegramUserId,
+          ctx.from?.first_name,
         );
+
+        await SponsorHandler.handleCheckSubscription(ctx, manager.id);
         return;
       }
 
       // 3O. Sponsor Income History (sp_history_1)
       if (data === 'sp_history_1') {
-        await ctx.answerCallbackQuery();
-        await SponsorHandler.renderIncomeHistory(
-          ctx,
-          '00000000-0000-0000-0000-000000000001',
-          1,
+        const telegramUserId = ctx.from?.id;
+        if (!telegramUserId) return;
+        const manager = await IdentityService.getOrCreateManager(
+          telegramUserId,
+          ctx.from?.first_name,
         );
+
+        await ctx.answerCallbackQuery();
+        await SponsorHandler.renderIncomeHistory(ctx, manager.id, 1);
         return;
       }
 
       // 3P. Sponsor Admin Panel (sp_admin_menu)
       if (data === 'sp_admin_menu') {
+        const telegramUserId = ctx.from?.id;
+        if (!telegramUserId) return;
+        const admin = await IdentityService.getAdminUser(telegramUserId);
+        if (!admin) {
+          await ctx.answerCallbackQuery({
+            text: '❌ Ushbu amal uchun admin huquqi talab etiladi.',
+            show_alert: true,
+          });
+          return;
+        }
+
         await ctx.answerCallbackQuery();
-        await SponsorHandler.renderAdminSponsorPanel(
-          ctx,
-          '00000000-0000-0000-0000-000000000001',
-        );
+        await SponsorHandler.renderAdminSponsorPanel(ctx, admin.id);
         return;
       }
 
       // 3Q. Sponsor Admin Test Channel (sp_admin_test)
       if (data === 'sp_admin_test') {
-        await SponsorHandler.handleAdminTestChannel(
-          ctx,
-          '00000000-0000-0000-0000-000000000001',
-        );
+        const telegramUserId = ctx.from?.id;
+        if (!telegramUserId) return;
+        const admin = await IdentityService.getAdminUser(telegramUserId);
+        if (!admin) {
+          await ctx.answerCallbackQuery({
+            text: '❌ Ushbu amal uchun admin huquqi talab etiladi.',
+            show_alert: true,
+          });
+          return;
+        }
+
+        await SponsorHandler.handleAdminTestChannel(ctx, admin.id);
         return;
       }
 
       // 3R. Sponsor Admin Remove Channel (sp_admin_remove)
       if (data === 'sp_admin_remove') {
-        await SponsorHandler.handleAdminRemoveChannel(
-          ctx,
-          '00000000-0000-0000-0000-000000000001',
-        );
+        const telegramUserId = ctx.from?.id;
+        if (!telegramUserId) return;
+        const admin = await IdentityService.getAdminUser(telegramUserId);
+        if (!admin) {
+          await ctx.answerCallbackQuery({
+            text: '❌ Ushbu amal uchun admin huquqi talab etiladi.',
+            show_alert: true,
+          });
+          return;
+        }
+
+        await SponsorHandler.handleAdminRemoveChannel(ctx, admin.id);
         return;
       }
 

@@ -9,6 +9,11 @@
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "worker:bot-transfers": "node dist/jobs/runBotTransferWorkerCli.js",
+    "data:validate": "tsx src/data/validate-dataset.ts",
+    "data:validate-legends": "tsx src/data/validate-legends.ts",
+    "data:generate-seed": "tsx src/data/generate-seed-sql.ts",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

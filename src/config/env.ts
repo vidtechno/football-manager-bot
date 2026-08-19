@@ -83,6 +83,8 @@ const envSchema = z.object({
       1,
       "Atrof-muhit o'zgaruvchisi bo'sh bo'lishi mumkin emas: CRON_SECRET",
     ),
+
+  ADMIN_TELEGRAM_IDS: z.string().optional(),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

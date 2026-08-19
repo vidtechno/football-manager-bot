@@ -25,8 +25,26 @@ export function createBot(): Bot<Context> {
   return botInstance;
 }
 
+export async function stopBot(): Promise<void> {
+  if (botInstance && botInstance.isInited()) {
+    console.log('🛑 Telegram bot to‘xtatilmoqda...');
+    await botInstance.stop();
+    botInstance = null;
+  }
+}
+
 export async function startBot(): Promise<void> {
   const bot = createBot();
   console.log('🤖 Telegram bot polling rejimida ishga tushirilmoqda...');
+
+  const handleSignal = async (signal: string) => {
+    console.log(`\n[SIGNAL] ${signal} qabul qilindi. Bot to‘xtatilyapti...`);
+    await stopBot();
+    process.exit(0);
+  };
+
+  process.once('SIGINT', () => handleSignal('SIGINT'));
+  process.once('SIGTERM', () => handleSignal('SIGTERM'));
+
   await bot.start();
 }
