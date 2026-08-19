@@ -66,9 +66,9 @@ BEGIN
     VALUES (v_league_id, v_club_template_id, 'Legend Club', 'LGC', v_user_id)
     RETURNING id INTO v_league_club_id;
 
-    -- Setup club finances (€100,000,000)
+    -- Setup club finances (€1,000,000,000)
     INSERT INTO public.club_finances (league_id, league_club_id, total_balance, reserved_balance)
-    VALUES (v_league_id, v_league_club_id, 100000000.00, 0.00);
+    VALUES (v_league_id, v_league_club_id, 1000000000.00, 0.00);
 
     -- Get or insert legend template
     SELECT id INTO v_legend_template_id
@@ -136,12 +136,12 @@ BEGIN
         RAISE EXCEPTION 'Test Failed: Legend purchase failed unexpectedly.';
     END IF;
 
-    -- Verify updated balance (€100,000,000 - €50,000,000 = €50,000,000)
+    -- Verify updated balance (€1,000,000,000 - €500,000,000 = €500,000,000)
     SELECT total_balance INTO v_finance_balance
     FROM public.club_finances
     WHERE league_club_id = v_league_club_id;
 
-    IF v_finance_balance <> 50000000.00 THEN
+    IF v_finance_balance <> 500000000.00 THEN
         RAISE EXCEPTION 'Test Failed: Balance not deducted properly, found %', v_finance_balance;
     END IF;
 
