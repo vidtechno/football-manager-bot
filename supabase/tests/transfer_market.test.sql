@@ -56,16 +56,16 @@ BEGIN
     INSERT INTO public.leagues (name, code, owner_manager_id)
     VALUES ('Transfer Test League', 'TRFX77', v_seller_user_id) RETURNING id INTO v_league_id;
 
-    INSERT INTO public.league_members (league_id, manager_id, role, status)
-    VALUES (v_league_id, v_seller_user_id, 'OWNER', 'JOINED')
+    INSERT INTO public.league_members (league_id, manager_id, role)
+    VALUES (v_league_id, v_seller_user_id, 'OWNER')
     ON CONFLICT (league_id, manager_id) DO NOTHING;
 
-    INSERT INTO public.league_members (league_id, manager_id, role, status)
-    VALUES (v_league_id, v_buyer_user_id, 'MEMBER', 'JOINED')
+    INSERT INTO public.league_members (league_id, manager_id, role)
+    VALUES (v_league_id, v_buyer_user_id, 'MEMBER')
     ON CONFLICT (league_id, manager_id) DO NOTHING;
 
-    INSERT INTO public.league_members (league_id, manager_id, role, status)
-    VALUES (v_league_id, v_other_user_id, 'MEMBER', 'JOINED')
+    INSERT INTO public.league_members (league_id, manager_id, role)
+    VALUES (v_league_id, v_other_user_id, 'MEMBER')
     ON CONFLICT (league_id, manager_id) DO NOTHING;
 
     -- Club Template
