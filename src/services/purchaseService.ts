@@ -75,7 +75,7 @@ export class PurchaseService {
     const { data: existing } = await supabase
       .from('transfer_budget_purchase_requests')
       .select(
-        '*, leagues(name), league_clubs(name), transfer_budget_packages(display_name)',
+        '*, leagues(name), league_clubs(display_name), transfer_budget_packages(display_name)',
       )
       .eq('telegram_user_id', params.telegramUserId)
       .eq('league_id', params.leagueId)
@@ -94,7 +94,8 @@ export class PurchaseService {
         leagueName:
           (row['leagues'] as Record<string, string>)?.['name'] ?? 'Liga',
         clubName:
-          (row['league_clubs'] as Record<string, string>)?.['name'] ?? 'Klub',
+          (row['league_clubs'] as Record<string, string>)?.['display_name'] ??
+          'Klub',
         packageId: String(row['package_id']),
         packageDisplay:
           (row['transfer_budget_packages'] as Record<string, string>)?.[
@@ -107,8 +108,6 @@ export class PurchaseService {
       };
     }
 
-    const orderCode = this.generateOrderCode();
-
     const { data, error } = await supabase.rpc(
       'create_transfer_budget_purchase_request',
       {
@@ -116,9 +115,6 @@ export class PurchaseService {
         p_league_id: params.leagueId,
         p_league_club_id: params.leagueClubId,
         p_package_id: params.pkg.id,
-        p_order_code: orderCode,
-        p_requested_eur_amount: params.pkg.eurAmount,
-        p_uzs_price: params.pkg.uzsPrice,
       },
     );
 
@@ -127,7 +123,7 @@ export class PurchaseService {
     }
 
     return {
-      id: String(data.id),
+      id: String(data.request_id),
       orderCode: String(data.order_code),
       telegramUserId: params.telegramUserId,
       leagueId: params.leagueId,
@@ -139,7 +135,7 @@ export class PurchaseService {
       eurAmount: params.pkg.eurAmount,
       uzsPrice: params.pkg.uzsPrice,
       status: 'PENDING',
-      createdAt: String(data.created_at),
+      createdAt: new Date().toISOString(),
     };
   }
 
@@ -153,7 +149,7 @@ export class PurchaseService {
     const { data, error } = await supabase
       .from('transfer_budget_purchase_requests')
       .select(
-        '*, leagues(name), league_clubs(name), transfer_budget_packages(display_name)',
+        '*, leagues(name), league_clubs(display_name), transfer_budget_packages(display_name)',
       )
       .eq('telegram_user_id', telegramUserId)
       .order('created_at', { ascending: false });
@@ -171,7 +167,8 @@ export class PurchaseService {
       leagueName:
         (row['leagues'] as Record<string, string>)?.['name'] ?? 'Liga',
       clubName:
-        (row['league_clubs'] as Record<string, string>)?.['name'] ?? 'Klub',
+        (row['league_clubs'] as Record<string, string>)?.['display_name'] ??
+        'Klub',
       packageId: String(row['package_id']),
       packageDisplay:
         (row['transfer_budget_packages'] as Record<string, string>)?.[
@@ -192,7 +189,7 @@ export class PurchaseService {
     const { data, error } = await supabase
       .from('transfer_budget_purchase_requests')
       .select(
-        '*, leagues(name), league_clubs(name), transfer_budget_packages(display_name), users(username)',
+        '*, leagues(name), league_clubs(display_name), transfer_budget_packages(display_name), users(username)',
       )
       .eq('status', 'PENDING')
       .order('created_at', { ascending: true });
@@ -210,7 +207,8 @@ export class PurchaseService {
       leagueName:
         (row['leagues'] as Record<string, string>)?.['name'] ?? 'Liga',
       clubName:
-        (row['league_clubs'] as Record<string, string>)?.['name'] ?? 'Klub',
+        (row['league_clubs'] as Record<string, string>)?.['display_name'] ??
+        'Klub',
       packageId: String(row['package_id']),
       packageDisplay:
         (row['transfer_budget_packages'] as Record<string, string>)?.[
@@ -240,7 +238,7 @@ export class PurchaseService {
       {
         p_request_id: requestId,
         p_admin_id: adminId,
-        p_admin_notes: notes || 'Approved via Telegram Bot',
+        p_admin_note: notes || 'Approved via Telegram Bot',
       },
     );
 
@@ -271,7 +269,7 @@ export class PurchaseService {
       {
         p_request_id: requestId,
         p_admin_id: adminId,
-        p_admin_notes: notes || 'Rejected via Telegram Bot',
+        p_admin_note: notes || 'Rejected via Telegram Bot',
       },
     );
 
