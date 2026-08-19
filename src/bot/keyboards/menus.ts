@@ -142,6 +142,7 @@ export function buildAdminOrderActionKeyboard(
 
 export function buildLegendMarketKeyboard(
   legends: LegendSeed[],
+  legendIndexes: number[],
   positionFilter: string,
   page: number,
   totalPages: number,
@@ -174,11 +175,11 @@ export function buildLegendMarketKeyboard(
   ]);
 
   // Legend item buttons
-  for (const leg of legends) {
+  for (const [index, leg] of legends.entries()) {
     keyboard.push([
       {
         text: `⭐ ${leg.fullName} (${leg.primaryPosition}) — ${formatEur(leg.legendTransferPriceEur)}`,
-        callback_data: `leg_det:${leagueId}:${leg.legendId}`,
+        callback_data: `leg_det:${leagueId}:${legendIndexes[index]}`,
       },
     ]);
   }
@@ -209,7 +210,7 @@ export function buildLegendMarketKeyboard(
 }
 
 export function buildLegendDetailKeyboard(
-  legendId: string,
+  legendIndex: number,
   leagueId: string,
   canAfford: boolean,
 ): InlineKeyboardButton[][] {
@@ -218,7 +219,7 @@ export function buildLegendDetailKeyboard(
   if (canAfford) {
     actionRow.push({
       text: '✅ Sotib olish',
-      callback_data: `leg_buy:${leagueId}:${legendId}`,
+      callback_data: `leg_buy:${leagueId}:${legendIndex}`,
     });
   } else {
     actionRow.push({
