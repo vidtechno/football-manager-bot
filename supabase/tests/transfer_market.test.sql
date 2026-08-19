@@ -1,6 +1,6 @@
 -- pgTAP SQL Test Suite: Permanent Player Transfer Market & Controls
 BEGIN;
-SELECT plan(10);
+SELECT plan(8);
 
 -- 1. Test Schema & Types Exist
 SELECT has_type('enum_transfer_listing_status', 'enum_transfer_listing_status exists');
