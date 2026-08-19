@@ -62,8 +62,8 @@ BEGIN
     END IF;
 
     -- Insert league club owned by v_user_id
-    INSERT INTO public.league_clubs (league_id, club_template_id, human_manager_id)
-    VALUES (v_league_id, v_club_template_id, v_user_id)
+    INSERT INTO public.league_clubs (league_id, club_template_id, display_name, human_manager_id)
+    VALUES (v_league_id, v_club_template_id, 'Legend Club', v_user_id)
     RETURNING id INTO v_league_club_id;
 
     -- Setup club finances (€100,000,000)

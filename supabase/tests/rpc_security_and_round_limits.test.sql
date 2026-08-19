@@ -56,8 +56,8 @@ BEGIN
     END IF;
 
     -- Insert league club
-    INSERT INTO public.league_clubs (league_id, club_template_id, human_manager_id)
-    VALUES (v_league_id, v_club_template_id, v_user_id)
+    INSERT INTO public.league_clubs (league_id, club_template_id, display_name, human_manager_id)
+    VALUES (v_league_id, v_club_template_id, 'Security Club', v_user_id)
     RETURNING id INTO v_league_club_id;
 
     -- Test 2A: Verify non-admin ID rejection in approve_transfer_budget_purchase_request
