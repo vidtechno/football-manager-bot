@@ -174,6 +174,30 @@ export class GameService {
     return leagueId;
   }
 
+  static async getOwnedPlayerLeagueId(
+    managerId: string,
+    playerId: string,
+  ): Promise<string> {
+    const db = getSupabaseAdminClient();
+    const { data: player, error: playerError } = await db
+      .from('league_players')
+      .select('league_id,league_club_id')
+      .eq('id', playerId)
+      .single();
+    if (playerError) throw new Error(playerError.message);
+
+    const { data: club, error: clubError } = await db
+      .from('league_clubs')
+      .select('human_manager_id')
+      .eq('id', player.league_club_id)
+      .single();
+    if (clubError) throw new Error(clubError.message);
+    if (club.human_manager_id !== managerId) {
+      throw new Error('Bu futbolchi sizning klubingizga tegishli emas.');
+    }
+    return player.league_id;
+  }
+
   static async startLeague(managerId: string, leagueId: string): Promise<void> {
     const db = getSupabaseAdminClient();
     const { error } = await db.rpc('start_playable_league', {
