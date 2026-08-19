@@ -300,7 +300,7 @@ BEGIN
     -- Resolve manager ID for effective user identity if applicable
     SELECT id INTO v_requesting_manager_id
     FROM public.managers
-    WHERE id = v_effective_user_id OR user_id = v_effective_user_id;
+    WHERE id = v_effective_user_id;
 
     IF v_requesting_manager_id IS NULL THEN
         v_requesting_manager_id := v_effective_user_id;
