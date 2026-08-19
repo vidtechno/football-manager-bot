@@ -30,8 +30,8 @@ DECLARE
     v_ledger_count INT;
 BEGIN
     -- Setup test admin
-    INSERT INTO public.admin_users (id, telegram_user_id, username, role)
-    VALUES (v_admin_id, 8880001, 'inc_admin', 'SUPER_ADMIN')
+    INSERT INTO public.admin_users (id, telegram_user_id, role)
+    VALUES (v_admin_id, 8880001, 'SUPER_ADMIN')
     ON CONFLICT (id) DO NOTHING;
 
     -- Setup human manager
