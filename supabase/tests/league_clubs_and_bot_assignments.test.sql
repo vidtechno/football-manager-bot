@@ -88,7 +88,8 @@ BEGIN
     INSERT INTO public.managers (telegram_user_id, manager_name) VALUES (888880006, 'blocked_m') RETURNING id INTO v_blocked_id;
 
     -- Block manager
-    INSERT INTO public.manager_blocks (manager_id, reason, is_blocked) VALUES (v_blocked_id, 'Violation', TRUE);
+    INSERT INTO public.manager_blocks (manager_id, reason) VALUES (v_blocked_id, 'Violation');
+
 
     -- Create League & Members
     INSERT INTO public.leagues (name, code, owner_manager_id, status) VALUES ('Selection Test League', 'S4B299', v_owner_id, 'LOBBY') RETURNING id INTO v_league_id;
@@ -159,8 +160,9 @@ BEGIN
         RAISE EXCEPTION 'Test Failed: Club 1 was not released.';
     END IF;
 
-    -- Lock league state (Status ACTIVE) -> Selection/Switch/Release must fail
-    UPDATE public.leagues SET status = 'DRAFT_ACTIVE' WHERE id = v_league_id;
+    -- Lock league state (Status STARTING) -> Selection/Switch/Release must fail
+    UPDATE public.leagues SET status = 'STARTING' WHERE id = v_league_id;
+
 
     v_caught := FALSE;
     BEGIN
