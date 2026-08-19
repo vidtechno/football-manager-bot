@@ -54,7 +54,7 @@ BEGIN
 
     -- Setup dummy league
     INSERT INTO public.leagues (name, code, owner_manager_id)
-    VALUES ('Transfer Test League', 'TRF100', v_seller_user_id) RETURNING id INTO v_league_id;
+    VALUES ('Transfer Test League', 'TRFX77', v_seller_user_id) RETURNING id INTO v_league_id;
 
     -- Club Template
     SELECT id INTO v_club_template_id FROM public.club_templates LIMIT 1;
