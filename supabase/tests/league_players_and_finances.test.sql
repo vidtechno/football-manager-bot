@@ -96,7 +96,6 @@ BEGIN
     INSERT INTO public.leagues (id, name, code, status, owner_manager_id)
     VALUES (v_league_id, 'Finances Test League', 'FNC234', 'LOBBY', v_mgr_id);
 
-
     SELECT id INTO v_template_id FROM public.club_templates WHERE slug = 'real-madrid';
 
     INSERT INTO public.league_clubs (id, league_id, club_template_id, display_name, short_code)
@@ -208,4 +207,4 @@ SELECT results_eq(
     'financial_ledger records exactly 4 entries'
 );
 
-SELECT ROLLBACK();
+ROLLBACK;
