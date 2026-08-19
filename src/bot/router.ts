@@ -18,9 +18,18 @@ import {
   handleLegendDetails,
   handleLegendPurchaseSuccess,
 } from './handlers/legendHandler.js';
+import {
+  handleTransferMainMenu,
+  handleTransferBrowseList,
+  handleListingDetailView,
+  handleListingConfirmView,
+  handleMyListingsView,
+  handleTransferHistoryView,
+} from './handlers/transferHandler.js';
 import { buildOrderStatusViewMessage } from './messages/templates.js';
 import { PurchaseService } from '../services/purchaseService.js';
 import { LeagueService } from '../services/leagueService.js';
+import { TransferService } from '../services/transferService.js';
 
 export function registerBotRoutes(bot: Bot<Context>): void {
   // 1. Command: /start
@@ -173,6 +182,206 @@ export function registerBotRoutes(bot: Bot<Context>): void {
           const errMsg = err instanceof Error ? err.message : String(err);
           await ctx.reply(`❌ Xatolik: ${errMsg}`);
         }
+        await ctx.answerCallbackQuery();
+        return;
+      }
+
+      // 3D-4. Transfer Market Main Menu (tr_menu:leagueId)
+      if (data.startsWith('tr_menu:')) {
+        const leagueId = data.split(':')[1]!;
+        const { text, keyboard } = handleTransferMainMenu(
+          leagueId,
+          100_000_000,
+          0,
+        );
+        await ctx.editMessageText(text, {
+          parse_mode: 'Markdown',
+          reply_markup: { inline_keyboard: keyboard },
+        });
+        await ctx.answerCallbackQuery();
+        return;
+      }
+
+      // 3D-5. Transfer Market Browse (tr_buy_list:leagueId:filter:page)
+      if (data.startsWith('tr_buy_list:')) {
+        const parts = data.split(':');
+        const leagueId = parts[1]!;
+        const filter = parts[2] || 'ALL';
+        const page = parseInt(parts[3] || '1', 10);
+
+        const { text, keyboard } = await handleTransferBrowseList(
+          leagueId,
+          filter,
+          page,
+          100_000_000,
+        );
+        await ctx.editMessageText(text, {
+          parse_mode: 'Markdown',
+          reply_markup: { inline_keyboard: keyboard },
+        });
+        await ctx.answerCallbackQuery();
+        return;
+      }
+
+      // 3D-6. Transfer Listing Detail (tr_buy_det:leagueId:listingId)
+      if (data.startsWith('tr_buy_det:')) {
+        const parts = data.split(':');
+        const leagueId = parts[1]!;
+        const listingId = parts[2]!;
+
+        const { listings } = await TransferService.getActiveListings(leagueId, {
+          page: 1,
+          pageSize: 100,
+        });
+        const target = listings.find((l) => l.id === listingId);
+
+        if (!target) {
+          await ctx.reply('❌ E’lon topilmadi yoki allaqachon sotib olingan.');
+          await ctx.answerCallbackQuery();
+          return;
+        }
+
+        const { text, keyboard } = handleListingDetailView(
+          target,
+          100_000_000,
+          'user_club_id',
+        );
+        await ctx.editMessageText(text, {
+          parse_mode: 'Markdown',
+          reply_markup: { inline_keyboard: keyboard },
+        });
+        await ctx.answerCallbackQuery();
+        return;
+      }
+
+      // 3D-7. Transfer Purchase Confirmation (tr_buy_confirm:leagueId:listingId)
+      if (data.startsWith('tr_buy_confirm:')) {
+        const parts = data.split(':');
+        const leagueId = parts[1]!;
+        const listingId = parts[2]!;
+
+        const { listings } = await TransferService.getActiveListings(leagueId, {
+          page: 1,
+          pageSize: 100,
+        });
+        const target = listings.find((l) => l.id === listingId);
+
+        if (!target) {
+          await ctx.reply('❌ E’lon topilmadi.');
+          await ctx.answerCallbackQuery();
+          return;
+        }
+
+        const { text, keyboard } = handleListingConfirmView(target, leagueId);
+        await ctx.editMessageText(text, {
+          parse_mode: 'Markdown',
+          reply_markup: { inline_keyboard: keyboard },
+        });
+        await ctx.answerCallbackQuery();
+        return;
+      }
+
+      // 3D-8. Transfer Purchase Execution (tr_buy_exec:leagueId:listingId)
+      if (data.startsWith('tr_buy_exec:')) {
+        const parts = data.split(':');
+        const leagueId = parts[1]!;
+        const listingId = parts[2]!;
+        const userId = ctx.from.id.toString();
+
+        try {
+          const res = await TransferService.purchaseListing(
+            listingId,
+            'buyer_club_id',
+            userId,
+          );
+          const priceMln = (res.priceEur / 1_000_000).toFixed(1);
+          const remMln = (res.remainingBudget / 1_000_000).toFixed(1);
+
+          await ctx.editMessageText(
+            `✅ *Muvaffaqiyatli Xarid!*\n\n` +
+              `Futbolchi **€${priceMln}M** evaziga klubingizga o‘tdi.\n` +
+              `🏦 *Qolgan budjetingiz:* €${remMln}M`,
+            {
+              parse_mode: 'Markdown',
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text: '🛒 Bozorga qaytish',
+                      callback_data: `tr_buy_list:${leagueId}:ALL:1`,
+                    },
+                  ],
+                  [{ text: '🏠 Bosh menyu', callback_data: 'main_menu' }],
+                ],
+              },
+            },
+          );
+        } catch (err: unknown) {
+          const errMsg = err instanceof Error ? err.message : String(err);
+          await ctx.reply(`❌ Xatolik: ${errMsg}`);
+        }
+        await ctx.answerCallbackQuery();
+        return;
+      }
+
+      // 3D-9. My Listings View (tr_my_listings:leagueId)
+      if (data.startsWith('tr_my_listings:')) {
+        const leagueId = data.split(':')[1]!;
+        const { text, keyboard } = await handleMyListingsView(
+          leagueId,
+          'seller_club_id',
+        );
+        await ctx.editMessageText(text, {
+          parse_mode: 'Markdown',
+          reply_markup: { inline_keyboard: keyboard },
+        });
+        await ctx.answerCallbackQuery();
+        return;
+      }
+
+      // 3D-10. Cancel Listing Execution (tr_cancel:leagueId:listingId)
+      if (data.startsWith('tr_cancel:')) {
+        const parts = data.split(':');
+        const leagueId = parts[1]!;
+        const listingId = parts[2]!;
+        const userId = ctx.from.id.toString();
+
+        try {
+          await TransferService.cancelListing(listingId, userId);
+          await ctx.reply('✅ E’lon muvaffaqiyatli bekor qilindi.');
+          const { text, keyboard } = await handleMyListingsView(
+            leagueId,
+            'seller_club_id',
+          );
+          await ctx.editMessageText(text, {
+            parse_mode: 'Markdown',
+            reply_markup: { inline_keyboard: keyboard },
+          });
+        } catch (err: unknown) {
+          const errMsg = err instanceof Error ? err.message : String(err);
+          await ctx.reply(`❌ Xatolik: ${errMsg}`);
+        }
+        await ctx.answerCallbackQuery();
+        return;
+      }
+
+      // 3D-11. Transfer History View (tr_history:leagueId:filter:page)
+      if (data.startsWith('tr_history:')) {
+        const parts = data.split(':');
+        const leagueId = parts[1]!;
+        const filter = parts[2] || 'ALL';
+        const page = parseInt(parts[3] || '1', 10);
+
+        const { text, keyboard } = await handleTransferHistoryView(
+          leagueId,
+          'club_id',
+          filter,
+          page,
+        );
+        await ctx.editMessageText(text, {
+          parse_mode: 'Markdown',
+          reply_markup: { inline_keyboard: keyboard },
+        });
         await ctx.answerCallbackQuery();
         return;
       }

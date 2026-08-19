@@ -274,10 +274,22 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
 
 ---
 
-### [2026-08-19] DEC-026: 4I-Bosqich Admin Callback Yo'nalishlari va Afsonalar Bozori (Legend Transfers) To'liq Ma'lumotlar To'plami
+---
+
+### [2026-08-20] DEC-027: Doimiy Ochiq Futbolchilar Transfer Bozori va Bot Xaridlari Mantig‘i
 
 - **Maqom:** Tasdiqlangan (Approved)
-- **Kontekst:** Admin panelining tasdiqlash va rad etish callback'larini (`adm_app_req:<requestId>`, `adm_rej_req:<requestId>`) bot routeriga kiritish va sinovdan o'tkazish, hamda barcha 15 ta pozitsiya bo'yicha kamida 3 tadan afsona futbolchini qamrab oluvchi 60 ta audittan o'tgan afsonalar ma'lumotlar to'plamini (`data/football/legends/legends.json`) shakllantirish.
+- **Kontekst:** Transferlar uchun turlar bo‘yicha har qanday cheklovlarni (1-6 va boshqa tur cheklovlarini) olib tashlash, transfer bozorini 24/7 doimiy ochiq etib belgilash, har bir klub uchun ko‘pi bilan 4 ta faol e’lon (`ACTIVE`) ruxsat etish, hamda 24 soatdan so‘ng o‘yinchilarni bot klublar tomonidan avtomatik sotib olinishining xavfsiz va ehtimollikka asoslangan tizimini joriy etish.
+- **Qaror:**
+  - Migratsiya `20260820000000_permanent_player_transfer_market.sql` yaratildi: `enum_transfer_listing_status`, `enum_transfer_buyer_type` tiplari hamda `league_transfer_listings` jadvali va u bo‘yicha partial unique index `uq_active_listing_per_player` tashkil etildi.
+  - Atomar database RPC funksiyalari o‘rnatildi:
+    - `create_player_transfer_listing`: 4 ta faol e’lon va sotuvdan so‘ng kamida 18 ta o‘yinchi tarkib cheklovini va sotuvchi egaligini tekshiradi.
+    - `cancel_player_transfer_listing`: Sotuvchi menejerga o‘z faol e’lonini bekor qilish imkonini beradi (`status = 'CANCELLED'`).
+    - `purchase_player_transfer_listing`: Atomar tranzaksiyada row lock qo‘llaydi, balans va tarkib hajmini (xaridor <= 30, sotuvchi >= 18) tekshiradi, o‘yinchi egaligini o‘tkazadi, audit ledger yozuvlarini yaratadi.
+    - `process_bot_transfer_reviews`: 24 soatdan oshgan faol e’lonlarni (overall <= 82, narx <= 120%) ko‘rib chiqadi va 70%/45%/25% ehtimollik bo‘yicha mos bot klubga sotadi (`buyer_type = 'BOT'`).
+  - TypeScript servis qatlami `src/services/transferService.ts`, Telegram UI klaviaturalari `src/bot/keyboards/transferKeyboards.ts`, handlerlari `src/bot/handlers/transferHandler.ts` va bot ishchisi `src/jobs/botTransferReviewWorker.ts` yaratildi.
+  - Vitest test to‘plami `tests/transferService.test.ts` hamda pgTAP SQL test to‘plami `supabase/tests/transfer_market.test.sql` to‘liq sinovdan o‘tkazildi.
+
 - **Qaror:**
   - Bot routerida `adm_app_req` va `adm_rej_req` callback routelari to'liq kiritildi va server-side idempotent xarid RPC lariga ulandi.
   - Afsonalar bozori ma'lumotlar to me'yorlari shakllantirildi: 60 ta futbolchi, 15 ta pozitsiyadan har birida kamida 3 ta birinchi darajali pozitsiya (GK: 4, CB: 6, LB: 4, RB: 4, LWB: 3, RWB: 3, CDM: 4, CM: 5, CAM: 4, LM: 3, RM: 3, LW: 4, RW: 4, CF: 3, ST: 5).

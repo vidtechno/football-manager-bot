@@ -285,11 +285,12 @@ Ma me'lumotlar bazasi 9 ta mantiqiy domenga bo'lingan **45 ta alohida jadvaldan*
 - **PK:** `id UUID`
 - **Ustunlar:** `transfer_offer_id UUID REFERENCES transfer_offers(id)`, `action_by_manager_id UUID REFERENCES managers(id)`, `action_type TEXT NOT NULL`, `offered_price DECIMAL(15,2)`, `message TEXT`, `created_at TIMESTAMPTZ DEFAULT NOW()`
 
-#### 34. `transfer_window_states`
+#### 34. `league_transfer_listings`
 
-- **Vazifasi:** Liganing transfer oynalari ochiq/yopiq holati.
+- **Vazifasi:** Liga doirasidagi doimiy futbolchilar transfer e’lonlari bozori (Human va Bot xaridlari).
 - **PK:** `id UUID`
-- **Ustunlar:** `league_id UUID REFERENCES leagues(id)`, `window_number INT CHECK (window_number IN (1, 2))`, `status enum_transfer_window_status DEFAULT 'CLOSED'`, `opened_at_round INT`, `closed_at_round INT`
+- **Ustunlar:** `league_id UUID REFERENCES leagues(id)`, `seller_club_id UUID REFERENCES league_clubs(id)`, `league_player_id UUID REFERENCES league_players(id)`, `player_name_snapshot VARCHAR(150)`, `position_code enum_player_position`, `overall_rating INT`, `original_market_value_eur NUMERIC(15,2)`, `asking_price_eur NUMERIC(15,2)`, `status enum_transfer_listing_status DEFAULT 'ACTIVE'`, `buyer_club_id UUID REFERENCES league_clubs(id)`, `buyer_type enum_transfer_buyer_type`, `listed_at TIMESTAMPTZ`, `bot_eligible_at TIMESTAMPTZ`, `completed_at TIMESTAMPTZ`, `cancelled_at TIMESTAMPTZ`
+- **Constraint:** Partial Unique Index `uq_active_listing_per_player` (`league_player_id WHERE status = 'ACTIVE'`)
 
 #### 35. `reserved_funds`
 

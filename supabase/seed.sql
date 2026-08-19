@@ -1,4 +1,4 @@
--- Reproducible Phase 4E & 4H Seed Data generated on 2026-08-19T13:36:46.548Z
+-- Reproducible Phase 4E & 4H Seed Data generated on 2026-08-19T15:07:26.772Z
 -- Snapshot Date: 2026-08-19
 -- Total Clubs: 20, Total Players: 567, Total Legends: 60
 

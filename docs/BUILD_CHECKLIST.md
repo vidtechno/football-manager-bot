@@ -109,8 +109,8 @@
 - [ ] **26. Menejerlar o'rtasidagi transferlar (Manager-to-manager transfers)**
   - [ ] Kamida 50% taklif narxi, `reserved_funds` jadvalida muzlatilgan pul balansi, atomar transfer va `transfer_offer_history` yozilishi yozilgan.
 
-- [ ] **27. Transfer oynalari va eslatmalar (Transfer windows and reminders)**
-  - [ ] `transfer_window_states` bo me'yicha 1-6 va 17-24 turlarda oynalarni ochish/yopish va O'zbekcha eslatmalar yuborish joriy qilingan.
+- [x] **27. Doimiy ochiq transfer bozori va Bot xaridlari (Permanent transfer market & bot purchases)**
+  - [x] Transfer bozori turlar bo‘yicha cheklovlarsiz (1-6 va boshqa tur cheklovlarisiz) 24/7 doimiy ochiq. Har bir klub 4 tagacha faol e’lon qo‘ya oladi, 24 soatdan so‘ng e’lonlar bot klublar tomonidan ham ko‘rib chiqiladi (OVR <= 82, narx <= 120%).
 
 - [ ] **28. Mavsumni yakunlash (Season completion)**
   - [ ] Chempionni taqdirlash (`season_championships`), statistikani `season_histories` jadvalida muzlatish va ligani yakunlash mantig'i tayyorlangan.
