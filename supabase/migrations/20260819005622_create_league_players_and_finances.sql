@@ -980,3 +980,67 @@ REVOKE EXECUTE ON FUNCTION public.record_financial_transaction FROM PUBLIC, anon
 REVOKE EXECUTE ON FUNCTION public.reserve_club_funds FROM PUBLIC, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION public.release_club_reserved_funds FROM PUBLIC, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION public.capture_club_reserved_funds FROM PUBLIC, anon, authenticated;
+
+-- Forward Repair: Fix manager_blocks column check in validate_league_club_human_selection
+CREATE OR REPLACE FUNCTION public.validate_league_club_human_selection()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_league_status public.enum_league_status;
+    v_is_member BOOLEAN;
+    v_is_blocked BOOLEAN;
+    v_has_active_bot BOOLEAN;
+BEGIN
+    -- Check if human_manager_id is being changed or set
+    IF (TG_OP = 'INSERT' AND NEW.human_manager_id IS NOT NULL) OR
+       (TG_OP = 'UPDATE' AND NEW.human_manager_id IS DISTINCT FROM OLD.human_manager_id) THEN
+
+        -- 1. Verify League Status is LOBBY
+        SELECT status INTO v_league_status
+        FROM public.leagues
+        WHERE id = NEW.league_id;
+
+        IF v_league_status IS NULL THEN
+            RAISE EXCEPTION 'Biriktirilgan liga topilmadi.' USING ERRCODE = 'P0001';
+        END IF;
+
+        IF v_league_status <> 'LOBBY' THEN
+            RAISE EXCEPTION 'Klub tanlash yoki o''zgartirish faqat LOBBY holatidagi ligada amalga oshirilishi mumkin.' USING ERRCODE = 'P0001';
+        END IF;
+
+        IF NEW.human_manager_id IS NOT NULL THEN
+            -- 2. Verify manager is an active member of the league
+            SELECT EXISTS (
+                SELECT 1 FROM public.league_members 
+                WHERE league_id = NEW.league_id AND manager_id = NEW.human_manager_id
+            ) INTO v_is_member;
+
+            IF NOT v_is_member THEN
+                RAISE EXCEPTION 'Menejer bu liganing faol a''zosi emas.' USING ERRCODE = 'P0001';
+            END IF;
+
+            -- 3. Verify manager is not blocked
+            SELECT EXISTS (
+                SELECT 1 FROM public.manager_blocks 
+                WHERE manager_id = NEW.human_manager_id AND unblocked_at IS NULL
+            ) INTO v_is_blocked;
+
+            IF v_is_blocked THEN
+                RAISE EXCEPTION 'Menejer bliroqlangan va klub tanlay olmaydi.' USING ERRCODE = 'P0001';
+            END IF;
+
+            -- 4. Verify club has no active bot assignment
+            SELECT EXISTS (
+                SELECT 1 FROM public.bot_manager_assignments 
+                WHERE league_club_id = NEW.id AND is_active = TRUE
+            ) INTO v_has_active_bot;
+
+            IF v_has_active_bot THEN
+                RAISE EXCEPTION 'Bot biriktirilgan klubni insonga berish taqiqlangan.' USING ERRCODE = 'P0001';
+            END IF;
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
