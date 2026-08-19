@@ -303,6 +303,19 @@ Ma me'lumotlar bazasi 9 ta mantiqiy domenga bo'lingan **45 ta alohida jadvaldan*
 - **PK:** `id UUID`
 - **Ustunlar:** `league_id UUID REFERENCES leagues(id)`, `league_player_id UUID REFERENCES league_players(id)`, `from_club_id UUID REFERENCES league_clubs(id)`, `to_club_id UUID REFERENCES league_clubs(id)`, `final_price DECIMAL(15,2) NOT NULL`, `round_number INT NOT NULL`, `completed_at TIMESTAMPTZ DEFAULT NOW()`
 
+#### 37. `legend_templates`
+
+- **Vazifasi:** Afsonaviy futbolchilar (prime versiyalar) global ensiklopediyasi va shablonlari.
+- **PK:** `id UUID DEFAULT gen_random_uuid()`
+- **Ustunlar:** `slug VARCHAR(50) UNIQUE`, `canonical_key VARCHAR(100) UNIQUE`, `full_name VARCHAR(100)`, `nationality VARCHAR(100)`, `date_of_birth DATE`, `primary_position enum_player_position`, `secondary_positions enum_player_position[]`, `peak_club VARCHAR(100)`, `peak_period VARCHAR(50)`, `overall_rating INT CHECK (1..99)`, `default_price_eur NUMERIC(15,2)`, `is_retired BOOLEAN`, `source_id VARCHAR(50)`, `outfield_attributes JSONB`, `goalkeeper_attributes JSONB`, `is_active BOOLEAN`
+
+#### 38. `league_legend_market`
+
+- **Vazifasi:** Har bir liga uchun ajratilgan muxtor Legend Transfers afsonalar bozori.
+- **PK:** `id UUID DEFAULT gen_random_uuid()`
+- **Ustunlar:** `league_id UUID REFERENCES leagues(id) ON DELETE CASCADE`, `legend_template_id UUID REFERENCES legend_templates(id)`, `status enum_legend_market_status DEFAULT 'AVAILABLE'`, `price_eur NUMERIC(15,2)`, `purchased_by_league_club_id UUID REFERENCES league_clubs(id)`, `purchased_at TIMESTAMPTZ`
+- **Constraints:** `UNIQUE(league_id, legend_template_id)`, ownership consistency check.
+
 ---
 
 ### DOMAIN 8: AUTOMATION, SYSTEM AND NOTIFICATIONS (Avtomatlashtirish va Xabarlar)

@@ -9,9 +9,12 @@ All first-team squads, official club rosters, market values, and attribute ratin
 
 ## 2. Squad Inclusion & Exclusion Rules
 
-Each of the 20 Gigants Mode clubs maintains a first-team squad of **18 to 25 players**:
+Each of the 20 Gigants Mode clubs maintains a first-team squad of **18 to 30 players**:
 
 - **Goalkeeper Minimum:** At least 2 active goalkeepers (`GK`) per club.
+- **Defender Minimum:** At least 6 defenders (`CB`, `LB`, `RB`, `LWB`, `RWB`) per club.
+- **Midfielder Minimum:** At least 6 midfielders (`CDM`, `CM`, `CAM`, `LM`, `RM`) per club.
+- **Forward Minimum:** At least 4 forwards (`LW`, `RW`, `CF`, `ST`) per club.
 - **Inclusions:** Officially registered first-team players, players loaned _into_ the club.
 - **Exclusions:** Players loaned _out_ to another club, players who permanently left before the snapshot date, rumor/uncompleted transfers.
 - **No Duplicate Assignments:** Every player canonical key is unique across the entire 20-club league dataset.

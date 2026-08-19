@@ -163,9 +163,9 @@ export function validateDataset(
     const clubErrors: string[] = [];
 
     const playerCount = clubPlayers.length;
-    if (playerCount < 18 || playerCount > 25) {
+    if (playerCount < 18 || playerCount > 30) {
       clubErrors.push(
-        `Club ${club.name} (${club.slug}) squad size must be 18..25, found ${playerCount}`,
+        `Club ${club.name} (${club.slug}) squad size must be 18..30, found ${playerCount}`,
       );
     }
 
@@ -174,6 +174,37 @@ export function validateDataset(
     if (goalkeeperCount < 2) {
       clubErrors.push(
         `Club ${club.name} (${club.slug}) must have at least 2 goalkeepers, found ${goalkeeperCount}`,
+      );
+    }
+
+    const defPositions = new Set(['CB', 'LB', 'RB', 'LWB', 'RWB']);
+    const midPositions = new Set(['CDM', 'CM', 'CAM', 'LM', 'RM']);
+    const fwdPositions = new Set(['LW', 'RW', 'CF', 'ST']);
+
+    const defenderCount = clubPlayers.filter((p) =>
+      defPositions.has(p.primaryPosition),
+    ).length;
+    if (defenderCount < 6) {
+      clubErrors.push(
+        `Club ${club.name} (${club.slug}) must have at least 6 defenders, found ${defenderCount}`,
+      );
+    }
+
+    const midfielderCount = clubPlayers.filter((p) =>
+      midPositions.has(p.primaryPosition),
+    ).length;
+    if (midfielderCount < 6) {
+      clubErrors.push(
+        `Club ${club.name} (${club.slug}) must have at least 6 midfielders, found ${midfielderCount}`,
+      );
+    }
+
+    const forwardCount = clubPlayers.filter((p) =>
+      fwdPositions.has(p.primaryPosition),
+    ).length;
+    if (forwardCount < 4) {
+      clubErrors.push(
+        `Club ${club.name} (${club.slug}) must have at least 4 forwards, found ${forwardCount}`,
       );
     }
 

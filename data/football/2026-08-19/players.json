@@ -6,9 +6,7 @@
     "nationality": "Türkiye",
     "clubSlug": "real-madrid",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "RW"
-    ],
+    "secondaryPositions": ["RW"],
     "marketValueEur": 90000000,
     "overallRating": 78,
     "outfieldAttributes": {
@@ -29,9 +27,7 @@
     "nationality": "Portugal",
     "clubSlug": "real-madrid",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "RW"
-    ],
+    "secondaryPositions": ["RW"],
     "marketValueEur": 22000000,
     "overallRating": 88,
     "outfieldAttributes": {
@@ -52,9 +48,7 @@
     "nationality": "England",
     "clubSlug": "real-madrid",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 160000000,
     "overallRating": 90,
     "outfieldAttributes": {
@@ -159,9 +153,7 @@
     "nationality": "Brazil",
     "clubSlug": "real-madrid",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "RB"
-    ],
+    "secondaryPositions": ["RB"],
     "marketValueEur": 20000000,
     "overallRating": 85,
     "outfieldAttributes": {
@@ -182,9 +174,7 @@
     "nationality": "France",
     "clubSlug": "real-madrid",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 70000000,
     "overallRating": 86,
     "outfieldAttributes": {
@@ -205,10 +195,7 @@
     "nationality": "France",
     "clubSlug": "real-madrid",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM",
-      "LB"
-    ],
+    "secondaryPositions": ["CDM", "LB"],
     "marketValueEur": 50000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -229,9 +216,7 @@
     "nationality": "Uruguay",
     "clubSlug": "real-madrid",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "RM"
-    ],
+    "secondaryPositions": ["RM"],
     "marketValueEur": 90000000,
     "overallRating": 88,
     "outfieldAttributes": {
@@ -357,9 +342,7 @@
     "nationality": "Spain",
     "clubSlug": "real-madrid",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "LWB"
-    ],
+    "secondaryPositions": ["LWB"],
     "marketValueEur": 50000000,
     "overallRating": 75,
     "outfieldAttributes": {
@@ -380,9 +363,7 @@
     "nationality": "Brazil",
     "clubSlug": "real-madrid",
     "primaryPosition": "LW",
-    "secondaryPositions": [
-      "ST"
-    ],
+    "secondaryPositions": ["ST"],
     "marketValueEur": 140000000,
     "overallRating": 90,
     "outfieldAttributes": {
@@ -403,9 +384,7 @@
     "nationality": "Netherlands",
     "clubSlug": "real-madrid",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "RM"
-    ],
+    "secondaryPositions": ["RM"],
     "marketValueEur": 25000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -426,9 +405,7 @@
     "nationality": "England",
     "clubSlug": "real-madrid",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 60000000,
     "overallRating": 86,
     "outfieldAttributes": {
@@ -449,9 +426,7 @@
     "nationality": "Morocco",
     "clubSlug": "real-madrid",
     "primaryPosition": "RW",
-    "secondaryPositions": [
-      "RW"
-    ],
+    "secondaryPositions": ["RW"],
     "marketValueEur": 35000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -472,10 +447,7 @@
     "nationality": "Brazil",
     "clubSlug": "real-madrid",
     "primaryPosition": "RW",
-    "secondaryPositions": [
-      "LW",
-      "ST"
-    ],
+    "secondaryPositions": ["LW", "ST"],
     "marketValueEur": 45000000,
     "overallRating": 86,
     "outfieldAttributes": {
@@ -559,9 +531,7 @@
     "nationality": "France",
     "clubSlug": "real-madrid",
     "primaryPosition": "ST",
-    "secondaryPositions": [
-      "LW"
-    ],
+    "secondaryPositions": ["LW"],
     "marketValueEur": 200000000,
     "overallRating": 91,
     "outfieldAttributes": {
@@ -582,9 +552,7 @@
     "nationality": "Spain",
     "clubSlug": "barcelona",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "LW"
-    ],
+    "secondaryPositions": ["LW"],
     "marketValueEur": 60000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -605,9 +573,7 @@
     "nationality": "Spain",
     "clubSlug": "barcelona",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 100000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -775,9 +741,7 @@
     "nationality": "Spain",
     "clubSlug": "barcelona",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 18000000,
     "overallRating": 75,
     "outfieldAttributes": {
@@ -798,9 +762,7 @@
     "nationality": "Spain",
     "clubSlug": "barcelona",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 55000000,
     "overallRating": 91,
     "outfieldAttributes": {
@@ -863,9 +825,7 @@
     "nationality": "Netherlands",
     "clubSlug": "barcelona",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 35000000,
     "overallRating": 87,
     "outfieldAttributes": {
@@ -886,9 +846,7 @@
     "nationality": "Spain",
     "clubSlug": "barcelona",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 30000000,
     "overallRating": 83,
     "outfieldAttributes": {
@@ -930,9 +888,7 @@
     "nationality": "Spain",
     "clubSlug": "barcelona",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 150000000,
     "overallRating": 86,
     "outfieldAttributes": {
@@ -1079,9 +1035,7 @@
     "nationality": "Brazil",
     "clubSlug": "barcelona",
     "primaryPosition": "LW",
-    "secondaryPositions": [
-      "LW"
-    ],
+    "secondaryPositions": ["LW"],
     "marketValueEur": 70000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -1123,9 +1077,7 @@
     "nationality": "France",
     "clubSlug": "barcelona",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 60000000,
     "overallRating": 85,
     "outfieldAttributes": {
@@ -1167,10 +1119,7 @@
     "nationality": "Germany",
     "clubSlug": "barcelona",
     "primaryPosition": "RW",
-    "secondaryPositions": [
-      "ST",
-      "RW"
-    ],
+    "secondaryPositions": ["ST", "RW"],
     "marketValueEur": 40000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -1422,9 +1371,7 @@
     "nationality": "Spain",
     "clubSlug": "atletico-madrid",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 5000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -1676,10 +1623,7 @@
     "nationality": "Spain",
     "clubSlug": "atletico-madrid",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "RB",
-      "CM"
-    ],
+    "secondaryPositions": ["RB", "CM"],
     "marketValueEur": 20000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -1742,9 +1686,7 @@
     "nationality": "Argentina",
     "clubSlug": "atletico-madrid",
     "primaryPosition": "ST",
-    "secondaryPositions": [
-      "CF"
-    ],
+    "secondaryPositions": ["CF"],
     "marketValueEur": 120000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -1786,9 +1728,7 @@
     "nationality": "England",
     "clubSlug": "manchester-city",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "RW"
-    ],
+    "secondaryPositions": ["RW"],
     "marketValueEur": 70000000,
     "overallRating": 88,
     "outfieldAttributes": {
@@ -1851,9 +1791,7 @@
     "nationality": "Croatia",
     "clubSlug": "manchester-city",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 70000000,
     "overallRating": 83,
     "outfieldAttributes": {
@@ -1958,9 +1896,7 @@
     "nationality": "Spain",
     "clubSlug": "manchester-city",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 40000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -2002,9 +1938,7 @@
     "nationality": "Croatia",
     "clubSlug": "manchester-city",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 10000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -2025,9 +1959,7 @@
     "nationality": "Netherlands",
     "clubSlug": "manchester-city",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 50000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -2094,12 +2026,12 @@
     "marketValueEur": 300000,
     "overallRating": 77,
     "goalkeeperAttributes": {
-      "pace": 68,
-      "shooting": 35,
-      "passing": 66,
-      "dribbling": 62,
-      "defending": 78,
-      "physical": 80
+      "reflexes": 78,
+      "handling": 76,
+      "positioning": 77,
+      "aerialAbility": 75,
+      "distribution": 73,
+      "oneOnOne": 76
     },
     "isLoan": false,
     "sourceId": "src-ea-fc-2026"
@@ -2216,9 +2148,7 @@
     "nationality": "Belgium",
     "clubSlug": "manchester-city",
     "primaryPosition": "LW",
-    "secondaryPositions": [
-      "RW"
-    ],
+    "secondaryPositions": ["RW"],
     "marketValueEur": 75000000,
     "overallRating": 81,
     "outfieldAttributes": {
@@ -2239,9 +2169,7 @@
     "nationality": "Brazil",
     "clubSlug": "manchester-city",
     "primaryPosition": "LW",
-    "secondaryPositions": [
-      "LW"
-    ],
+    "secondaryPositions": ["LW"],
     "marketValueEur": 35000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -2283,9 +2211,7 @@
     "nationality": "Portugal",
     "clubSlug": "manchester-city",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 50000000,
     "overallRating": 78,
     "outfieldAttributes": {
@@ -2306,9 +2232,7 @@
     "nationality": "England",
     "clubSlug": "manchester-city",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 28000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -2392,9 +2316,7 @@
     "nationality": "Hungary",
     "clubSlug": "liverpool",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 100000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -2415,10 +2337,7 @@
     "nationality": "Germany",
     "clubSlug": "liverpool",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "LW",
-      "RW"
-    ],
+    "secondaryPositions": ["LW", "RW"],
     "marketValueEur": 100000000,
     "overallRating": 88,
     "outfieldAttributes": {
@@ -2439,10 +2358,7 @@
     "nationality": "England",
     "clubSlug": "liverpool",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "RW",
-      "CM"
-    ],
+    "secondaryPositions": ["RW", "CM"],
     "marketValueEur": 20000000,
     "overallRating": 78,
     "outfieldAttributes": {
@@ -2484,10 +2400,7 @@
     "nationality": "England",
     "clubSlug": "liverpool",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "LB",
-      "RB"
-    ],
+    "secondaryPositions": ["LB", "RB"],
     "marketValueEur": 13000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -2529,9 +2442,7 @@
     "nationality": "Uruguay",
     "clubSlug": "liverpool",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "RB"
-    ],
+    "secondaryPositions": ["RB"],
     "marketValueEur": 20000000,
     "overallRating": 86,
     "outfieldAttributes": {
@@ -2573,9 +2484,7 @@
     "nationality": "Netherlands",
     "clubSlug": "liverpool",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 80000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -2638,9 +2547,7 @@
     "nationality": "Argentina",
     "clubSlug": "liverpool",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 70000000,
     "overallRating": 86,
     "outfieldAttributes": {
@@ -2850,9 +2757,7 @@
     "nationality": "Netherlands",
     "clubSlug": "liverpool",
     "primaryPosition": "LW",
-    "secondaryPositions": [
-      "ST"
-    ],
+    "secondaryPositions": ["ST"],
     "marketValueEur": 60000000,
     "overallRating": 83,
     "outfieldAttributes": {
@@ -2957,9 +2862,7 @@
     "nationality": "Netherlands",
     "clubSlug": "liverpool",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "RM"
-    ],
+    "secondaryPositions": ["RM"],
     "marketValueEur": 35000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -3106,9 +3009,7 @@
     "nationality": "Norway",
     "clubSlug": "arsenal",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 70000000,
     "overallRating": 89,
     "outfieldAttributes": {
@@ -3171,9 +3072,7 @@
     "nationality": "Ecuador",
     "clubSlug": "arsenal",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "LB"
-    ],
+    "secondaryPositions": ["LB"],
     "marketValueEur": 50000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -3257,9 +3156,7 @@
     "nationality": "England",
     "clubSlug": "arsenal",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 120000000,
     "overallRating": 87,
     "outfieldAttributes": {
@@ -3280,9 +3177,7 @@
     "nationality": "Spain",
     "clubSlug": "arsenal",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 25000000,
     "overallRating": 83,
     "outfieldAttributes": {
@@ -3408,9 +3303,7 @@
     "nationality": "Italy",
     "clubSlug": "arsenal",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 55000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -3494,9 +3387,7 @@
     "nationality": "England",
     "clubSlug": "arsenal",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 30000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -3517,10 +3408,7 @@
     "nationality": "Netherlands",
     "clubSlug": "arsenal",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "LB",
-      "CB"
-    ],
+    "secondaryPositions": ["LB", "CB"],
     "marketValueEur": 70000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -3604,9 +3492,7 @@
     "nationality": "Brazil",
     "clubSlug": "arsenal",
     "primaryPosition": "ST",
-    "secondaryPositions": [
-      "RW"
-    ],
+    "secondaryPositions": ["RW"],
     "marketValueEur": 17000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -3627,9 +3513,7 @@
     "nationality": "Germany",
     "clubSlug": "arsenal",
     "primaryPosition": "ST",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 55000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -3670,10 +3554,8 @@
     "dateOfBirth": "2002-05-06",
     "nationality": "England",
     "clubSlug": "chelsea",
-    "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "RW"
-    ],
+    "primaryPosition": "RW",
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 100000000,
     "overallRating": 85,
     "outfieldAttributes": {
@@ -3693,8 +3575,8 @@
     "dateOfBirth": "2002-07-26",
     "nationality": "England",
     "clubSlug": "chelsea",
-    "primaryPosition": "CAM",
-    "secondaryPositions": [],
+    "primaryPosition": "ST",
+    "secondaryPositions": ["CAM", "LW"],
     "marketValueEur": 110000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -3736,9 +3618,7 @@
     "nationality": "France",
     "clubSlug": "chelsea",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "RB"
-    ],
+    "secondaryPositions": ["RB"],
     "marketValueEur": 15000000,
     "overallRating": 78,
     "outfieldAttributes": {
@@ -3780,9 +3660,7 @@
     "nationality": "England",
     "clubSlug": "chelsea",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "LB"
-    ],
+    "secondaryPositions": ["LB"],
     "marketValueEur": 50000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -3908,9 +3786,7 @@
     "nationality": "Ecuador",
     "clubSlug": "chelsea",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 100000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -3952,9 +3828,7 @@
     "nationality": "Argentina",
     "clubSlug": "chelsea",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 100000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -3975,9 +3849,7 @@
     "nationality": "England",
     "clubSlug": "chelsea",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 1200000,
     "overallRating": 78,
     "outfieldAttributes": {
@@ -4124,9 +3996,7 @@
     "nationality": "Netherlands",
     "clubSlug": "chelsea",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 40000000,
     "overallRating": 76,
     "outfieldAttributes": {
@@ -4168,9 +4038,7 @@
     "nationality": "England",
     "clubSlug": "chelsea",
     "primaryPosition": "LW",
-    "secondaryPositions": [
-      "RW"
-    ],
+    "secondaryPositions": ["RW"],
     "marketValueEur": 30000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -4232,8 +4100,8 @@
     "dateOfBirth": "2005-03-03",
     "nationality": "Italy",
     "clubSlug": "chelsea",
-    "primaryPosition": "RB",
-    "secondaryPositions": [],
+    "primaryPosition": "RW",
+    "secondaryPositions": ["RB"],
     "marketValueEur": 35000000,
     "overallRating": 78,
     "outfieldAttributes": {
@@ -4254,9 +4122,7 @@
     "nationality": "England",
     "clubSlug": "chelsea",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "RWB"
-    ],
+    "secondaryPositions": ["RWB"],
     "marketValueEur": 60000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -4277,9 +4143,7 @@
     "nationality": "Portugal",
     "clubSlug": "manchester-united",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 35000000,
     "overallRating": 87,
     "outfieldAttributes": {
@@ -4321,9 +4185,7 @@
     "nationality": "England",
     "clubSlug": "manchester-united",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 25000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -4407,9 +4269,7 @@
     "nationality": "Argentina",
     "clubSlug": "manchester-united",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "LB"
-    ],
+    "secondaryPositions": ["LB"],
     "marketValueEur": 45000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -4514,9 +4374,7 @@
     "nationality": "England",
     "clubSlug": "manchester-united",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 70000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -4663,9 +4521,7 @@
     "nationality": "England",
     "clubSlug": "manchester-united",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 8000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -4707,9 +4563,7 @@
     "nationality": "England",
     "clubSlug": "manchester-united",
     "primaryPosition": "LW",
-    "secondaryPositions": [
-      "ST"
-    ],
+    "secondaryPositions": ["ST"],
     "marketValueEur": 40000000,
     "overallRating": 81,
     "outfieldAttributes": {
@@ -4730,9 +4584,7 @@
     "nationality": "Portugal",
     "clubSlug": "manchester-united",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "LB"
-    ],
+    "secondaryPositions": ["LB"],
     "marketValueEur": 30000000,
     "overallRating": 81,
     "outfieldAttributes": {
@@ -4753,9 +4605,7 @@
     "nationality": "Morocco",
     "clubSlug": "manchester-united",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "LB"
-    ],
+    "secondaryPositions": ["LB"],
     "marketValueEur": 18000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -4902,9 +4752,7 @@
     "nationality": "Sweden",
     "clubSlug": "tottenham",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 17000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -4925,9 +4773,7 @@
     "nationality": "England",
     "clubSlug": "tottenham",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 20000000,
     "overallRating": 85,
     "outfieldAttributes": {
@@ -5074,9 +4920,7 @@
     "nationality": "Netherlands",
     "clubSlug": "tottenham",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "LB"
-    ],
+    "secondaryPositions": ["LB"],
     "marketValueEur": 50000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -5097,10 +4941,7 @@
     "nationality": "England",
     "clubSlug": "tottenham",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "RB",
-      "CDM"
-    ],
+    "secondaryPositions": ["RB", "CDM"],
     "marketValueEur": 35000000,
     "overallRating": 74,
     "outfieldAttributes": {
@@ -5121,9 +4962,7 @@
     "nationality": "Uruguay",
     "clubSlug": "tottenham",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 20000000,
     "overallRating": 81,
     "outfieldAttributes": {
@@ -5165,9 +5004,7 @@
     "nationality": "England",
     "clubSlug": "tottenham",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 32000000,
     "overallRating": 81,
     "outfieldAttributes": {
@@ -5188,9 +5025,7 @@
     "nationality": "Sweden",
     "clubSlug": "tottenham",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 35000000,
     "overallRating": 74,
     "outfieldAttributes": {
@@ -5337,9 +5172,7 @@
     "nationality": "Italy",
     "clubSlug": "tottenham",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "LWB"
-    ],
+    "secondaryPositions": ["LWB"],
     "marketValueEur": 30000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -5444,9 +5277,7 @@
     "nationality": "Spain",
     "clubSlug": "tottenham",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "RWB"
-    ],
+    "secondaryPositions": ["RWB"],
     "marketValueEur": 45000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -5530,9 +5361,7 @@
     "nationality": "Brazil",
     "clubSlug": "tottenham",
     "primaryPosition": "ST",
-    "secondaryPositions": [
-      "LW"
-    ],
+    "secondaryPositions": ["LW"],
     "marketValueEur": 25000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -5574,10 +5403,7 @@
     "nationality": "Germany",
     "clubSlug": "bayern-munich",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "LM",
-      "RW"
-    ],
+    "secondaryPositions": ["LM", "RW"],
     "marketValueEur": 100000000,
     "overallRating": 87,
     "outfieldAttributes": {
@@ -5703,9 +5529,7 @@
     "nationality": "Germany",
     "clubSlug": "bayern-munich",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 90000000,
     "overallRating": 78,
     "outfieldAttributes": {
@@ -5747,10 +5571,7 @@
     "nationality": "Germany",
     "clubSlug": "bayern-munich",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "RB",
-      "CM"
-    ],
+    "secondaryPositions": ["RB", "CM"],
     "marketValueEur": 35000000,
     "overallRating": 86,
     "outfieldAttributes": {
@@ -5792,9 +5613,7 @@
     "nationality": "Germany",
     "clubSlug": "bayern-munich",
     "primaryPosition": "CF",
-    "secondaryPositions": [
-      "RW"
-    ],
+    "secondaryPositions": ["RW"],
     "marketValueEur": 18000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -5941,9 +5760,7 @@
     "nationality": "Canada",
     "clubSlug": "bayern-munich",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "LM"
-    ],
+    "secondaryPositions": ["LM"],
     "marketValueEur": 40000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -6048,9 +5865,7 @@
     "nationality": "Croatia",
     "clubSlug": "bayern-munich",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 40000000,
     "overallRating": 78,
     "outfieldAttributes": {
@@ -6113,9 +5928,7 @@
     "nationality": "France",
     "clubSlug": "bayern-munich",
     "primaryPosition": "RW",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 170000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -6220,9 +6033,7 @@
     "nationality": "Germany",
     "clubSlug": "borussia-dortmund",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 3000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -6327,9 +6138,7 @@
     "nationality": "Algeria",
     "clubSlug": "borussia-dortmund",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 7000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -6434,9 +6243,7 @@
     "nationality": "Germany",
     "clubSlug": "borussia-dortmund",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 55000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -6499,9 +6306,7 @@
     "nationality": "Austria",
     "clubSlug": "borussia-dortmund",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 6000000,
     "overallRating": 81,
     "outfieldAttributes": {
@@ -6669,9 +6474,7 @@
     "nationality": "Norway",
     "clubSlug": "borussia-dortmund",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "LB"
-    ],
+    "secondaryPositions": ["LB"],
     "marketValueEur": 25000000,
     "overallRating": 78,
     "outfieldAttributes": {
@@ -6713,9 +6516,7 @@
     "nationality": "Germany",
     "clubSlug": "borussia-dortmund",
     "primaryPosition": "ST",
-    "secondaryPositions": [
-      "LW"
-    ],
+    "secondaryPositions": ["LW"],
     "marketValueEur": 40000000,
     "overallRating": 78,
     "outfieldAttributes": {
@@ -6778,9 +6579,7 @@
     "nationality": "Germany",
     "clubSlug": "bayer-leverkusen",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "RM"
-    ],
+    "secondaryPositions": ["RM"],
     "marketValueEur": 1500000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -7011,9 +6810,7 @@
     "nationality": "Germany",
     "clubSlug": "bayer-leverkusen",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 6000000,
     "overallRating": 81,
     "outfieldAttributes": {
@@ -7034,9 +6831,7 @@
     "nationality": "Spain",
     "clubSlug": "bayer-leverkusen",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 20000000,
     "overallRating": 81,
     "outfieldAttributes": {
@@ -7057,9 +6852,7 @@
     "nationality": "Argentina",
     "clubSlug": "bayer-leverkusen",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 25000000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -7206,9 +6999,7 @@
     "nationality": "France",
     "clubSlug": "bayer-leverkusen",
     "primaryPosition": "LW",
-    "secondaryPositions": [
-      "ST"
-    ],
+    "secondaryPositions": ["ST"],
     "marketValueEur": 8000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -7334,9 +7125,7 @@
     "nationality": "Nigeria",
     "clubSlug": "bayer-leverkusen",
     "primaryPosition": "RW",
-    "secondaryPositions": [
-      "RW"
-    ],
+    "secondaryPositions": ["RW"],
     "marketValueEur": 15000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -7420,9 +7209,7 @@
     "nationality": "Brazil",
     "clubSlug": "paris-saint-germain",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "LB"
-    ],
+    "secondaryPositions": ["LB"],
     "marketValueEur": 22000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -7485,9 +7272,7 @@
     "nationality": "Portugal",
     "clubSlug": "paris-saint-germain",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 140000000,
     "overallRating": 85,
     "outfieldAttributes": {
@@ -7529,9 +7314,7 @@
     "nationality": "Portugal",
     "clubSlug": "paris-saint-germain",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 140000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -7573,10 +7356,7 @@
     "nationality": "France",
     "clubSlug": "paris-saint-germain",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM",
-      "RB"
-    ],
+    "secondaryPositions": ["CDM", "RB"],
     "marketValueEur": 80000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -7681,9 +7461,7 @@
     "nationality": "France",
     "clubSlug": "paris-saint-germain",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 18000000,
     "overallRating": 83,
     "outfieldAttributes": {
@@ -7704,9 +7482,7 @@
     "nationality": "Portugal",
     "clubSlug": "paris-saint-germain",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "LWB"
-    ],
+    "secondaryPositions": ["LWB"],
     "marketValueEur": 80000000,
     "overallRating": 83,
     "outfieldAttributes": {
@@ -7727,9 +7503,7 @@
     "nationality": "France",
     "clubSlug": "paris-saint-germain",
     "primaryPosition": "LW",
-    "secondaryPositions": [
-      "RW"
-    ],
+    "secondaryPositions": ["RW"],
     "marketValueEur": 90000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -7813,9 +7587,7 @@
     "nationality": "Morocco",
     "clubSlug": "paris-saint-germain",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "RWB"
-    ],
+    "secondaryPositions": ["RWB"],
     "marketValueEur": 80000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -7836,9 +7608,7 @@
     "nationality": "France",
     "clubSlug": "paris-saint-germain",
     "primaryPosition": "RW",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 120000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -7901,9 +7671,7 @@
     "nationality": "Spain",
     "clubSlug": "paris-saint-germain",
     "primaryPosition": "ST",
-    "secondaryPositions": [
-      "ST"
-    ],
+    "secondaryPositions": ["ST"],
     "marketValueEur": 55000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -7924,9 +7692,7 @@
     "nationality": "France",
     "clubSlug": "paris-saint-germain",
     "primaryPosition": "ST",
-    "secondaryPositions": [
-      "LW"
-    ],
+    "secondaryPositions": ["LW"],
     "marketValueEur": 100000000,
     "overallRating": 86,
     "outfieldAttributes": {
@@ -7989,9 +7755,7 @@
     "nationality": "France",
     "clubSlug": "inter",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "RB"
-    ],
+    "secondaryPositions": ["RB"],
     "marketValueEur": 12000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -8012,9 +7776,7 @@
     "nationality": "England",
     "clubSlug": "inter",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 12000000,
     "overallRating": 85,
     "outfieldAttributes": {
@@ -8035,9 +7797,7 @@
     "nationality": "Switzerland",
     "clubSlug": "inter",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "RB"
-    ],
+    "secondaryPositions": ["RB"],
     "marketValueEur": 17000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -8100,9 +7860,7 @@
     "nationality": "Türkiye",
     "clubSlug": "inter",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 16000000,
     "overallRating": 86,
     "outfieldAttributes": {
@@ -8123,9 +7881,7 @@
     "nationality": "Albania",
     "clubSlug": "inter",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 12000000,
     "overallRating": 76,
     "outfieldAttributes": {
@@ -8167,9 +7923,7 @@
     "nationality": "Armenia",
     "clubSlug": "inter",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 3000000,
     "overallRating": 83,
     "outfieldAttributes": {
@@ -8316,10 +8070,7 @@
     "nationality": "Brazil",
     "clubSlug": "inter",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "LWB",
-      "CB"
-    ],
+    "secondaryPositions": ["LWB", "CB"],
     "marketValueEur": 23000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -8340,10 +8091,7 @@
     "nationality": "Italy",
     "clubSlug": "inter",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "LM",
-      "LB"
-    ],
+    "secondaryPositions": ["LM", "LB"],
     "marketValueEur": 50000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -8448,9 +8196,7 @@
     "nationality": "France",
     "clubSlug": "inter",
     "primaryPosition": "ST",
-    "secondaryPositions": [
-      "LW"
-    ],
+    "secondaryPositions": ["LW"],
     "marketValueEur": 50000000,
     "overallRating": 83,
     "outfieldAttributes": {
@@ -8702,9 +8448,7 @@
     "nationality": "France",
     "clubSlug": "ac-milan",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 23000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -8767,9 +8511,7 @@
     "nationality": "Croatia",
     "clubSlug": "ac-milan",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 3500000,
     "overallRating": 86,
     "outfieldAttributes": {
@@ -8790,9 +8532,7 @@
     "nationality": "England",
     "clubSlug": "ac-milan",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 8500000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -8834,9 +8574,7 @@
     "nationality": "United States",
     "clubSlug": "ac-milan",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "RM"
-    ],
+    "secondaryPositions": ["RM"],
     "marketValueEur": 14000000,
     "overallRating": 76,
     "outfieldAttributes": {
@@ -8962,9 +8700,7 @@
     "nationality": "Portugal",
     "clubSlug": "ac-milan",
     "primaryPosition": "LW",
-    "secondaryPositions": [
-      "ST"
-    ],
+    "secondaryPositions": ["ST"],
     "marketValueEur": 50000000,
     "overallRating": 86,
     "outfieldAttributes": {
@@ -9006,10 +8742,7 @@
     "nationality": "United States",
     "clubSlug": "ac-milan",
     "primaryPosition": "RW",
-    "secondaryPositions": [
-      "LW",
-      "CAM"
-    ],
+    "secondaryPositions": ["LW", "CAM"],
     "marketValueEur": 40000000,
     "overallRating": 83,
     "outfieldAttributes": {
@@ -9051,10 +8784,7 @@
     "nationality": "France",
     "clubSlug": "ac-milan",
     "primaryPosition": "ST",
-    "secondaryPositions": [
-      "ST",
-      "CAM"
-    ],
+    "secondaryPositions": ["ST", "CAM"],
     "marketValueEur": 25000000,
     "overallRating": 83,
     "outfieldAttributes": {
@@ -9243,9 +8973,7 @@
     "nationality": "France",
     "clubSlug": "juventus",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "RB"
-    ],
+    "secondaryPositions": ["RB"],
     "marketValueEur": 32000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -9308,9 +9036,7 @@
     "nationality": "Netherlands",
     "clubSlug": "juventus",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 14000000,
     "overallRating": 83,
     "outfieldAttributes": {
@@ -9331,9 +9057,7 @@
     "nationality": "Brazil",
     "clubSlug": "juventus",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 18000000,
     "overallRating": 83,
     "outfieldAttributes": {
@@ -9375,9 +9099,7 @@
     "nationality": "France",
     "clubSlug": "juventus",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 38000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -9398,10 +9120,7 @@
     "nationality": "United States",
     "clubSlug": "juventus",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "RM",
-      "RB"
-    ],
+    "secondaryPositions": ["RM", "RB"],
     "marketValueEur": 30000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -9506,10 +9225,7 @@
     "nationality": "Italy",
     "clubSlug": "juventus",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "LB",
-      "CM"
-    ],
+    "secondaryPositions": ["LB", "CM"],
     "marketValueEur": 20000000,
     "overallRating": 81,
     "outfieldAttributes": {
@@ -9530,9 +9246,7 @@
     "nationality": "Colombia",
     "clubSlug": "juventus",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 7000000,
     "overallRating": 74,
     "outfieldAttributes": {
@@ -9574,10 +9288,7 @@
     "nationality": "Türkiye",
     "clubSlug": "juventus",
     "primaryPosition": "LW",
-    "secondaryPositions": [
-      "CAM",
-      "ST"
-    ],
+    "secondaryPositions": ["CAM", "ST"],
     "marketValueEur": 75000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -9619,9 +9330,7 @@
     "nationality": "Argentina",
     "clubSlug": "juventus",
     "primaryPosition": "LW",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 22000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -9810,9 +9519,7 @@
     "nationality": "Belgium",
     "clubSlug": "napoli",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 8000000,
     "overallRating": 90,
     "outfieldAttributes": {
@@ -9980,9 +9687,7 @@
     "nationality": "Scotland",
     "clubSlug": "napoli",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 20000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -10024,9 +9729,7 @@
     "nationality": "Slovakia",
     "clubSlug": "napoli",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 10000000,
     "overallRating": 83,
     "outfieldAttributes": {
@@ -10068,9 +9771,7 @@
     "nationality": "Italy",
     "clubSlug": "napoli",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 5000000,
     "overallRating": 76,
     "outfieldAttributes": {
@@ -10091,10 +9792,7 @@
     "nationality": "Scotland",
     "clubSlug": "napoli",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CAM",
-      "CDM"
-    ],
+    "secondaryPositions": ["CAM", "CDM"],
     "marketValueEur": 40000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -10178,9 +9876,7 @@
     "nationality": "Italy",
     "clubSlug": "napoli",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "LB"
-    ],
+    "secondaryPositions": ["LB"],
     "marketValueEur": 3500000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -10201,9 +9897,7 @@
     "nationality": "Uruguay",
     "clubSlug": "napoli",
     "primaryPosition": "LB",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 15000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -10266,9 +9960,7 @@
     "nationality": "Italy",
     "clubSlug": "napoli",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "CB"
-    ],
+    "secondaryPositions": ["CB"],
     "marketValueEur": 7500000,
     "overallRating": 82,
     "outfieldAttributes": {
@@ -10289,9 +9981,7 @@
     "nationality": "Italy",
     "clubSlug": "napoli",
     "primaryPosition": "RB",
-    "secondaryPositions": [
-      "LB"
-    ],
+    "secondaryPositions": ["LB"],
     "marketValueEur": 1500000,
     "overallRating": 74,
     "outfieldAttributes": {
@@ -10333,9 +10023,7 @@
     "nationality": "Brazil",
     "clubSlug": "napoli",
     "primaryPosition": "RW",
-    "secondaryPositions": [
-      "LW"
-    ],
+    "secondaryPositions": ["LW"],
     "marketValueEur": 23000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -10377,9 +10065,7 @@
     "nationality": "Italy",
     "clubSlug": "napoli",
     "primaryPosition": "RW",
-    "secondaryPositions": [
-      "RM"
-    ],
+    "secondaryPositions": ["RM"],
     "marketValueEur": 5000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -10526,9 +10212,7 @@
     "nationality": "Portugal",
     "clubSlug": "benfica",
     "primaryPosition": "CB",
-    "secondaryPositions": [
-      "RB"
-    ],
+    "secondaryPositions": ["RB"],
     "marketValueEur": 30000000,
     "overallRating": 76,
     "outfieldAttributes": {
@@ -10633,10 +10317,7 @@
     "nationality": "Norway",
     "clubSlug": "benfica",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "RB",
-      "LB"
-    ],
+    "secondaryPositions": ["RB", "LB"],
     "marketValueEur": 15000000,
     "overallRating": 80,
     "outfieldAttributes": {
@@ -10657,9 +10338,7 @@
     "nationality": "Luxembourg",
     "clubSlug": "benfica",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 18000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -10890,9 +10569,7 @@
     "nationality": "Argentina",
     "clubSlug": "benfica",
     "primaryPosition": "RW",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 20000000,
     "overallRating": 71,
     "outfieldAttributes": {
@@ -11144,9 +10821,7 @@
     "nationality": "Argentina",
     "clubSlug": "porto",
     "primaryPosition": "CDM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 32000000,
     "overallRating": 79,
     "outfieldAttributes": {
@@ -11209,9 +10884,7 @@
     "nationality": "Canada",
     "clubSlug": "porto",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CDM"
-    ],
+    "secondaryPositions": ["CDM"],
     "marketValueEur": 6000000,
     "overallRating": 77,
     "outfieldAttributes": {
@@ -11232,9 +10905,7 @@
     "nationality": "Portugal",
     "clubSlug": "porto",
     "primaryPosition": "CM",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 2000000,
     "overallRating": 73,
     "outfieldAttributes": {
@@ -11507,10 +11178,7 @@
     "nationality": "Brazil",
     "clubSlug": "porto",
     "primaryPosition": "RW",
-    "secondaryPositions": [
-      "RM",
-      "LW"
-    ],
+    "secondaryPositions": ["RM", "LW"],
     "marketValueEur": 17000000,
     "overallRating": 81,
     "outfieldAttributes": {
@@ -11636,9 +11304,7 @@
     "nationality": "Germany",
     "clubSlug": "ajax",
     "primaryPosition": "CAM",
-    "secondaryPositions": [
-      "CM"
-    ],
+    "secondaryPositions": ["CM"],
     "marketValueEur": 15000000,
     "overallRating": 84,
     "outfieldAttributes": {
@@ -12142,9 +11808,7 @@
     "nationality": "Netherlands",
     "clubSlug": "ajax",
     "primaryPosition": "RW",
-    "secondaryPositions": [
-      "CAM"
-    ],
+    "secondaryPositions": ["CAM"],
     "marketValueEur": 2000000,
     "overallRating": 79,
     "outfieldAttributes": {

@@ -18,11 +18,11 @@ describe('Phase 4E Dataset Validation Suite', () => {
     expect(report.clubSummaries.length).toBe(20);
   });
 
-  it('3. should enforce 18-25 players and at least 2 goalkeepers for every club squad', () => {
+  it('3. should enforce 18-30 players and at least 2 goalkeepers for every club squad', () => {
     const report = validateDataset();
     for (const club of report.clubSummaries) {
       expect(club.playerCount).toBeGreaterThanOrEqual(18);
-      expect(club.playerCount).toBeLessThanOrEqual(25);
+      expect(club.playerCount).toBeLessThanOrEqual(30);
       expect(club.goalkeeperCount).toBeGreaterThanOrEqual(2);
       expect(club.isSquadValid).toBe(true);
       expect(club.errors).toEqual([]);

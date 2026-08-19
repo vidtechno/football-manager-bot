@@ -227,3 +227,17 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
   - Generatsiya va validatsiya: `src/data/types.ts` Zod tiplari, `src/data/validate-dataset.ts` deterministik validatsiya dvigateli va `src/data/generate-seed-sql.ts` orqali takrorlanuvchan `supabase/seed.sql` shakllantirildi.
   - Qoidalar: Har bir klub uchun 18-25 ta futbolchi (kamida 2 ta GK), GK/Outfield atributlarining qat'iy ajratilishi, non-negative EUR narxlari, va takrorlanmas `canonicalKey` belgilandi.
   - Sinov va xavfsizlik: Vitest orqali 11 ta test muvaffaqiyatli o'tdi. Masofaviy Supabase va avvalgi migratsiyalarga hech qanday o'zgartirish kiritilmadi, maxfiy kalitlar va admin Telegram ID lar sir saqlandi.
+
+---
+
+### [2026-08-19] DEC-023: 4F-Bosqich Tarkib Sig'imini 18-30 gacha Oshirish va Afsonalar Bozori (Legend Transfers) Poydevori Shakllantirilishi
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Faol klub tarkibi sig'imini 18-25 dan 18-30 ta futbolchigacha kengaytirish, pozitsion minimal talablarni (2 GK, 6 DEF, 6 MID, 4 FWD) qat'iylashtirish, hamda har bir liga uchun ajratilgan "Legend Transfers" afsonaviy futbolchilar bozori poydevorini va tranzaktsiyaviy RPC strukturasini yaratish.
+- **Qaror:**
+  - Tarkib sig'imi 18-30 ga kengaytirildi, `src/data/validate-dataset.ts`, `instantiate_league_players` funksiyasi hamda testlar muvofiqlashtirildi.
+  - `src/data/build-players-json.ts` xavfsiz validatsiya va passthrough wrapperga o'tkazildi, 567 ta futbolchidan iborat yangi ma'lumotlar to'plami saqlandi.
+  - Afsonalar Bozori arxitekturasi: Global `legend_templates` jadvali va har bir liga uchun ajratilgan `league_legend_market` jadvali shakllantirildi (20260819140000).
+  - Tranzaktsiyaviy xarid PL/pgSQL funksiyasi (`purchase_league_legend`) yaratildi: `FOR UPDATE` qulfi, ligaga tegishlilik, menejer muvofiqligi, mablag' yetarliligi tekshiruvi, balansdan ayirish hamda `financial_ledger` jurnaliga yozish atomar ravishda ta'minlandi.
+  - Zod validator `src/data/validate-legends.ts` hamda loyiha arxitekturasi hujjati `docs/LEGEND_TRANSFERS_PLAN.md` shakllantirildi.
+  - Vitest va pgTAP test to'plamlari muvaffaqiyatli o'tdi. Masofaviy Supabase va avvalgi migratsiyalarga o'zgartirish kiritilmadi.
