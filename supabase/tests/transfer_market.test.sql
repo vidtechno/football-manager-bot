@@ -26,6 +26,8 @@ DECLARE
     v_club_template1_id UUID;
     v_club_template2_id UUID;
     v_club_template3_id UUID;
+    v_tpl_id UUID;
+    v_ver_id UUID;
 
     v_player_ids UUID[];
     v_player_id UUID;
@@ -101,6 +103,14 @@ BEGIN
 
     -- Insert 20 players for seller club to satisfy >= 19 squad count requirement
     FOR i IN 1..20 LOOP
+        INSERT INTO public.player_templates (slug, full_name, display_name, date_of_birth, nationality)
+        VALUES ('seller-player-tpl-' || gen_random_uuid(), 'Seller Player ' || i, 'Seller Player ' || i, '2000-01-01', 'Uzbekistan')
+        RETURNING id INTO v_tpl_id;
+
+        INSERT INTO public.player_template_versions (player_template_id, version_number, overall_rating, market_value_eur)
+        VALUES (v_tpl_id, 1, 75, 10000000.00)
+        RETURNING id INTO v_ver_id;
+
         INSERT INTO public.league_players (
             league_id,
             league_club_id,
@@ -114,8 +124,8 @@ BEGIN
         ) VALUES (
             v_league_id,
             v_seller_club_id,
-            gen_random_uuid(),
-            gen_random_uuid(),
+            v_tpl_id,
+            v_ver_id,
             'Seller Player ' || i,
             '2000-01-01',
             'Uzbekistan',
