@@ -33,7 +33,7 @@ DECLARE
     v_caught BOOLEAN := FALSE;
 BEGIN
     -- Setup dummy admin and user
-    INSERT INTO public.admin_users (telegram_id, role)
+    INSERT INTO public.admin_users (telegram_user_id, role)
     VALUES (9990001, 'SUPER_ADMIN')
     RETURNING id INTO v_admin_id;
 

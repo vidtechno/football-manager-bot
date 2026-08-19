@@ -37,7 +37,7 @@ DECLARE
     v_completed_count INT;
 BEGIN
     -- Setup dummy admin and managers
-    INSERT INTO public.admin_users (telegram_id, role)
+    INSERT INTO public.admin_users (telegram_user_id, role)
     VALUES (9990002, 'SUPER_ADMIN')
     RETURNING id INTO v_admin_id;
 

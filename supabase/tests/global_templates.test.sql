@@ -302,6 +302,5 @@ END;
 $$;
 
 SELECT pass('Global club and player templates tests completed successfully.');
-SELECT * FROM finish();
 
 ROLLBACK;
