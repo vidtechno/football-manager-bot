@@ -164,6 +164,37 @@ BEGIN
 
     -- Insert 18 players for buyer club
     FOR i IN 1..18 LOOP
+        INSERT INTO public.player_templates (
+            canonical_key,
+            current_club_template_id,
+            full_name,
+            date_of_birth,
+            nationality
+        ) VALUES (
+            'buyer-player-ck-' || gen_random_uuid(),
+            v_club_template2_id,
+            'Buyer Player ' || i,
+            '2000-01-01',
+            'Uzbekistan'
+        ) RETURNING id INTO v_tpl_id;
+
+        INSERT INTO public.player_template_positions (player_template_id, position_code, is_primary)
+        VALUES (v_tpl_id, 'CM', TRUE);
+
+        INSERT INTO public.player_template_versions (
+            player_template_id,
+            version,
+            market_value_eur,
+            overall_rating,
+            pace, shooting, passing, dribbling, defending, physical
+        ) VALUES (
+            v_tpl_id,
+            1,
+            5000000.00,
+            70,
+            70, 70, 70, 70, 70, 70
+        ) RETURNING id INTO v_ver_id;
+
         INSERT INTO public.league_players (
             league_id,
             league_club_id,
@@ -177,8 +208,8 @@ BEGIN
         ) VALUES (
             v_league_id,
             v_buyer_club_id,
-            gen_random_uuid(),
-            gen_random_uuid(),
+            v_tpl_id,
+            v_ver_id,
             'Buyer Player ' || i,
             '2000-01-01',
             'Uzbekistan',
