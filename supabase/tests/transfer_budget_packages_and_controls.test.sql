@@ -85,7 +85,8 @@ BEGIN
     RETURNING id INTO v_other_club_id;
 
     -- Initialize finances (€100,000,000)
-    PERFORM public.initialize_club_finances(v_league_id, v_league_club_id, 100000000.00);
+    INSERT INTO public.club_finances (league_id, league_club_id, total_balance, reserved_balance)
+    VALUES (v_league_id, v_league_club_id, 100000000.00, 0.00);
 
     -- Test 3A: Create Transfer Budget Purchase Request
     v_create_res := public.create_transfer_budget_purchase_request(

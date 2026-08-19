@@ -67,7 +67,8 @@ BEGIN
     RETURNING id INTO v_league_club_id;
 
     -- Setup club finances (€100,000,000)
-    PERFORM public.initialize_club_finances(v_league_id, v_league_club_id, 100000000.00);
+    INSERT INTO public.club_finances (league_id, league_club_id, total_balance, reserved_balance)
+    VALUES (v_league_id, v_league_club_id, 100000000.00, 0.00);
 
     -- Insert dummy legend template
     INSERT INTO public.legend_templates (
