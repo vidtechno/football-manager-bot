@@ -55,7 +55,8 @@ BEGIN
     END IF;
 
     -- Reject initialization for non-LOBBY league
-    UPDATE public.leagues SET status = 'ACTIVE' WHERE id = v_league_id;
+    UPDATE public.leagues SET status = 'STARTING' WHERE id = v_league_id;
+
 
     v_caught := FALSE;
     BEGIN
