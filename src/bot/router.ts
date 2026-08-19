@@ -18,6 +18,7 @@ import {
   handleLegendMarketList,
   handleLegendDetails,
   handleLegendPurchaseSuccess,
+  loadLegends,
 } from './handlers/legendHandler.js';
 import {
   handleTransferMainMenu,
@@ -648,7 +649,9 @@ export function registerBotRoutes(bot: Bot<Context>): void {
       if (data.startsWith('leg_det:')) {
         const parts = data.split(':');
         const leagueId = parts[1]!;
-        const legendId = parts[2]!;
+        const legendIndex = Number(parts[2]);
+        const legendId = loadLegends()[legendIndex]?.legendId;
+        if (!legendId) throw new Error('LEGEND_NOT_FOUND');
         const { league } = await leagueContext(ctx, leagueId);
 
         const { text, keyboard } = handleLegendDetails(
@@ -669,7 +672,9 @@ export function registerBotRoutes(bot: Bot<Context>): void {
       if (data.startsWith('leg_buy:')) {
         const parts = data.split(':');
         const leagueId = parts[1]!;
-        const legendId = parts[2]!;
+        const legendIndex = Number(parts[2]);
+        const legendId = loadLegends()[legendIndex]?.legendId;
+        if (!legendId) throw new Error('LEGEND_NOT_FOUND');
         const { managerId, league } = await leagueContext(ctx, leagueId);
         if (!league.clubId) throw new Error('Avval klub tanlang.');
 
@@ -740,8 +745,8 @@ export function registerBotRoutes(bot: Bot<Context>): void {
       // 3D-6. Transfer Listing Detail (tr_buy_det:leagueId:listingId)
       if (data.startsWith('tr_buy_det:')) {
         const parts = data.split(':');
-        const leagueId = parts[1]!;
-        const listingId = parts[2]!;
+        const listingId = parts[1]!;
+        const leagueId = await TransferService.getListingLeagueId(listingId);
         const { league } = await leagueContext(ctx, leagueId);
         if (!league.clubId) throw new Error('Avval klub tanlang.');
 
@@ -773,8 +778,8 @@ export function registerBotRoutes(bot: Bot<Context>): void {
       // 3D-7. Transfer Purchase Confirmation (tr_buy_confirm:leagueId:listingId)
       if (data.startsWith('tr_buy_confirm:')) {
         const parts = data.split(':');
-        const leagueId = parts[1]!;
-        const listingId = parts[2]!;
+        const listingId = parts[1]!;
+        const leagueId = await TransferService.getListingLeagueId(listingId);
 
         const { listings } = await TransferService.getActiveListings(leagueId, {
           page: 1,
@@ -800,8 +805,8 @@ export function registerBotRoutes(bot: Bot<Context>): void {
       // 3D-8. Transfer Purchase Execution (tr_buy_exec:leagueId:listingId)
       if (data.startsWith('tr_buy_exec:')) {
         const parts = data.split(':');
-        const leagueId = parts[1]!;
-        const listingId = parts[2]!;
+        const listingId = parts[1]!;
+        const leagueId = await TransferService.getListingLeagueId(listingId);
         const { managerId, league } = await leagueContext(ctx, leagueId);
         if (!league.clubId) throw new Error('Avval klub tanlang.');
 
@@ -861,8 +866,8 @@ export function registerBotRoutes(bot: Bot<Context>): void {
       // 3D-10. Cancel Listing Execution (tr_cancel:leagueId:listingId)
       if (data.startsWith('tr_cancel:')) {
         const parts = data.split(':');
-        const leagueId = parts[1]!;
-        const listingId = parts[2]!;
+        const listingId = parts[1]!;
+        const leagueId = await TransferService.getListingLeagueId(listingId);
         const { managerId, league } = await leagueContext(ctx, leagueId);
         if (!league.clubId) throw new Error('Avval klub tanlang.');
 
@@ -1193,8 +1198,3 @@ export function registerBotRoutes(bot: Bot<Context>): void {
         }
 
         await SponsorHandler.handleAdminRemoveChannel(ctx, admin.id);
-        return;
-      }
-
-      // Default answer callback query to clear Telegram loading spinner
-      await ctx.answerCallbackQuery();
