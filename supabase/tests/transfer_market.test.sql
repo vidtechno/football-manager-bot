@@ -67,25 +67,15 @@ BEGIN
     INSERT INTO public.league_members (league_id, manager_id, role)
     VALUES (v_league_id, v_other_user_id, 'MEMBER');
 
-    -- Club Templates
-    SELECT id INTO v_club_template1_id FROM public.club_templates ORDER BY created_at LIMIT 1 OFFSET 0;
-    SELECT id INTO v_club_template2_id FROM public.club_templates ORDER BY created_at LIMIT 1 OFFSET 1;
-    SELECT id INTO v_club_template3_id FROM public.club_templates ORDER BY created_at LIMIT 1 OFFSET 2;
+    -- Club Templates (Create unique test templates)
+    INSERT INTO public.club_templates (slug, name, short_code, country)
+    VALUES ('trf-tm-seller', 'TM Seller FC', 'TMS', 'Spain') RETURNING id INTO v_club_template1_id;
 
-    IF v_club_template1_id IS NULL THEN
-        INSERT INTO public.club_templates (slug, name, short_code, country)
-        VALUES ('trf-fc-1', 'Trf FC 1', 'TF1', 'Spain') RETURNING id INTO v_club_template1_id;
-    END IF;
+    INSERT INTO public.club_templates (slug, name, short_code, country)
+    VALUES ('trf-tm-buyer', 'TM Buyer FC', 'TMB', 'England') RETURNING id INTO v_club_template2_id;
 
-    IF v_club_template2_id IS NULL THEN
-        INSERT INTO public.club_templates (slug, name, short_code, country)
-        VALUES ('trf-fc-2', 'Trf FC 2', 'TF2', 'Spain') RETURNING id INTO v_club_template2_id;
-    END IF;
-
-    IF v_club_template3_id IS NULL THEN
-        INSERT INTO public.club_templates (slug, name, short_code, country)
-        VALUES ('trf-fc-3', 'Trf FC 3', 'TF3', 'Spain') RETURNING id INTO v_club_template3_id;
-    END IF;
+    INSERT INTO public.club_templates (slug, name, short_code, country)
+    VALUES ('trf-tm-bot', 'TM Bot FC', 'TMT', 'Italy') RETURNING id INTO v_club_template3_id;
 
     -- Setup seller club (human)
     INSERT INTO public.league_clubs (league_id, club_template_id, display_name, short_code, human_manager_id)
