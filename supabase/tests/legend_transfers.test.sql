@@ -50,6 +50,9 @@ BEGIN
     VALUES ('Legend Test League', 'MEG222', v_user_id)
     RETURNING id INTO v_league_id;
 
+    INSERT INTO public.league_members (league_id, manager_id, role)
+    VALUES (v_league_id, v_user_id, 'OWNER');
+
     -- Get a club template
     SELECT id INTO v_club_template_id FROM public.club_templates LIMIT 1;
     IF v_club_template_id IS NULL THEN

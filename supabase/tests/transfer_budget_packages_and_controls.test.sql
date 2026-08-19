@@ -54,6 +54,12 @@ BEGIN
     VALUES ('Package Test League', 'PKG222', v_user_id)
     RETURNING id INTO v_league_id;
 
+    INSERT INTO public.league_members (league_id, manager_id, role)
+    VALUES (v_league_id, v_user_id, 'OWNER');
+
+    INSERT INTO public.league_members (league_id, manager_id, role)
+    VALUES (v_league_id, v_other_user_id, 'MEMBER');
+
     -- Get a club template
     SELECT id INTO v_club_template_id FROM public.club_templates LIMIT 1;
     IF v_club_template_id IS NULL THEN
@@ -139,6 +145,9 @@ BEGIN
     INSERT INTO public.leagues (name, code, owner_manager_id)
     VALUES ('Solo League', 'SHQ222', v_user_id)
     RETURNING id INTO v_solo_league_id;
+
+    INSERT INTO public.league_members (league_id, manager_id, role)
+    VALUES (v_solo_league_id, v_user_id, 'OWNER');
 
     INSERT INTO public.league_clubs (league_id, club_template_id, human_manager_id)
     VALUES (v_solo_league_id, v_club_template_id, v_user_id)
