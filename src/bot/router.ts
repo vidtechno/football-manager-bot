@@ -328,7 +328,7 @@ export function registerBotRoutes(bot: Bot<Context>): void {
         const rows = slice.map((c) => [
           {
             text: `${c.taken ? '🔒' : '⚽'} ${c.name}`,
-            callback_data: c.taken ? 'noop' : `club_select:${leagueId}:${c.id}`,
+            callback_data: c.taken ? 'noop' : `club_select:${c.id}`,
           },
         ]);
         const nav = [];
@@ -354,12 +354,12 @@ export function registerBotRoutes(bot: Bot<Context>): void {
         return;
       }
       if (data.startsWith('club_select:')) {
-        const [, leagueId, clubId] = data.split(':');
+        const [, clubId] = data.split(':');
         const manager = await IdentityService.getOrCreateManager(
           ctx.from.id,
           ctx.from.first_name,
         );
-        await GameService.selectClub(manager.id, leagueId!, clubId!);
+        const leagueId = await GameService.selectClub(manager.id, clubId!);
         await ctx.answerCallbackQuery({ text: 'Klub tanlandi ✅' });
         const league = await GameService.getLeague(manager.id, leagueId!);
         await ctx.editMessageText(
