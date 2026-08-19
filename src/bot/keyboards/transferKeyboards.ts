@@ -159,7 +159,7 @@ export function buildListingDetailKeyboard(
 
 export function buildListingConfirmKeyboard(
   listingId: string,
-  leagueId: string,
+  _leagueId: string,
 ): InlineKeyboardButton[][] {
   return [
     [
