@@ -1198,3 +1198,15 @@ export function registerBotRoutes(bot: Bot<Context>): void {
         }
 
         await SponsorHandler.handleAdminRemoveChannel(ctx, admin.id);
+        return;
+      }
+
+      // Default answer callback query to clear Telegram loading spinner
+      await ctx.answerCallbackQuery();
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      await ctx.reply(`❌ Xatolik yuz berdi: ${errMsg}`);
+      await ctx.answerCallbackQuery();
+    }
+  });
+}
