@@ -317,16 +317,26 @@ BEGIN
 
     -- 3. Record in financial ledger
     INSERT INTO public.financial_ledger (
+        league_id,
         league_club_id,
         transaction_type,
-        amount,
+        amount_eur,
+        balance_before,
         balance_after,
+        reserved_before,
+        reserved_after,
+        idempotency_key,
         description
     ) VALUES (
+        v_finance_rec.league_id,
         p_league_club_id,
         'TRANSFER_PURCHASE',
         -v_market_rec.price_eur,
+        v_finance_rec.total_balance,
         v_finance_rec.total_balance - v_market_rec.price_eur,
+        v_finance_rec.reserved_balance,
+        v_finance_rec.reserved_balance,
+        'LEGEND_BUY_' || p_league_legend_id::text,
         'Legend Purchase: ' || v_legend_template.full_name
     ) RETURNING id INTO v_transaction_id;
 

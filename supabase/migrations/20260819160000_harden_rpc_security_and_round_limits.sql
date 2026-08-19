@@ -101,16 +101,26 @@ BEGIN
 
     -- 2. Insert financial ledger entry (TRANSFER_PURCHASE)
     INSERT INTO public.financial_ledger (
+        league_id,
         league_club_id,
         transaction_type,
-        amount,
+        amount_eur,
+        balance_before,
         balance_after,
+        reserved_before,
+        reserved_after,
+        idempotency_key,
         description
     ) VALUES (
+        v_finance.league_id,
         v_req.league_club_id,
         'TRANSFER_PURCHASE',
         v_req.requested_eur_amount,
+        v_finance.total_balance,
         v_finance.total_balance + v_req.requested_eur_amount,
+        v_finance.reserved_balance,
+        v_finance.reserved_balance,
+        'PKG_APPROVE_' || p_request_id::text,
         'Transfer Budget Purchase [' || v_req.order_code || ']: +' || v_req.requested_eur_amount::text || ' EUR (' || v_req.uzs_price::text || ' UZS)'
     ) RETURNING id INTO v_ledger_id;
 
