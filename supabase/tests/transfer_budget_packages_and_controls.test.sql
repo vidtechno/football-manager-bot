@@ -36,22 +36,22 @@ DECLARE
     v_caught BOOLEAN := FALSE;
     v_completed_count INT;
 BEGIN
-    -- Setup dummy admin and users
+    -- Setup dummy admin and managers
     INSERT INTO public.admin_users (telegram_id, role)
     VALUES (9990002, 'SUPER_ADMIN')
     RETURNING id INTO v_admin_id;
 
-    INSERT INTO public.users (telegram_id, username, first_name)
-    VALUES (7770001, 'budget_buyer', 'Budget Buyer')
+    INSERT INTO public.managers (telegram_user_id, manager_name)
+    VALUES (7770001, 'budget_buyer')
     RETURNING id INTO v_user_id;
 
-    INSERT INTO public.users (telegram_id, username, first_name)
-    VALUES (7770002, 'other_member', 'Other Member')
+    INSERT INTO public.managers (telegram_user_id, manager_name)
+    VALUES (7770002, 'other_member')
     RETURNING id INTO v_other_user_id;
 
     -- Setup multi-player test league
-    INSERT INTO public.leagues (name, invite_code, max_clubs, created_by_user_id)
-    VALUES ('Package Test League', 'PKG001', 20, v_user_id)
+    INSERT INTO public.leagues (name, code, owner_manager_id)
+    VALUES ('Package Test League', 'PKG001', v_user_id)
     RETURNING id INTO v_league_id;
 
     -- Get a club template
@@ -63,12 +63,12 @@ BEGIN
     END IF;
 
     -- Insert league clubs
-    INSERT INTO public.league_clubs (league_id, club_template_id, name, user_id)
-    VALUES (v_league_id, v_club_template_id, 'Buyer Club', v_user_id)
+    INSERT INTO public.league_clubs (league_id, club_template_id, human_manager_id)
+    VALUES (v_league_id, v_club_template_id, v_user_id)
     RETURNING id INTO v_league_club_id;
 
-    INSERT INTO public.league_clubs (league_id, club_template_id, name, user_id)
-    VALUES (v_league_id, v_club_template_id, 'Other Club', v_other_user_id)
+    INSERT INTO public.league_clubs (league_id, club_template_id, human_manager_id)
+    VALUES (v_league_id, v_club_template_id, v_other_user_id)
     RETURNING id INTO v_other_club_id;
 
     -- Initialize finances (€100,000,000)

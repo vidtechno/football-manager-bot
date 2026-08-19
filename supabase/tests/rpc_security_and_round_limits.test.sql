@@ -26,22 +26,22 @@ DECLARE
     v_round_res JSONB;
     v_caught BOOLEAN := FALSE;
 BEGIN
-    -- Setup dummy admin and users
+    -- Setup dummy admin and managers
     INSERT INTO public.admin_users (telegram_id, role)
     VALUES (9990003, 'SUPER_ADMIN')
     RETURNING id INTO v_admin_id;
 
-    INSERT INTO public.users (telegram_id, username, first_name)
-    VALUES (7770003, 'sec_user', 'Security User')
+    INSERT INTO public.managers (telegram_user_id, manager_name)
+    VALUES (7770003, 'sec_user')
     RETURNING id INTO v_user_id;
 
-    INSERT INTO public.users (telegram_id, username, first_name)
-    VALUES (7770004, 'sec_other', 'Security Other')
+    INSERT INTO public.managers (telegram_user_id, manager_name)
+    VALUES (7770004, 'sec_other')
     RETURNING id INTO v_other_user_id;
 
     -- Setup dummy league
-    INSERT INTO public.leagues (name, invite_code, max_clubs, created_by_user_id)
-    VALUES ('Security Test League', 'SEC001', 20, v_user_id)
+    INSERT INTO public.leagues (name, code, owner_manager_id)
+    VALUES ('Security Test League', 'SEC001', v_user_id)
     RETURNING id INTO v_league_id;
 
     -- Get a club template
@@ -53,8 +53,8 @@ BEGIN
     END IF;
 
     -- Insert league club
-    INSERT INTO public.league_clubs (league_id, club_template_id, name, user_id)
-    VALUES (v_league_id, v_club_template_id, 'Security FC League', v_user_id)
+    INSERT INTO public.league_clubs (league_id, club_template_id, human_manager_id)
+    VALUES (v_league_id, v_club_template_id, v_user_id)
     RETURNING id INTO v_league_club_id;
 
     -- Test 2A: Verify non-admin ID rejection in approve_transfer_budget_purchase_request

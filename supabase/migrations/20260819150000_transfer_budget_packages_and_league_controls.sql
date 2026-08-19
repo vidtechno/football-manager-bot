@@ -56,7 +56,7 @@ CREATE TABLE public.transfer_budget_purchase_requests (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_code VARCHAR(30) NOT NULL UNIQUE CHECK (order_code ~ '^[A-Z0-9-]{6,30}$'),
     telegram_user_id BIGINT NOT NULL,
-    user_id UUID NULL REFERENCES public.users(id) ON DELETE SET NULL,
+    user_id UUID NULL REFERENCES auth.users(id) ON DELETE SET NULL,
     league_id UUID NOT NULL REFERENCES public.leagues(id) ON DELETE CASCADE,
     league_club_id UUID NOT NULL REFERENCES public.league_clubs(id) ON DELETE CASCADE,
     package_id VARCHAR(50) NOT NULL REFERENCES public.transfer_budget_packages(id) ON DELETE RESTRICT,
@@ -107,8 +107,8 @@ BEGIN
         RAISE EXCEPTION 'CLUB_LEAGUE_MISMATCH' USING ERRCODE = 'P0001';
     END IF;
 
-    -- Find user_id by telegram_id
-    SELECT id INTO v_user_id FROM public.users WHERE telegram_id = p_telegram_user_id;
+    -- Set v_user_id to NULL (telegram_user_id is primary)
+    v_user_id := NULL;
 
     -- Generate human-readable order code (e.g. TBP-8F3K9A)
     v_order_code := 'TBP-' || upper(substring(md5(random()::text || clock_timestamp()::text) from 1 for 8));
