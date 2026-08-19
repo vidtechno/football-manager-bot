@@ -69,12 +69,12 @@ BEGIN
     END IF;
 
     -- Insert league clubs
-    INSERT INTO public.league_clubs (league_id, club_template_id, display_name, human_manager_id)
-    VALUES (v_league_id, v_club_template_id, 'Package Club 1', v_user_id)
+    INSERT INTO public.league_clubs (league_id, club_template_id, display_name, short_code, human_manager_id)
+    VALUES (v_league_id, v_club_template_id, 'Package Club 1', 'PK1', v_user_id)
     RETURNING id INTO v_league_club_id;
 
-    INSERT INTO public.league_clubs (league_id, club_template_id, display_name, human_manager_id)
-    VALUES (v_league_id, v_club_template_id, 'Package Club 2', v_other_user_id)
+    INSERT INTO public.league_clubs (league_id, club_template_id, display_name, short_code, human_manager_id)
+    VALUES (v_league_id, v_club_template_id, 'Package Club 2', 'PK2', v_other_user_id)
     RETURNING id INTO v_other_club_id;
 
     -- Initialize finances (€100,000,000)
@@ -149,8 +149,8 @@ BEGIN
     INSERT INTO public.league_members (league_id, manager_id, role)
     VALUES (v_solo_league_id, v_user_id, 'OWNER');
 
-    INSERT INTO public.league_clubs (league_id, club_template_id, display_name, human_manager_id)
-    VALUES (v_solo_league_id, v_club_template_id, 'Solo Club', v_user_id)
+    INSERT INTO public.league_clubs (league_id, club_template_id, display_name, short_code, human_manager_id)
+    VALUES (v_solo_league_id, v_club_template_id, 'Solo Club', 'SOL', v_user_id)
     RETURNING id INTO v_solo_club_id;
 
     PERFORM public.delete_solo_league(v_solo_league_id, v_user_id);
