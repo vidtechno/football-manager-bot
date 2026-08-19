@@ -41,7 +41,7 @@ BEGIN
 
     -- Setup dummy league
     INSERT INTO public.leagues (name, code, owner_manager_id)
-    VALUES ('Security Test League', 'SEC001', v_user_id)
+    VALUES ('Security Test League', 'SEC222', v_user_id)
     RETURNING id INTO v_league_id;
 
     -- Get a club template

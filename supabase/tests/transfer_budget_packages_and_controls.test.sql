@@ -51,7 +51,7 @@ BEGIN
 
     -- Setup multi-player test league
     INSERT INTO public.leagues (name, code, owner_manager_id)
-    VALUES ('Package Test League', 'PKG001', v_user_id)
+    VALUES ('Package Test League', 'PKG222', v_user_id)
     RETURNING id INTO v_league_id;
 
     -- Get a club template
@@ -136,12 +136,12 @@ BEGIN
     END IF;
 
     -- Test 3F: Successful Solo League Deletion
-    INSERT INTO public.leagues (name, invite_code, max_clubs, created_by_user_id)
-    VALUES ('Solo League', 'SOLO01', 20, v_user_id)
+    INSERT INTO public.leagues (name, code, owner_manager_id)
+    VALUES ('Solo League', 'SHQ222', v_user_id)
     RETURNING id INTO v_solo_league_id;
 
-    INSERT INTO public.league_clubs (league_id, club_template_id, name, user_id)
-    VALUES (v_solo_league_id, v_club_template_id, 'Solo Club Owner', v_user_id)
+    INSERT INTO public.league_clubs (league_id, club_template_id, human_manager_id)
+    VALUES (v_solo_league_id, v_club_template_id, v_user_id)
     RETURNING id INTO v_solo_club_id;
 
     PERFORM public.delete_solo_league(v_solo_league_id, v_user_id);
