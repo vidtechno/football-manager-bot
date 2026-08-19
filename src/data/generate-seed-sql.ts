@@ -117,9 +117,9 @@ export function generateSeedSql(
         : `'{}'::public.enum_player_position[]`;
 
     sql += `INSERT INTO public.legend_templates (\n`;
-    sql += `    legend_id, canonical_key, full_name, nationality, date_of_birth,\n`;
-    sql += `    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,\n`;
-    sql += `    default_price_eur, status, source_id, rating_methodology`;
+    sql += `    slug, canonical_key, full_name, nationality, date_of_birth,\n`;
+    sql += `    primary_position, secondary_positions, peak_club, peak_period, overall_rating,\n`;
+    sql += `    default_price_eur, source_id, rating_methodology`;
 
     if (leg.primaryPosition === 'GK') {
       sql += `, goalkeeper_attributes\n`;
@@ -130,7 +130,7 @@ export function generateSeedSql(
     sql += `) VALUES (\n`;
     sql += `    '${leg.legendId}', '${leg.canonicalKey}', '${leg.fullName.replace(/'/g, "''")}', '${leg.nationality.replace(/'/g, "''")}', '${leg.dateOfBirth}',\n`;
     sql += `    '${leg.primaryPosition}'::public.enum_player_position, ${secArray}, '${leg.peakClub.replace(/'/g, "''")}', '${leg.peakPeriod}', ${leg.peakOverallRating},\n`;
-    sql += `    ${leg.legendTransferPriceEur}.00, '${leg.status}', '${leg.sourceId}', '${leg.ratingMethodology.replace(/'/g, "''")}'`;
+    sql += `    ${leg.legendTransferPriceEur}.00, '${leg.sourceId}', '${leg.ratingMethodology.replace(/'/g, "''")}'`;
 
     if (leg.primaryPosition === 'GK') {
       sql += `, '${JSON.stringify(leg.goalkeeperAttributes)}'::jsonb\n`;
@@ -138,9 +138,9 @@ export function generateSeedSql(
       sql += `, '${JSON.stringify(leg.outfieldAttributes)}'::jsonb\n`;
     }
 
-    sql += `) ON CONFLICT (legend_id) DO UPDATE SET\n`;
+    sql += `) ON CONFLICT (slug) DO UPDATE SET\n`;
     sql += `    default_price_eur = EXCLUDED.default_price_eur,\n`;
-    sql += `    peak_overall_rating = EXCLUDED.peak_overall_rating;\n\n`;
+    sql += `    overall_rating = EXCLUDED.overall_rating;\n\n`;
   }
 
   sql += `COMMIT;\n`;
