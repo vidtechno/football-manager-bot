@@ -1,6 +1,6 @@
--- Reprodusibl Phase 4E Seed Data generated on 2026-08-19T08:50:08.989Z
+-- Reproducible Phase 4E & 4H Seed Data generated on 2026-08-19T09:00:59.829Z
 -- Snapshot Date: 2026-08-19
--- Total Clubs: 20, Total Players: 567, Total Value: €16,750,950,000
+-- Total Clubs: 20, Total Players: 567, Total Legends: 60
 
 BEGIN;
 
@@ -12199,5 +12199,726 @@ BEGIN
     END IF;
 
 END $$;
+
+-- 3. Seed Legend Templates (60 Legends)
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-cristiano-ronaldo-prime', 'cristiano-ronaldo-prime', 'Cristiano Ronaldo', 'Portugal', '1985-02-05',
+    'LW'::public.enum_player_position, ARRAY['ST'::public.enum_player_position, 'RW'::public.enum_player_position], 'Real Madrid', '2011-2014', 94,
+    500000000.00, 'ACTIVE', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2011-2014', '{"pace":93,"shooting":93,"passing":82,"dribbling":91,"defending":33,"physical":80}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-lionel-messi-prime', 'lionel-messi-prime', 'Lionel Messi', 'Argentina', '1987-06-24',
+    'RW'::public.enum_player_position, ARRAY['CF'::public.enum_player_position, 'CAM'::public.enum_player_position], 'FC Barcelona', '2011-2012', 94,
+    500000000.00, 'ACTIVE', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2011-2012', '{"pace":92,"shooting":92,"passing":91,"dribbling":96,"defending":30,"physical":68}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-marcelo-prime', 'marcelo-prime', 'Marcelo Vieira da Silva', 'Brazil', '1988-05-12',
+    'LB'::public.enum_player_position, ARRAY['LWB'::public.enum_player_position], 'Real Madrid', '2016-2018', 89,
+    220000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2016-2018', '{"pace":82,"shooting":72,"passing":83,"dribbling":87,"defending":81,"physical":77}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-gareth-bale-prime', 'gareth-bale-prime', 'Gareth Bale', 'Wales', '1989-07-16',
+    'RW'::public.enum_player_position, ARRAY['RM'::public.enum_player_position, 'LB'::public.enum_player_position], 'Real Madrid', '2013-2016', 89,
+    230000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2013-2016', '{"pace":94,"shooting":87,"passing":84,"dribbling":86,"defending":58,"physical":80}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-eden-hazard-prime', 'eden-hazard-prime', 'Eden Hazard', 'Belgium', '1991-01-07',
+    'LW'::public.enum_player_position, ARRAY['LM'::public.enum_player_position, 'CAM'::public.enum_player_position], 'Chelsea', '2017-2019', 89,
+    210000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2017-2019', '{"pace":91,"shooting":83,"passing":86,"dribbling":94,"defending":35,"physical":66}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-luka-modric-prime', 'luka-modric-prime', 'Luka Modrić', 'Croatia', '1985-09-09',
+    'CM'::public.enum_player_position, ARRAY['CAM'::public.enum_player_position], 'Real Madrid', '2017-2018', 91,
+    320000000.00, 'ACTIVE', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2017-2018', '{"pace":76,"shooting":76,"passing":89,"dribbling":91,"defending":72,"physical":66}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-toni-kroos-prime', 'toni-kroos-prime', 'Toni Kroos', 'Germany', '1990-01-04',
+    'CM'::public.enum_player_position, ARRAY['CDM'::public.enum_player_position], 'Real Madrid', '2016-2020', 90,
+    280000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2016-2020', '{"pace":53,"shooting":81,"passing":91,"dribbling":81,"defending":70,"physical":69}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-xavi-prime', 'xavi-prime', 'Xavi Hernández', 'Spain', '1980-01-25',
+    'CM'::public.enum_player_position, ARRAY['CAM'::public.enum_player_position], 'FC Barcelona', '2008-2012', 92,
+    350000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2008-2012', '{"pace":70,"shooting":74,"passing":94,"dribbling":90,"defending":70,"physical":66}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-andres-iniesta-prime', 'andres-iniesta-prime', 'Andrés Iniesta', 'Spain', '1984-05-11',
+    'CM'::public.enum_player_position, ARRAY['LW'::public.enum_player_position, 'CAM'::public.enum_player_position], 'FC Barcelona', '2008-2012', 92,
+    350000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2008-2012', '{"pace":75,"shooting":72,"passing":90,"dribbling":92,"defending":63,"physical":60}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, goalkeeper_attributes
+) VALUES (
+    'leg-lev-yashin-prime', 'lev-yashin-prime', 'Lev Yashin', 'Russia', '1929-10-22',
+    'GK'::public.enum_player_position, '{}'::public.enum_player_position[], 'Dynamo Moscow', '1956-1964', 93,
+    400000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1956-1964', '{"reflexes":95,"handling":89,"positioning":92,"aerialAbility":88,"distribution":75,"oneOnOne":94}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, goalkeeper_attributes
+) VALUES (
+    'leg-gianluigi-buffon-prime', 'gianluigi-buffon-prime', 'Gianluigi Buffon', 'Italy', '1978-01-28',
+    'GK'::public.enum_player_position, '{}'::public.enum_player_position[], 'Juventus', '2003-2006', 92,
+    340000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2003-2006', '{"reflexes":94,"handling":90,"positioning":93,"aerialAbility":86,"distribution":74,"oneOnOne":92}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, goalkeeper_attributes
+) VALUES (
+    'leg-iker-casillas-prime', 'iker-casillas-prime', 'Iker Casillas', 'Spain', '1981-05-20',
+    'GK'::public.enum_player_position, '{}'::public.enum_player_position[], 'Real Madrid', '2008-2012', 91,
+    290000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2008-2012', '{"reflexes":92,"handling":87,"positioning":89,"aerialAbility":84,"distribution":78,"oneOnOne":91}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, goalkeeper_attributes
+) VALUES (
+    'leg-peter-schmeichel-prime', 'peter-schmeichel-prime', 'Peter Schmeichel', 'Denmark', '1963-11-18',
+    'GK'::public.enum_player_position, '{}'::public.enum_player_position[], 'Manchester United', '1996-1999', 90,
+    250000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1996-1999', '{"reflexes":91,"handling":89,"positioning":88,"aerialAbility":90,"distribution":80,"oneOnOne":90}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-franz-beckenbauer-prime', 'franz-beckenbauer-prime', 'Franz Beckenbauer', 'Germany', '1945-09-11',
+    'CB'::public.enum_player_position, ARRAY['CDM'::public.enum_player_position], 'Bayern Munich', '1972-1976', 93,
+    420000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1972-1976', '{"pace":81,"shooting":76,"passing":88,"dribbling":86,"defending":94,"physical":82}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-paolo-maldini-prime', 'paolo-maldini-prime', 'Paolo Maldini', 'Italy', '1968-06-26',
+    'CB'::public.enum_player_position, ARRAY['LB'::public.enum_player_position], 'AC Milan', '1993-2003', 93,
+    430000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1993-2003', '{"pace":85,"shooting":56,"passing":75,"dribbling":70,"defending":95,"physical":83}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-sergio-ramos-prime', 'sergio-ramos-prime', 'Sergio Ramos', 'Spain', '1986-03-30',
+    'CB'::public.enum_player_position, ARRAY['RB'::public.enum_player_position], 'Real Madrid', '2014-2018', 92,
+    350000000.00, 'ACTIVE', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2014-2018', '{"pace":78,"shooting":68,"passing":76,"dribbling":72,"defending":92,"physical":87}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-alessandro-nesta-prime', 'alessandro-nesta-prime', 'Alessandro Nesta', 'Italy', '1976-03-19',
+    'CB'::public.enum_player_position, '{}'::public.enum_player_position[], 'AC Milan', '2002-2007', 91,
+    310000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2002-2007', '{"pace":74,"shooting":40,"passing":68,"dribbling":66,"defending":93,"physical":83}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-fabio-cannavaro-prime', 'fabio-cannavaro-prime', 'Fabio Cannavaro', 'Italy', '1973-09-13',
+    'CB'::public.enum_player_position, '{}'::public.enum_player_position[], 'Juventus', '2006', 90,
+    260000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2006', '{"pace":80,"shooting":43,"passing":62,"dribbling":68,"defending":92,"physical":85}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-carles-puyol-prime', 'carles-puyol-prime', 'Carles Puyol', 'Spain', '1978-04-13',
+    'CB'::public.enum_player_position, ARRAY['RB'::public.enum_player_position], 'FC Barcelona', '2008-2011', 90,
+    250000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2008-2011', '{"pace":72,"shooting":45,"passing":60,"dribbling":58,"defending":91,"physical":89}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-roberto-carlos-prime', 'roberto-carlos-prime', 'Roberto Carlos da Silva', 'Brazil', '1973-04-10',
+    'LB'::public.enum_player_position, ARRAY['LWB'::public.enum_player_position], 'Real Madrid', '1997-2002', 90,
+    260000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1997-2002', '{"pace":92,"shooting":83,"passing":80,"dribbling":81,"defending":82,"physical":86}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-ashley-cole-prime', 'ashley-cole-prime', 'Ashley Cole', 'England', '1980-12-20',
+    'LB'::public.enum_player_position, '{}'::public.enum_player_position[], 'Chelsea', '2008-2012', 88,
+    170000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2008-2012', '{"pace":86,"shooting":60,"passing":76,"dribbling":78,"defending":86,"physical":78}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-giacinto-facchetti-prime', 'giacinto-facchetti-prime', 'Giacinto Facchetti', 'Italy', '1942-07-18',
+    'LB'::public.enum_player_position, ARRAY['CB'::public.enum_player_position], 'Inter Milan', '1965-1971', 88,
+    160000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1965-1971', '{"pace":84,"shooting":68,"passing":75,"dribbling":76,"defending":87,"physical":82}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-cafu-prime', 'cafu-prime', 'Marcos Evangelista de Morais (Cafu)', 'Brazil', '1970-06-07',
+    'RB'::public.enum_player_position, ARRAY['RWB'::public.enum_player_position], 'AC Milan', '2001-2005', 90,
+    270000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2001-2005', '{"pace":88,"shooting":64,"passing":82,"dribbling":83,"defending":85,"physical":86}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-dani-alves-prime', 'dani-alves-prime', 'Daniel Alves da Silva', 'Brazil', '1983-05-06',
+    'RB'::public.enum_player_position, ARRAY['RWB'::public.enum_player_position], 'FC Barcelona', '2009-2015', 90,
+    270000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2009-2015', '{"pace":86,"shooting":72,"passing":84,"dribbling":85,"defending":82,"physical":80}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-philipp-lahm-prime', 'philipp-lahm-prime', 'Philipp Lahm', 'Germany', '1983-11-11',
+    'RB'::public.enum_player_position, ARRAY['LB'::public.enum_player_position, 'CDM'::public.enum_player_position], 'Bayern Munich', '2011-2014', 90,
+    260000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2011-2014', '{"pace":82,"shooting":58,"passing":84,"dribbling":82,"defending":88,"physical":72}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-javier-zanetti-prime', 'javier-zanetti-prime', 'Javier Zanetti', 'Argentina', '1973-08-10',
+    'RB'::public.enum_player_position, ARRAY['CDM'::public.enum_player_position, 'LB'::public.enum_player_position], 'Inter Milan', '2008-2010', 89,
+    210000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2008-2010', '{"pace":83,"shooting":55,"passing":78,"dribbling":80,"defending":86,"physical":84}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-andreas-brehme-prime', 'andreas-brehme-prime', 'Andreas Brehme', 'Germany', '1960-11-09',
+    'LWB'::public.enum_player_position, ARRAY['LB'::public.enum_player_position, 'LM'::public.enum_player_position], 'Inter Milan', '1988-1991', 88,
+    160000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1988-1991', '{"pace":81,"shooting":76,"passing":84,"dribbling":78,"defending":84,"physical":78}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-bixente-lizarazu-prime', 'bixente-lizarazu-prime', 'Bixente Lizarazu', 'France', '1969-12-09',
+    'LWB'::public.enum_player_position, ARRAY['LB'::public.enum_player_position], 'Bayern Munich', '1998-2001', 87,
+    140000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1998-2001', '{"pace":85,"shooting":56,"passing":74,"dribbling":78,"defending":83,"physical":76}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-junior-prime', 'junior-prime', 'Leovegildo Lins da Gama Júnior', 'Brazil', '1954-06-29',
+    'LWB'::public.enum_player_position, ARRAY['LB'::public.enum_player_position, 'CM'::public.enum_player_position], 'Flamengo', '1980-1983', 87,
+    130000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1980-1983', '{"pace":82,"shooting":68,"passing":81,"dribbling":82,"defending":81,"physical":77}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-carlos-alberto-prime', 'carlos-alberto-prime', 'Carlos Alberto Torres', 'Brazil', '1944-07-17',
+    'RWB'::public.enum_player_position, ARRAY['RB'::public.enum_player_position, 'CB'::public.enum_player_position], 'Santos', '1968-1972', 89,
+    210000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1968-1972', '{"pace":84,"shooting":66,"passing":80,"dribbling":78,"defending":86,"physical":84}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-gianluca-zambrotta-prime', 'gianluca-zambrotta-prime', 'Gianluca Zambrotta', 'Italy', '1977-02-19',
+    'RWB'::public.enum_player_position, ARRAY['RB'::public.enum_player_position, 'LWB'::public.enum_player_position], 'Juventus', '2003-2006', 87,
+    140000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2003-2006', '{"pace":86,"shooting":62,"passing":76,"dribbling":79,"defending":82,"physical":80}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-djalma-santos-prime', 'djalma-santos-prime', 'Djalma Pereira Dias dos Santos', 'Brazil', '1929-02-27',
+    'RWB'::public.enum_player_position, ARRAY['RB'::public.enum_player_position], 'Palmeiras', '1958-1962', 88,
+    150000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1958-1962', '{"pace":83,"shooting":55,"passing":75,"dribbling":76,"defending":87,"physical":83}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-lothar-matthaus-prime', 'lothar-matthaus-prime', 'Lothar Matthäus', 'Germany', '1961-03-21',
+    'CDM'::public.enum_player_position, ARRAY['CM'::public.enum_player_position, 'CB'::public.enum_player_position], 'Inter Milan', '1990-1994', 92,
+    360000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1990-1994', '{"pace":83,"shooting":85,"passing":87,"dribbling":82,"defending":88,"physical":85}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-sergio-busquets-prime', 'sergio-busquets-prime', 'Sergio Busquets Burgos', 'Spain', '1988-07-16',
+    'CDM'::public.enum_player_position, ARRAY['CM'::public.enum_player_position], 'FC Barcelona', '2011-2015', 90,
+    260000000.00, 'ACTIVE', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2011-2015', '{"pace":45,"shooting":62,"passing":83,"dribbling":81,"defending":86,"physical":80}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-claude-makelele-prime', 'claude-makelele-prime', 'Claude Makélélé', 'France', '1973-02-18',
+    'CDM'::public.enum_player_position, '{}'::public.enum_player_position[], 'Chelsea', '2004-2007', 89,
+    220000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2004-2007', '{"pace":76,"shooting":48,"passing":75,"dribbling":74,"defending":89,"physical":86}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-frank-rijkaard-prime', 'frank-rijkaard-prime', 'Frank Rijkaard', 'Netherlands', '1962-09-30',
+    'CDM'::public.enum_player_position, ARRAY['CB'::public.enum_player_position], 'AC Milan', '1988-1992', 90,
+    270000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1988-1992', '{"pace":77,"shooting":72,"passing":80,"dribbling":77,"defending":88,"physical":86}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-andrea-pirlo-prime', 'andrea-pirlo-prime', 'Andrea Pirlo', 'Italy', '1979-05-19',
+    'CM'::public.enum_player_position, ARRAY['CDM'::public.enum_player_position], 'AC Milan', '2006-2012', 90,
+    280000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2006-2012', '{"pace":66,"shooting":78,"passing":93,"dribbling":85,"defending":68,"physical":63}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-zinedine-zidane-prime', 'zinedine-zidane-prime', 'Zinedine Zidane', 'France', '1972-06-23',
+    'CAM'::public.enum_player_position, ARRAY['CM'::public.enum_player_position], 'Real Madrid', '2000-2003', 93,
+    430000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2000-2003', '{"pace":80,"shooting":84,"passing":92,"dribbling":93,"defending":62,"physical":82}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-kaka-prime', 'kaka-prime', 'Ricardo Izecson dos Santos Leite (Kaká)', 'Brazil', '1982-04-22',
+    'CAM'::public.enum_player_position, ARRAY['CF'::public.enum_player_position], 'AC Milan', '2006-2007', 91,
+    330000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2006-2007', '{"pace":91,"shooting":86,"passing":88,"dribbling":92,"defending":44,"physical":73}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-michel-platini-prime', 'michel-platini-prime', 'Michel Platini', 'France', '1955-06-21',
+    'CAM'::public.enum_player_position, ARRAY['CF'::public.enum_player_position], 'Juventus', '1983-1985', 92,
+    370000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1983-1985', '{"pace":78,"shooting":88,"passing":93,"dribbling":89,"defending":52,"physical":72}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-ruud-gullit-prime', 'ruud-gullit-prime', 'Ruud Gullit', 'Netherlands', '1962-09-01',
+    'CAM'::public.enum_player_position, ARRAY['CM'::public.enum_player_position, 'CF'::public.enum_player_position], 'AC Milan', '1987-1990', 90,
+    290000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1987-1990', '{"pace":86,"shooting":85,"passing":86,"dribbling":86,"defending":78,"physical":87}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-pavel-nedved-prime', 'pavel-nedved-prime', 'Pavel Nedvěd', 'Czech Republic', '1972-08-30',
+    'LM'::public.enum_player_position, ARRAY['CAM'::public.enum_player_position, 'LW'::public.enum_player_position], 'Juventus', '2002-2004', 90,
+    250000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2002-2004', '{"pace":86,"shooting":86,"passing":86,"dribbling":87,"defending":68,"physical":82}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-ryan-giggs-prime', 'ryan-giggs-prime', 'Ryan Giggs', 'Wales', '1973-11-29',
+    'LM'::public.enum_player_position, ARRAY['LW'::public.enum_player_position], 'Manchester United', '1998-2001', 89,
+    210000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1998-2001', '{"pace":90,"shooting":78,"passing":84,"dribbling":88,"defending":48,"physical":70}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-robert-pires-prime', 'robert-pires-prime', 'Robert Pires', 'France', '1973-10-29',
+    'LM'::public.enum_player_position, ARRAY['RM'::public.enum_player_position, 'CAM'::public.enum_player_position], 'Arsenal', '2001-2004', 88,
+    170000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2001-2004', '{"pace":86,"shooting":82,"passing":84,"dribbling":87,"defending":40,"physical":64}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-david-beckham-prime', 'david-beckham-prime', 'David Beckham', 'England', '1975-05-02',
+    'RM'::public.enum_player_position, ARRAY['CM'::public.enum_player_position], 'Manchester United', '1998-2003', 89,
+    220000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1998-2003', '{"pace":76,"shooting":82,"passing":93,"dribbling":81,"defending":70,"physical":80}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-luis-figo-prime', 'luis-figo-prime', 'Luís Figo', 'Portugal', '1972-11-04',
+    'RM'::public.enum_player_position, ARRAY['RW'::public.enum_player_position, 'CAM'::public.enum_player_position], 'Real Madrid', '1999-2002', 90,
+    270000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1999-2002', '{"pace":87,"shooting":83,"passing":87,"dribbling":90,"defending":42,"physical":77}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-jairzinho-prime', 'jairzinho-prime', 'Jair Ventura Filho (Jairzinho)', 'Brazil', '1944-12-25',
+    'RM'::public.enum_player_position, ARRAY['RW'::public.enum_player_position, 'ST'::public.enum_player_position], 'Botafogo', '1970', 89,
+    210000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1970', '{"pace":90,"shooting":85,"passing":80,"dribbling":89,"defending":48,"physical":82}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-ronaldinho-prime', 'ronaldinho-prime', 'Ronaldo de Assis Moreira (Ronaldinho)', 'Brazil', '1980-03-21',
+    'LW'::public.enum_player_position, ARRAY['CAM'::public.enum_player_position], 'FC Barcelona', '2004-2006', 92,
+    380000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2004-2006', '{"pace":91,"shooting":88,"passing":90,"dribbling":95,"defending":36,"physical":78}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-franck-ribery-prime', 'franck-ribery-prime', 'Franck Ribéry', 'France', '1983-04-07',
+    'LW'::public.enum_player_position, ARRAY['LM'::public.enum_player_position], 'Bayern Munich', '2012-2014', 89,
+    220000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2012-2014', '{"pace":89,"shooting":81,"passing":84,"dribbling":91,"defending":38,"physical":65}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-george-best-prime', 'george-best-prime', 'George Best', 'Northern Ireland', '1946-05-22',
+    'RW'::public.enum_player_position, ARRAY['LW'::public.enum_player_position], 'Manchester United', '1968', 91,
+    330000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1968', '{"pace":91,"shooting":86,"passing":82,"dribbling":94,"defending":50,"physical":71}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-arjen-robben-prime', 'arjen-robben-prime', 'Arjen Robben', 'Netherlands', '1984-01-23',
+    'RW'::public.enum_player_position, ARRAY['RM'::public.enum_player_position], 'Bayern Munich', '2012-2014', 89,
+    230000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2012-2014', '{"pace":92,"shooting":86,"passing":80,"dribbling":90,"defending":32,"physical":64}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-diego-maradona-prime', 'diego-maradona-prime', 'Diego Armando Maradona', 'Argentina', '1960-10-30',
+    'CF'::public.enum_player_position, ARRAY['CAM'::public.enum_player_position], 'SSC Napoli', '1986-1990', 93,
+    440000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1986-1990', '{"pace":88,"shooting":91,"passing":90,"dribbling":95,"defending":40,"physical":75}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-johan-cruyff-prime', 'johan-cruyff-prime', 'Johan Cruyff', 'Netherlands', '1947-04-25',
+    'CF'::public.enum_player_position, ARRAY['CAM'::public.enum_player_position, 'LW'::public.enum_player_position], 'Ajax', '1971-1974', 93,
+    440000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1971-1974', '{"pace":91,"shooting":90,"passing":89,"dribbling":93,"defending":42,"physical":73}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-dennis-bergkamp-prime', 'dennis-bergkamp-prime', 'Dennis Bergkamp', 'Netherlands', '1969-05-10',
+    'CF'::public.enum_player_position, ARRAY['CAM'::public.enum_player_position], 'Arsenal', '1997-2002', 90,
+    260000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1997-2002', '{"pace":81,"shooting":87,"passing":86,"dribbling":89,"defending":36,"physical":74}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-ronaldo-nazario-prime', 'ronaldo-nazario-prime', 'Ronaldo Luís Nazário de Lima', 'Brazil', '1976-09-18',
+    'ST'::public.enum_player_position, '{}'::public.enum_player_position[], 'Inter Milan', '1997-2003', 93,
+    450000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1997-2003', '{"pace":95,"shooting":93,"passing":79,"dribbling":93,"defending":35,"physical":76}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-thierry-henry-prime', 'thierry-henry-prime', 'Thierry Henry', 'France', '1977-08-17',
+    'ST'::public.enum_player_position, ARRAY['LW'::public.enum_player_position], 'Arsenal', '2002-2006', 91,
+    340000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2002-2006', '{"pace":93,"shooting":90,"passing":83,"dribbling":90,"defending":38,"physical":78}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-pele-prime', 'pele-prime', 'Edson Arantes do Nascimento (Pelé)', 'Brazil', '1940-10-23',
+    'ST'::public.enum_player_position, ARRAY['CF'::public.enum_player_position], 'Santos', '1962-1970', 93,
+    450000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1962-1970', '{"pace":93,"shooting":92,"passing":87,"dribbling":93,"defending":38,"physical":76}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-ferenc-puskas-prime', 'ferenc-puskas-prime', 'Ferenc Puskás', 'Hungary', '1927-04-01',
+    'ST'::public.enum_player_position, ARRAY['CF'::public.enum_player_position], 'Real Madrid', '1958-1962', 91,
+    340000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1958-1962', '{"pace":88,"shooting":93,"passing":85,"dribbling":89,"defending":34,"physical":74}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-marco-van-basten-prime', 'marco-van-basten-prime', 'Marco van Basten', 'Netherlands', '1964-10-31',
+    'ST'::public.enum_player_position, '{}'::public.enum_player_position[], 'AC Milan', '1988-1992', 91,
+    330000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 1988-1992', '{"pace":83,"shooting":92,"passing":76,"dribbling":86,"defending":38,"physical":78}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
+
+INSERT INTO public.legend_templates (
+    legend_id, canonical_key, full_name, nationality, date_of_birth,
+    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,
+    default_price_eur, status, source_id, rating_methodology, outfield_attributes
+) VALUES (
+    'leg-zlatan-ibrahimovic-prime', 'zlatan-ibrahimovic-prime', 'Zlatan Ibrahimović', 'Sweden', '1981-10-03',
+    'ST'::public.enum_player_position, ARRAY['CF'::public.enum_player_position], 'Paris Saint-Germain', '2012-2016', 90,
+    270000000.00, 'RETIRED', 'src-ea-fc-icons-2026', 'Official EA FC Icon historical peak rating 2012-2016', '{"pace":76,"shooting":90,"passing":81,"dribbling":86,"defending":34,"physical":88}'::jsonb
+) ON CONFLICT (legend_id) DO UPDATE SET
+    default_price_eur = EXCLUDED.default_price_eur,
+    peak_overall_rating = EXCLUDED.peak_overall_rating;
 
 COMMIT;

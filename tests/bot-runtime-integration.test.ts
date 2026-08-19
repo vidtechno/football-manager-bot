@@ -13,6 +13,11 @@ import {
   handleSoloLeagueDeleteSuccess,
   handleDailyRoundLimitReached,
 } from '../src/bot/handlers/leagueHandler.js';
+import {
+  handleLegendMarketList,
+  handleLegendDetails,
+  handleLegendPurchaseSuccess,
+} from '../src/bot/handlers/legendHandler.js';
 import { buildEmptyLegendsMarketMessage } from '../src/bot/messages/templates.js';
 
 describe('Phase 4H Telegram Bot Runtime Integration Suite', () => {
@@ -115,7 +120,7 @@ describe('Phase 4H Telegram Bot Runtime Integration Suite', () => {
       'Solo League',
       'Solo FC',
     );
-    expect(step2.text).toContain('QAT\'IY TASDIQLASH');
+    expect(step2.text).toContain("QAT'IY TASDIQLASH");
     expect(step2.keyboard[0]![1]!.text).toBe('🗑 Ha, ligani o‘chirish');
 
     // Success response
@@ -131,13 +136,58 @@ describe('Phase 4H Telegram Bot Runtime Integration Suite', () => {
     expect(res.text).toContain('Toshkent vaqti');
   });
 
-  it('6. should render empty Legend Transfers market message gracefully', () => {
+  it('6. should render empty Legend Transfers market message gracefully when dataset empty', () => {
     const text = buildEmptyLegendsMarketMessage();
     expect(text).toContain('Legendalar Bozori');
     expect(text).toContain('hozircha tayyorlanmoqda');
   });
 
-  it('7. should initialize Bot router cleanly with environment variables', async () => {
+  it('7. should render Legend Transfers market list with position filters and pagination', () => {
+    const listRes = handleLegendMarketList('leg_123', 'ALL', 1, 5, 100_000_000);
+    expect(listRes.text).toContain('Afsonalar Bozori');
+    expect(listRes.text).toContain('€100 mln');
+    expect(listRes.keyboard.length).toBe(8); // 1 filter row + 5 item rows + 1 pagination row + 1 back row
+
+    const gkRes = handleLegendMarketList('leg_123', 'GK', 1, 5, 100_000_000);
+    expect(gkRes.text).toContain('*Saralash:* GK');
+    expect(gkRes.keyboard[1]![0]!.text).toContain('GK');
+  });
+
+  it('8. should render Legend Details screen and handle insufficient budget vs sufficient budget', () => {
+    // Insufficient budget for peak Ronaldo (€500m vs €100m budget)
+    const ronaldoRes = handleLegendDetails(
+      'leg_123',
+      'leg-cristiano-ronaldo-prime',
+      100_000_000,
+    );
+    expect(ronaldoRes.text).toContain('Cristiano Ronaldo');
+    expect(ronaldoRes.text).toContain('€500 mln');
+    expect(ronaldoRes.text).toContain('Transfer budjeti yetarli emas');
+    expect(ronaldoRes.keyboard[0]![0]!.text).toBe(
+      '💰 Transfer budjetini oshirish',
+    );
+
+    // Sufficient budget (€600m budget for peak Ronaldo)
+    const richRes = handleLegendDetails(
+      'leg_123',
+      'leg-cristiano-ronaldo-prime',
+      600_000_000,
+    );
+    expect(richRes.keyboard[0]![0]!.text).toBe('✅ Sotib olish');
+
+    // Purchase success message
+    const purchaseRes = handleLegendPurchaseSuccess(
+      'Cristiano Ronaldo',
+      'Real Madrid',
+      500_000_000,
+      100_000_000,
+      'leg_123',
+    );
+    expect(purchaseRes.text).toContain('Legenda muvaffaqiyatli sotib olindi');
+    expect(purchaseRes.text).toContain('€500 mln');
+  });
+
+  it('9. should initialize Bot router cleanly with environment variables', async () => {
     process.env['SUPABASE_PROJECT_ID'] = 'test-proj';
     process.env['SUPABASE_URL'] = 'https://test-proj.supabase.co';
     process.env['SUPABASE_ANON_KEY'] = 'anon-key-test';

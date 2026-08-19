@@ -13,7 +13,12 @@ import {
   handleSoloLeagueDeleteSuccess,
   handleDailyRoundLimitReached,
 } from './handlers/leagueHandler.js';
-import { buildEmptyLegendsMarketMessage, buildOrderStatusViewMessage } from './messages/templates.js';
+import {
+  handleLegendMarketList,
+  handleLegendDetails,
+  handleLegendPurchaseSuccess,
+} from './handlers/legendHandler.js';
+import { buildOrderStatusViewMessage } from './messages/templates.js';
 import { PurchaseService } from '../services/purchaseService.js';
 import { LeagueService } from '../services/leagueService.js';
 
@@ -35,8 +40,9 @@ export function registerBotRoutes(bot: Bot<Context>): void {
         parse_mode: 'Markdown',
         reply_markup: { inline_keyboard: keyboard },
       });
-    } catch (err: any) {
-      await ctx.reply(`❌ Xatolik: ${err.message}`);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      await ctx.reply(`❌ Xatolik: ${errMsg}`);
     }
   });
 
@@ -96,10 +102,77 @@ export function registerBotRoutes(bot: Bot<Context>): void {
         return;
       }
 
-      // 3D. Empty Legends Market View (legend_market:leagueId)
-      if (data.startsWith('legend_market:')) {
-        const text = buildEmptyLegendsMarketMessage();
-        await ctx.editMessageText(text, { parse_mode: 'Markdown' });
+      // 3D. Legend Market List View (legend_market:leagueId OR leg_list:leagueId:filter:page)
+      if (data.startsWith('legend_market:') || data.startsWith('leg_list:')) {
+        const parts = data.split(':');
+        const leagueId = parts[1]!;
+        const filter = parts[2] || 'ALL';
+        const page = parseInt(parts[3] || '1', 10);
+
+        const { text, keyboard } = handleLegendMarketList(
+          leagueId,
+          filter,
+          page,
+          5,
+          100_000_000,
+        );
+
+        await ctx.editMessageText(text, {
+          parse_mode: 'Markdown',
+          reply_markup: { inline_keyboard: keyboard },
+        });
+        await ctx.answerCallbackQuery();
+        return;
+      }
+
+      // 3D-2. Legend Detail View (leg_det:leagueId:legendId)
+      if (data.startsWith('leg_det:')) {
+        const parts = data.split(':');
+        const leagueId = parts[1]!;
+        const legendId = parts[2]!;
+
+        const { text, keyboard } = handleLegendDetails(
+          leagueId,
+          legendId,
+          100_000_000,
+        );
+
+        await ctx.editMessageText(text, {
+          parse_mode: 'Markdown',
+          reply_markup: { inline_keyboard: keyboard },
+        });
+        await ctx.answerCallbackQuery();
+        return;
+      }
+
+      // 3D-3. Legend Purchase Execution (leg_buy:leagueId:legendId)
+      if (data.startsWith('leg_buy:')) {
+        const parts = data.split(':');
+        const leagueId = parts[1]!;
+        const legendId = parts[2]!;
+        const userId = ctx.from.id.toString();
+
+        try {
+          const res = await LeagueService.purchaseLeagueLegend(
+            legendId,
+            'league_club_id',
+            userId,
+          );
+          const { text, keyboard } = handleLegendPurchaseSuccess(
+            'Afsonaviy Futbolchi',
+            'Klubingiz',
+            150_000_000,
+            res.remainingBudget,
+            leagueId,
+          );
+          await ctx.editMessageText(text, {
+            parse_mode: 'Markdown',
+            reply_markup: { inline_keyboard: keyboard },
+          });
+        } catch (err: unknown) {
+          const errMsg = err instanceof Error ? err.message : String(err);
+          await ctx.reply(`❌ Xatolik: ${errMsg}`);
+        }
         await ctx.answerCallbackQuery();
         return;
       }
@@ -107,7 +180,8 @@ export function registerBotRoutes(bot: Bot<Context>): void {
       // 3E. Solo League Deletion Step 1 (del_solo_step1:leagueId)
       if (data.startsWith('del_solo_step1:')) {
         const leagueId = data.split(':')[1]!;
-        const humanCount = await LeagueService.getHumanParticipantCount(leagueId);
+        const humanCount =
+          await LeagueService.getHumanParticipantCount(leagueId);
         const { text, keyboard } = handleSoloLeagueDeleteStep1(
           leagueId,
           'Solo League',
@@ -160,12 +234,13 @@ export function registerBotRoutes(bot: Bot<Context>): void {
             `⚽ *${res.completedRoundNumber}-tur muvaffaqiyatli o‘tkazildi!*`,
             { parse_mode: 'Markdown' },
           );
-        } catch (err: any) {
-          if (err.message.includes('DAILY_ROUND_LIMIT_REACHED')) {
+        } catch (err: unknown) {
+          const errMsg = err instanceof Error ? err.message : String(err);
+          if (errMsg.includes('DAILY_ROUND_LIMIT_REACHED')) {
             const { text } = handleDailyRoundLimitReached();
             await ctx.reply(text, { parse_mode: 'Markdown' });
           } else {
-            await ctx.reply(`❌ Round execution error: ${err.message}`);
+            await ctx.reply(`❌ Round execution error: ${errMsg}`);
           }
         }
         await ctx.answerCallbackQuery();
@@ -191,7 +266,9 @@ export function registerBotRoutes(bot: Bot<Context>): void {
         const target = orders.find((o) => o.id === requestId);
 
         if (!target) {
-          await ctx.reply('❌ Buyurtma topilmadi yoki allaqachon ko‘rib chiqilgan.');
+          await ctx.reply(
+            '❌ Buyurtma topilmadi yoki allaqachon ko‘rib chiqilgan.',
+          );
           await ctx.answerCallbackQuery();
           return;
         }
@@ -205,10 +282,75 @@ export function registerBotRoutes(bot: Bot<Context>): void {
         return;
       }
 
+      // 3K. Admin Order Approval (adm_app_req:requestId)
+      if (data.startsWith('adm_app_req:')) {
+        const requestId = data.split(':')[1]!;
+        await ctx.answerCallbackQuery({ text: 'Tasdiqlanmoqda...' });
+
+        // Execute atomic approval
+        const res = await PurchaseService.approvePurchaseRequest(
+          requestId,
+          '00000000-0000-0000-0000-000000000001', // Admin ID resolved server-side
+          'Telegram Admin Panel orqali tasdiqlandi',
+        );
+
+        await ctx.editMessageText(
+          `✅ *Buyurtma Muvaffaqiyatli Tasdiqlandi!*\n\n` +
+            `💶 *Qo‘shilgan budjet:* +€${(res.addedEurAmount / 1_000_000).toFixed(0)} mln\n` +
+            `🏦 *Klubning yangi budjeti:* €${(res.newBalance / 1_000_000).toFixed(0)} mln`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: '⬅️ Buyurtmalar ro‘yxatiga qaytish',
+                    callback_data: 'adm_pending_orders',
+                  },
+                ],
+              ],
+            },
+          },
+        );
+        return;
+      }
+
+      // 3L. Admin Order Rejection (adm_rej_req:requestId)
+      if (data.startsWith('adm_rej_req:')) {
+        const requestId = data.split(':')[1]!;
+        await ctx.answerCallbackQuery({ text: 'Rad etilmoqda...' });
+
+        // Execute rejection
+        await PurchaseService.rejectPurchaseRequest(
+          requestId,
+          '00000000-0000-0000-0000-000000000001',
+          'Telegram Admin Panel orqali rad etildi',
+        );
+
+        await ctx.editMessageText(
+          `❌ *Buyurtma Rad Etildi.*\n\nKlub transfer budjetiga hech qanday o‘zgarish kiritilmadi.`,
+          {
+            parse_mode: 'Markdown',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: '⬅️ Buyurtmalar ro‘yxatiga qaytish',
+                    callback_data: 'adm_pending_orders',
+                  },
+                ],
+              ],
+            },
+          },
+        );
+        return;
+      }
+
       // Default answer callback query to clear Telegram loading spinner
       await ctx.answerCallbackQuery();
-    } catch (err: any) {
-      await ctx.reply(`❌ Xatolik yuz berdi: ${err.message}`);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      await ctx.reply(`❌ Xatolik yuz berdi: ${errMsg}`);
       await ctx.answerCallbackQuery();
     }
   });

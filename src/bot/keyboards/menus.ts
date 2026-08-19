@@ -1,6 +1,7 @@
 import type { InlineKeyboardButton } from 'grammy/types';
 import { TransferBudgetPackage } from '../../config/packages.js';
-import { formatUzs } from '../../utils/formatters.js';
+import { formatEur, formatUzs } from '../../utils/formatters.js';
+import { LegendSeed } from '../../data/legend-types.js';
 
 export function buildPackageSelectionKeyboard(
   packages: TransferBudgetPackage[],
@@ -58,7 +59,9 @@ export function buildOrderConfirmationKeyboard(
   ];
 }
 
-export function buildSoloLeagueDeleteStep1Keyboard(leagueId: string): InlineKeyboardButton[][] {
+export function buildSoloLeagueDeleteStep1Keyboard(
+  leagueId: string,
+): InlineKeyboardButton[][] {
   return [
     [
       {
@@ -73,7 +76,9 @@ export function buildSoloLeagueDeleteStep1Keyboard(leagueId: string): InlineKeyb
   ];
 }
 
-export function buildSoloLeagueDeleteStep2Keyboard(leagueId: string): InlineKeyboardButton[][] {
+export function buildSoloLeagueDeleteStep2Keyboard(
+  leagueId: string,
+): InlineKeyboardButton[][] {
   return [
     [
       {
@@ -112,7 +117,9 @@ export function buildAdminPendingOrdersKeyboard(
   return keyboard;
 }
 
-export function buildAdminOrderActionKeyboard(requestId: string): InlineKeyboardButton[][] {
+export function buildAdminOrderActionKeyboard(
+  requestId: string,
+): InlineKeyboardButton[][] {
   return [
     [
       {
@@ -128,6 +135,104 @@ export function buildAdminOrderActionKeyboard(requestId: string): InlineKeyboard
       {
         text: '⬅️ Orqaga',
         callback_data: 'adm_pending_orders',
+      },
+    ],
+  ];
+}
+
+export function buildLegendMarketKeyboard(
+  legends: LegendSeed[],
+  positionFilter: string,
+  page: number,
+  totalPages: number,
+  leagueId: string,
+): InlineKeyboardButton[][] {
+  const keyboard: InlineKeyboardButton[][] = [];
+
+  // Position filter row
+  keyboard.push([
+    {
+      text: positionFilter === 'ALL' ? '● Barchasi' : 'Barchasi',
+      callback_data: `leg_list:${leagueId}:ALL:1`,
+    },
+    {
+      text: positionFilter === 'GK' ? '● GK' : 'GK',
+      callback_data: `leg_list:${leagueId}:GK:1`,
+    },
+    {
+      text: positionFilter === 'DEF' ? '● DEF' : 'DEF',
+      callback_data: `leg_list:${leagueId}:DEF:1`,
+    },
+    {
+      text: positionFilter === 'MID' ? '● MID' : 'MID',
+      callback_data: `leg_list:${leagueId}:MID:1`,
+    },
+    {
+      text: positionFilter === 'FWD' ? '● FWD' : 'FWD',
+      callback_data: `leg_list:${leagueId}:FWD:1`,
+    },
+  ]);
+
+  // Legend item buttons
+  for (const leg of legends) {
+    keyboard.push([
+      {
+        text: `⭐ ${leg.fullName} (${leg.primaryPosition}) — ${formatEur(leg.legendTransferPriceEur)}`,
+        callback_data: `leg_det:${leagueId}:${leg.legendId}`,
+      },
+    ]);
+  }
+
+  // Pagination row
+  const pageRow: InlineKeyboardButton[] = [];
+  if (page > 1) {
+    pageRow.push({
+      text: '⬅️ Oldingi',
+      callback_data: `leg_list:${leagueId}:${positionFilter}:${page - 1}`,
+    });
+  }
+  pageRow.push({ text: `${page} / ${totalPages || 1}`, callback_data: 'noop' });
+  if (page < totalPages) {
+    pageRow.push({
+      text: '➡️ Keyingi',
+      callback_data: `leg_list:${leagueId}:${positionFilter}:${page + 1}`,
+    });
+  }
+  keyboard.push(pageRow);
+
+  // Back button
+  keyboard.push([
+    { text: '⬅️ Orqaga', callback_data: `league_menu:${leagueId}` },
+  ]);
+
+  return keyboard;
+}
+
+export function buildLegendDetailKeyboard(
+  legendId: string,
+  leagueId: string,
+  canAfford: boolean,
+): InlineKeyboardButton[][] {
+  const actionRow: InlineKeyboardButton[] = [];
+
+  if (canAfford) {
+    actionRow.push({
+      text: '✅ Sotib olish',
+      callback_data: `leg_buy:${leagueId}:${legendId}`,
+    });
+  } else {
+    actionRow.push({
+      text: '💰 Transfer budjetini oshirish',
+      callback_data: `buy_pkg_list:${leagueId}`,
+    });
+  }
+
+  return [
+    actionRow,
+    [
+      {
+        text: '⬅️ Legendalar ro‘yxatiga qaytish',
+        callback_data: `leg_list:${leagueId}:ALL:1`,
       },
     ],
   ];

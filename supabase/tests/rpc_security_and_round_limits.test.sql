@@ -3,13 +3,14 @@
 
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap;
-SELECT plan(10);
+SELECT plan(11);
 
 -- 1. Test Function Existence & Security Schema
 SELECT has_function('delete_solo_league', ARRAY['uuid', 'uuid'], 'delete_solo_league RPC exists');
 SELECT has_function('approve_transfer_budget_purchase_request', ARRAY['uuid', 'uuid', 'text'], 'approve_transfer_budget_purchase_request RPC exists');
 SELECT has_function('reject_transfer_budget_purchase_request', ARRAY['uuid', 'uuid', 'text'], 'reject_transfer_budget_purchase_request RPC exists');
 SELECT has_function('execute_league_round', ARRAY['uuid', 'int'], 'execute_league_round RPC exists');
+SELECT has_function('purchase_league_legend', ARRAY['uuid', 'uuid', 'uuid'], 'purchase_league_legend RPC exists');
 
 -- 2. Execute Security & Daily Round Limit Verifications
 DO $$

@@ -13,7 +13,10 @@ export function createBot(): Bot<Context> {
   // Centralized Error Handling
   botInstance.catch((err) => {
     const ctx = err.ctx;
-    console.error(`[Grammy Error] update_id=${ctx.update.update_id}:`, err.error);
+    console.error(
+      `[Grammy Error] update_id=${ctx.update.update_id}:`,
+      err.error,
+    );
   });
 
   // Register Canonical Bot Routes

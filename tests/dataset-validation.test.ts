@@ -85,7 +85,7 @@ describe('Phase 4E Dataset Validation Suite', () => {
     expect(fs.existsSync(seedPath)).toBe(true);
 
     const content = fs.readFileSync(seedPath, 'utf-8');
-    expect(content).toContain('-- Reprodusibl Phase 4E Seed Data');
+    expect(content).toContain('Reproducible Phase 4E');
     expect(content).toContain('INSERT INTO public.club_template_versions');
     expect(content).toContain('public.create_player_template_with_positions');
     expect(content).toContain('INSERT INTO public.player_template_versions');

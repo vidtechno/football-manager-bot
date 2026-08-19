@@ -3,7 +3,9 @@ import { createBot } from './bot/bot.js';
 
 export function main(): void {
   const env = loadEnvironment();
-  console.log(`Football Manager bot loyihasi tayyor. Project ID: ${env.SUPABASE_PROJECT_ID}`);
+  console.log(
+    `Football Manager bot loyihasi tayyor. Project ID: ${env.SUPABASE_PROJECT_ID}`,
+  );
   createBot();
 }
 

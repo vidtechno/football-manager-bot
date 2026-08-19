@@ -13,7 +13,7 @@ export interface AdminPendingOrderView {
   packageDisplay: string;
   eurAmount: number;
   uzsPrice: number;
-  telegramUsername?: string;
+  telegramUsername?: string | undefined;
   telegramUserId: number;
   createdAt: string;
 }

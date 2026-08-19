@@ -1,0 +1,24 @@
+{
+  "snapshotDate": "2026-08-19",
+  "totalLegends": 60,
+  "positionsCovered": {
+    "GK": 4,
+    "CB": 6,
+    "LB": 4,
+    "RB": 4,
+    "LWB": 3,
+    "RWB": 3,
+    "CDM": 4,
+    "CM": 5,
+    "CAM": 4,
+    "LM": 3,
+    "RM": 3,
+    "LW": 4,
+    "RW": 4,
+    "CF": 3,
+    "ST": 6
+  },
+  "isValid": true,
+  "isFinalDatasetReady": true,
+  "errors": []
+}

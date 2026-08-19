@@ -3,9 +3,10 @@ import { LegendSeedSchema } from '../src/data/legend-types.js';
 import {
   validateLegends,
   ALL_SUPPORTED_POSITIONS,
+  REQUIRED_LEGEND_IDS,
 } from '../src/data/validate-legends.js';
 
-describe('Phase 4G Legend Transfers Infrastructure & Pricing Suite', () => {
+describe('Phase 4H Legend Transfers Dataset & Pricing Suite', () => {
   it('1. should validate legend seed schema correctly for peak Ronaldo at €500m', () => {
     const sampleLegend = {
       legendId: 'leg-cristiano-ronaldo-prime',
@@ -28,9 +29,8 @@ describe('Phase 4G Legend Transfers Infrastructure & Pricing Suite', () => {
       },
       legendTransferPriceEur: 500_000_000,
       status: 'ACTIVE',
-      sourceId: 'src-legend-research-2026',
-      ratingMethodology:
-        'Peak historical career performance analysis 2011-2014',
+      sourceId: 'src-ea-fc-icons-2026',
+      ratingMethodology: 'Official EA FC Icon historical peak rating 2011-2014',
     };
 
     const parsed = LegendSeedSchema.safeParse(sampleLegend);
@@ -39,7 +39,7 @@ describe('Phase 4G Legend Transfers Infrastructure & Pricing Suite', () => {
 
   it('2. should validate legend seed schema correctly for valid goalkeeper legend', () => {
     const sampleGkLegend = {
-      legendId: 'leg-ikercasillas-prime',
+      legendId: 'leg-iker-casillas-prime',
       canonicalKey: 'iker-casillas-prime',
       fullName: 'Iker Casillas',
       nationality: 'Spain',
@@ -57,11 +57,10 @@ describe('Phase 4G Legend Transfers Infrastructure & Pricing Suite', () => {
         distribution: 78,
         oneOnOne: 91,
       },
-      legendTransferPriceEur: 250_000_000,
+      legendTransferPriceEur: 290_000_000,
       status: 'RETIRED',
-      sourceId: 'src-legend-research-2026',
-      ratingMethodology:
-        'Peak historical career performance analysis 2008-2012',
+      sourceId: 'src-ea-fc-icons-2026',
+      ratingMethodology: 'Official EA FC Icon historical peak rating 2008-2012',
     };
 
     const parsed = LegendSeedSchema.safeParse(sampleGkLegend);
@@ -90,7 +89,7 @@ describe('Phase 4G Legend Transfers Infrastructure & Pricing Suite', () => {
       },
       legendTransferPriceEur: 300_000_000, // Invalid: must be €500m
       status: 'ACTIVE',
-      sourceId: 'src-legend-research-2026',
+      sourceId: 'src-ea-fc-icons-2026',
       ratingMethodology: 'Peak career analysis',
     };
 
@@ -123,7 +122,7 @@ describe('Phase 4G Legend Transfers Infrastructure & Pricing Suite', () => {
       },
       legendTransferPriceEur: 50_000_000, // Invalid: below €100m minimum
       status: 'RETIRED',
-      sourceId: 'src-legend-research-2026',
+      sourceId: 'src-ea-fc-icons-2026',
       ratingMethodology: 'Peak career analysis',
     };
 
@@ -131,21 +130,22 @@ describe('Phase 4G Legend Transfers Infrastructure & Pricing Suite', () => {
     expect(parsed.success).toBe(false);
   });
 
-  it('5. should confirm valid infrastructure report for draft/empty legends dataset', () => {
+  it('5. [Final Dataset Gate] should confirm 60 complete legends and 100% position coverage', () => {
     const report = validateLegends();
     expect(report.snapshotDate).toBe('2026-08-19');
     expect(report.isValid).toBe(true);
-    expect(report.totalLegends).toBe(0);
-    expect(report.isFinalDatasetReady).toBe(false);
+    expect(report.totalLegends).toBe(60);
+    expect(report.isFinalDatasetReady).toBe(true);
+    expect(report.errors).toHaveLength(0);
+
+    for (const pos of ALL_SUPPORTED_POSITIONS) {
+      expect(report.positionsCovered[pos]).toBeGreaterThanOrEqual(3);
+    }
   });
 
-  it('6. [Final-Dataset Gate] should verify ALL 15 positions have at least 3 legends when dataset is populated', () => {
+  it('6. should confirm all required legends exist in the final dataset', () => {
     const report = validateLegends();
-    expect(ALL_SUPPORTED_POSITIONS.length).toBe(15);
-    if (report.totalLegends === 0) {
-      expect(report.isFinalDatasetReady).toBe(false);
-    } else {
-      expect(report.isFinalDatasetReady).toBe(true);
-    }
+    expect(report.isValid).toBe(true);
+    expect(REQUIRED_LEGEND_IDS.length).toBe(9);
   });
 });

@@ -1,7 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { validateDataset } from './validate-dataset.js';
+import { validateLegends } from './validate-legends.js';
 import { ClubMetadata, PlayerSeed } from './types.js';
+import { LegendSeed } from './legend-types.js';
 
 export function generateSeedSql(
   baseDir: string = path.resolve(process.cwd(), 'data/football/2026-08-19'),
@@ -9,7 +11,16 @@ export function generateSeedSql(
 ): void {
   const report = validateDataset(baseDir);
   if (!report.isValid) {
-    throw new Error('Cannot generate seed SQL: Dataset validation failed.');
+    throw new Error(
+      'Cannot generate seed SQL: Active dataset validation failed.',
+    );
+  }
+
+  const legendReport = validateLegends();
+  if (!legendReport.isValid) {
+    throw new Error(
+      'Cannot generate seed SQL: Legend dataset validation failed.',
+    );
   }
 
   const rawClubs: ClubMetadata[] = JSON.parse(
@@ -18,10 +29,16 @@ export function generateSeedSql(
   const rawPlayers: PlayerSeed[] = JSON.parse(
     fs.readFileSync(path.join(baseDir, 'players.json'), 'utf-8'),
   );
+  const rawLegends: LegendSeed[] = JSON.parse(
+    fs.readFileSync(
+      path.resolve(process.cwd(), 'data/football/legends/legends.json'),
+      'utf-8',
+    ),
+  );
 
-  let sql = `-- Reprodusibl Phase 4E Seed Data generated on ${new Date().toISOString()}\n`;
+  let sql = `-- Reproducible Phase 4E & 4H Seed Data generated on ${new Date().toISOString()}\n`;
   sql += `-- Snapshot Date: ${report.snapshotDate}\n`;
-  sql += `-- Total Clubs: ${report.totalClubs}, Total Players: ${report.totalPlayers}, Total Value: €${report.totalLeagueMarketValueEur.toLocaleString()}\n\n`;
+  sql += `-- Total Clubs: ${report.totalClubs}, Total Players: ${report.totalPlayers}, Total Legends: ${rawLegends.length}\n\n`;
 
   sql += `BEGIN;\n\n`;
 
@@ -90,6 +107,42 @@ export function generateSeedSql(
   }
 
   sql += `END $$;\n\n`;
+
+  // Seed Legend Templates
+  sql += `-- 3. Seed Legend Templates (${rawLegends.length} Legends)\n`;
+  for (const leg of rawLegends) {
+    const secArray =
+      leg.secondaryPositions.length > 0
+        ? `ARRAY[${leg.secondaryPositions.map((pos: string) => `'${pos}'::public.enum_player_position`).join(', ')}]`
+        : `'{}'::public.enum_player_position[]`;
+
+    sql += `INSERT INTO public.legend_templates (\n`;
+    sql += `    legend_id, canonical_key, full_name, nationality, date_of_birth,\n`;
+    sql += `    primary_position, secondary_positions, peak_club, peak_period, peak_overall_rating,\n`;
+    sql += `    default_price_eur, status, source_id, rating_methodology`;
+
+    if (leg.primaryPosition === 'GK') {
+      sql += `, goalkeeper_attributes\n`;
+    } else {
+      sql += `, outfield_attributes\n`;
+    }
+
+    sql += `) VALUES (\n`;
+    sql += `    '${leg.legendId}', '${leg.canonicalKey}', '${leg.fullName.replace(/'/g, "''")}', '${leg.nationality.replace(/'/g, "''")}', '${leg.dateOfBirth}',\n`;
+    sql += `    '${leg.primaryPosition}'::public.enum_player_position, ${secArray}, '${leg.peakClub.replace(/'/g, "''")}', '${leg.peakPeriod}', ${leg.peakOverallRating},\n`;
+    sql += `    ${leg.legendTransferPriceEur}.00, '${leg.status}', '${leg.sourceId}', '${leg.ratingMethodology.replace(/'/g, "''")}'`;
+
+    if (leg.primaryPosition === 'GK') {
+      sql += `, '${JSON.stringify(leg.goalkeeperAttributes)}'::jsonb\n`;
+    } else {
+      sql += `, '${JSON.stringify(leg.outfieldAttributes)}'::jsonb\n`;
+    }
+
+    sql += `) ON CONFLICT (legend_id) DO UPDATE SET\n`;
+    sql += `    default_price_eur = EXCLUDED.default_price_eur,\n`;
+    sql += `    peak_overall_rating = EXCLUDED.peak_overall_rating;\n\n`;
+  }
+
   sql += `COMMIT;\n`;
 
   const seedDir = path.dirname(outputSqlPath);

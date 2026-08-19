@@ -1,8 +1,8 @@
-import {
-  DEFAULT_TRANSFER_BUDGET_PACKAGES,
-  TransferBudgetPackage,
-} from '../config/packages.js';
 import { getSupabaseAdminClient } from '../database/client.js';
+import {
+  TransferBudgetPackage,
+  DEFAULT_TRANSFER_BUDGET_PACKAGES,
+} from '../config/packages.js';
 
 export interface PurchaseRequestRecord {
   id: string;
@@ -16,52 +16,109 @@ export interface PurchaseRequestRecord {
   packageDisplay: string;
   eurAmount: number;
   uzsPrice: number;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+  telegramUsername?: string | undefined;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED' | 'CANCELLED';
   createdAt: string;
 }
 
+export interface PurchaseApprovalResult {
+  requestId: string;
+  orderCode: string;
+  leagueClubId: string;
+  addedEurAmount: number;
+  newBalance: number;
+}
+
+type RawDbRow = Record<string, unknown>;
+
 export class PurchaseService {
   /**
-   * Returns active purchase packages from canonical configuration/database.
+   * Returns all active transfer budget packages available for purchase.
    */
   static getActivePackages(): TransferBudgetPackage[] {
-    return DEFAULT_TRANSFER_BUDGET_PACKAGES.filter((p) => p.isActive);
+    return DEFAULT_TRANSFER_BUDGET_PACKAGES;
   }
 
   /**
-   * Look up package by ID.
+   * Finds a transfer budget package by its ID.
    */
   static getPackageById(packageId: string): TransferBudgetPackage | undefined {
     return DEFAULT_TRANSFER_BUDGET_PACKAGES.find(
-      (p) => p.id === packageId && p.isActive,
+      (p: TransferBudgetPackage) => p.id === packageId,
     );
   }
 
   /**
-   * Helper to format order code.
+   * Generates a unique short order code formatted as TBP-XXXXXX
    */
   static generateOrderCode(): string {
-    const hex = Math.random().toString(16).substring(2, 10).toUpperCase();
-    return `TBP-${hex}`;
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = 'TBP-';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
   }
 
   /**
-   * Inserts a purchase request using RPC create_transfer_budget_purchase_request.
+   * Creates a new transfer budget purchase request order for a user.
    */
   static async createPurchaseRequest(params: {
+    telegramUserId: number;
     leagueId: string;
     leagueClubId: string;
-    packageId: string;
-    telegramUserId: number;
-  }): Promise<{ requestId: string; orderCode: string }> {
+    pkg: TransferBudgetPackage;
+  }): Promise<PurchaseRequestRecord> {
     const supabase = getSupabaseAdminClient();
+
+    // Check if user already has an active PENDING request for this league and package
+    const { data: existing } = await supabase
+      .from('transfer_budget_purchase_requests')
+      .select(
+        '*, leagues(name), league_clubs(name), transfer_budget_packages(display_name)',
+      )
+      .eq('telegram_user_id', params.telegramUserId)
+      .eq('league_id', params.leagueId)
+      .eq('package_id', params.pkg.id)
+      .eq('status', 'PENDING')
+      .single();
+
+    if (existing) {
+      const row = existing as RawDbRow;
+      return {
+        id: String(row['id']),
+        orderCode: String(row['order_code']),
+        telegramUserId: Number(row['telegram_user_id']),
+        leagueId: String(row['league_id']),
+        leagueClubId: String(row['league_club_id']),
+        leagueName:
+          (row['leagues'] as Record<string, string>)?.['name'] ?? 'Liga',
+        clubName:
+          (row['league_clubs'] as Record<string, string>)?.['name'] ?? 'Klub',
+        packageId: String(row['package_id']),
+        packageDisplay:
+          (row['transfer_budget_packages'] as Record<string, string>)?.[
+            'display_name'
+          ] ?? params.pkg.displayName,
+        eurAmount: Number(row['requested_eur_amount']),
+        uzsPrice: Number(row['uzs_price']),
+        status: row['status'] as PurchaseRequestRecord['status'],
+        createdAt: String(row['created_at']),
+      };
+    }
+
+    const orderCode = this.generateOrderCode();
+
     const { data, error } = await supabase.rpc(
       'create_transfer_budget_purchase_request',
       {
+        p_telegram_user_id: params.telegramUserId,
         p_league_id: params.leagueId,
         p_league_club_id: params.leagueClubId,
-        p_package_id: params.packageId,
-        p_telegram_user_id: params.telegramUserId,
+        p_package_id: params.pkg.id,
+        p_order_code: orderCode,
+        p_requested_eur_amount: params.pkg.eurAmount,
+        p_uzs_price: params.pkg.uzsPrice,
       },
     );
 
@@ -70,66 +127,24 @@ export class PurchaseService {
     }
 
     return {
-      requestId: data.request_id,
-      orderCode: data.order_code,
+      id: String(data.id),
+      orderCode: String(data.order_code),
+      telegramUserId: params.telegramUserId,
+      leagueId: params.leagueId,
+      leagueClubId: params.leagueClubId,
+      leagueName: 'Liga',
+      clubName: 'Klub',
+      packageId: params.pkg.id,
+      packageDisplay: params.pkg.displayName,
+      eurAmount: params.pkg.eurAmount,
+      uzsPrice: params.pkg.uzsPrice,
+      status: 'PENDING',
+      createdAt: String(data.created_at),
     };
   }
 
   /**
-   * Approves a pending purchase request atomically via RPC approve_transfer_budget_purchase_request.
-   */
-  static async approvePurchaseRequest(
-    requestId: string,
-    adminId: string,
-    adminNote?: string,
-  ): Promise<{ addedEurAmount: number; newBalance: number }> {
-    const supabase = getSupabaseAdminClient();
-    const { data, error } = await supabase.rpc(
-      'approve_transfer_budget_purchase_request',
-      {
-        p_request_id: requestId,
-        p_admin_id: adminId,
-        p_admin_note: adminNote ?? null,
-      },
-    );
-
-    if (error) {
-      throw new Error(`APPROVE_PURCHASE_REQUEST_FAILED: ${error.message}`);
-    }
-
-    return {
-      addedEurAmount: data.added_eur_amount,
-      newBalance: data.new_balance,
-    };
-  }
-
-  /**
-   * Rejects a pending purchase request via RPC reject_transfer_budget_purchase_request.
-   */
-  static async rejectPurchaseRequest(
-    requestId: string,
-    adminId: string,
-    adminNote?: string,
-  ): Promise<boolean> {
-    const supabase = getSupabaseAdminClient();
-    const { data, error } = await supabase.rpc(
-      'reject_transfer_budget_purchase_request',
-      {
-        p_request_id: requestId,
-        p_admin_id: adminId,
-        p_admin_note: adminNote ?? null,
-      },
-    );
-
-    if (error) {
-      throw new Error(`REJECT_PURCHASE_REQUEST_FAILED: ${error.message}`);
-    }
-
-    return data.success;
-  }
-
-  /**
-   * Fetches user's recent purchase requests filtered by Telegram user ID.
+   * Fetches all purchase orders submitted by a Telegram user.
    */
   static async getUserOrders(
     telegramUserId: number,
@@ -137,7 +152,9 @@ export class PurchaseService {
     const supabase = getSupabaseAdminClient();
     const { data, error } = await supabase
       .from('transfer_budget_purchase_requests')
-      .select('*, leagues(name), league_clubs(name), transfer_budget_packages(display_name)')
+      .select(
+        '*, leagues(name), league_clubs(name), transfer_budget_packages(display_name)',
+      )
       .eq('telegram_user_id', telegramUserId)
       .order('created_at', { ascending: false });
 
@@ -145,20 +162,25 @@ export class PurchaseService {
       throw new Error(`GET_USER_ORDERS_FAILED: ${error.message}`);
     }
 
-    return (data || []).map((row: any) => ({
-      id: row.id,
-      orderCode: row.order_code,
-      telegramUserId: row.telegram_user_id,
-      leagueId: row.league_id,
-      leagueClubId: row.league_club_id,
-      leagueName: row.leagues?.name ?? 'Liga',
-      clubName: row.league_clubs?.name ?? 'Klub',
-      packageId: row.package_id,
-      packageDisplay: row.transfer_budget_packages?.display_name ?? 'Paket',
-      eurAmount: Number(row.requested_eur_amount),
-      uzsPrice: Number(row.uzs_price),
-      status: row.status,
-      createdAt: row.created_at,
+    return ((data || []) as RawDbRow[]).map((row) => ({
+      id: String(row['id']),
+      orderCode: String(row['order_code']),
+      telegramUserId: Number(row['telegram_user_id']),
+      leagueId: String(row['league_id']),
+      leagueClubId: String(row['league_club_id']),
+      leagueName:
+        (row['leagues'] as Record<string, string>)?.['name'] ?? 'Liga',
+      clubName:
+        (row['league_clubs'] as Record<string, string>)?.['name'] ?? 'Klub',
+      packageId: String(row['package_id']),
+      packageDisplay:
+        (row['transfer_budget_packages'] as Record<string, string>)?.[
+          'display_name'
+        ] ?? 'Paket',
+      eurAmount: Number(row['requested_eur_amount']),
+      uzsPrice: Number(row['uzs_price']),
+      status: row['status'] as PurchaseRequestRecord['status'],
+      createdAt: String(row['created_at']),
     }));
   }
 
@@ -169,7 +191,9 @@ export class PurchaseService {
     const supabase = getSupabaseAdminClient();
     const { data, error } = await supabase
       .from('transfer_budget_purchase_requests')
-      .select('*, leagues(name), league_clubs(name), transfer_budget_packages(display_name), users(username)')
+      .select(
+        '*, leagues(name), league_clubs(name), transfer_budget_packages(display_name), users(username)',
+      )
       .eq('status', 'PENDING')
       .order('created_at', { ascending: true });
 
@@ -177,20 +201,82 @@ export class PurchaseService {
       throw new Error(`GET_PENDING_ORDERS_FAILED: ${error.message}`);
     }
 
-    return (data || []).map((row: any) => ({
-      id: row.id,
-      orderCode: row.order_code,
-      telegramUserId: row.telegram_user_id,
-      leagueId: row.league_id,
-      leagueClubId: row.league_club_id,
-      leagueName: row.leagues?.name ?? 'Liga',
-      clubName: row.league_clubs?.name ?? 'Klub',
-      packageId: row.package_id,
-      packageDisplay: row.transfer_budget_packages?.display_name ?? 'Paket',
-      eurAmount: Number(row.requested_eur_amount),
-      uzsPrice: Number(row.uzs_price),
-      status: row.status,
-      createdAt: row.created_at,
+    return ((data || []) as RawDbRow[]).map((row) => ({
+      id: String(row['id']),
+      orderCode: String(row['order_code']),
+      telegramUserId: Number(row['telegram_user_id']),
+      leagueId: String(row['league_id']),
+      leagueClubId: String(row['league_club_id']),
+      leagueName:
+        (row['leagues'] as Record<string, string>)?.['name'] ?? 'Liga',
+      clubName:
+        (row['league_clubs'] as Record<string, string>)?.['name'] ?? 'Klub',
+      packageId: String(row['package_id']),
+      packageDisplay:
+        (row['transfer_budget_packages'] as Record<string, string>)?.[
+          'display_name'
+        ] ?? 'Paket',
+      eurAmount: Number(row['requested_eur_amount']),
+      uzsPrice: Number(row['uzs_price']),
+      telegramUsername: (row['users'] as Record<string, string> | undefined)?.[
+        'username'
+      ],
+      status: row['status'] as PurchaseRequestRecord['status'],
+      createdAt: String(row['created_at']),
     }));
+  }
+
+  /**
+   * Approves a pending purchase request, adding transfer budget to the club and recording financial ledger.
+   */
+  static async approvePurchaseRequest(
+    requestId: string,
+    adminId: string,
+    notes?: string,
+  ): Promise<PurchaseApprovalResult> {
+    const supabase = getSupabaseAdminClient();
+    const { data, error } = await supabase.rpc(
+      'approve_transfer_budget_purchase_request',
+      {
+        p_request_id: requestId,
+        p_admin_id: adminId,
+        p_admin_notes: notes || 'Approved via Telegram Bot',
+      },
+    );
+
+    if (error) {
+      throw new Error(`APPROVE_PURCHASE_REQUEST_FAILED: ${error.message}`);
+    }
+
+    return {
+      requestId: String(data.request_id),
+      orderCode: String(data.order_code),
+      leagueClubId: String(data.league_club_id),
+      addedEurAmount: Number(data.added_eur_amount),
+      newBalance: Number(data.new_balance),
+    };
+  }
+
+  /**
+   * Rejects a pending purchase request.
+   */
+  static async rejectPurchaseRequest(
+    requestId: string,
+    adminId: string,
+    notes?: string,
+  ): Promise<void> {
+    const supabase = getSupabaseAdminClient();
+    const { error } = await supabase.rpc(
+      'reject_transfer_budget_purchase_request',
+      {
+        p_request_id: requestId,
+        p_admin_id: adminId,
+        p_admin_notes: notes || 'Rejected via Telegram Bot',
+      },
+    );
+
+    if (error) {
+      throw new Error(`REJECT_PURCHASE_REQUEST_FAILED: ${error.message}`);
+    }
   }
 }

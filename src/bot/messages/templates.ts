@@ -68,7 +68,7 @@ export function buildOrderStatusViewMessage(
     clubName: string;
     packageDisplay: string;
     uzsPrice: number;
-    status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+    status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED' | 'CANCELLED';
     createdAt: string;
   }>,
 ): string {
@@ -80,6 +80,7 @@ export function buildOrderStatusViewMessage(
     PENDING: '⏳ Kutilmoqda',
     APPROVED: '✅ Tasdiqlandi',
     REJECTED: '❌ Rad etildi',
+    EXPIRED: '⏰ Muddati o‘tdi',
     CANCELLED: '🚫 Bekor qilindi',
   };
 
@@ -140,7 +141,7 @@ export function buildAdminPendingOrdersListMessage(
     clubName: string;
     packageDisplay: string;
     uzsPrice: number;
-    telegramUsername?: string;
+    telegramUsername?: string | undefined;
     telegramUserId: number;
   }>,
 ): string {
@@ -160,7 +161,9 @@ export function buildAdminPendingOrdersListMessage(
   return text.trim();
 }
 
-export function formatDailyRoundLimitMessage(nextAvailableTimeStr = '00:00'): string {
+export function formatDailyRoundLimitMessage(
+  nextAvailableTimeStr = '00:00',
+): string {
   return (
     `⚠️ *Kunlik tur limiti tugadi.*\n\n` +
     `Ushbu ligada kunlik 3 ta o‘yin turi o‘tkazib bo‘lindi.\n` +

@@ -271,3 +271,18 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
   - Solo liganing 2 bosqichli o'chirilishi `handleSoloLeagueDeleteStep1` va `handleSoloLeagueDeleteStep2` orqali ta'minlandi (ko'p insonli ligada taqiqlandi).
   - Bo'sh afsonalar bozori uchun `buildEmptyLegendsMarketMessage` (`ℹ️ Legendalar bozori hozircha tayyorlanmoqda.`) o'rnatildi.
   - Vitest test to'plami `tests/bot-runtime-integration.test.ts` va pgTAP SQL test to'plami `supabase/tests/rpc_security_and_round_limits.test.sql` muvaffaqiyatli o'tdi.
+
+---
+
+### [2026-08-19] DEC-026: 4I-Bosqich Admin Callback Yo'nalishlari va Afsonalar Bozori (Legend Transfers) To'liq Ma'lumotlar To'plami
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Admin panelining tasdiqlash va rad etish callback'larini (`adm_app_req:<requestId>`, `adm_rej_req:<requestId>`) bot routeriga kiritish va sinovdan o'tkazish, hamda barcha 15 ta pozitsiya bo'yicha kamida 3 tadan afsona futbolchini qamrab oluvchi 60 ta audittan o'tgan afsonalar ma'lumotlar to'plamini (`data/football/legends/legends.json`) shakllantirish.
+- **Qaror:**
+  - Bot routerida `adm_app_req` va `adm_rej_req` callback routelari to'liq kiritildi va server-side idempotent xarid RPC lariga ulandi.
+  - Afsonalar bozori ma'lumotlar to me'yorlari shakllantirildi: 60 ta futbolchi, 15 ta pozitsiyadan har birida kamida 3 ta birinchi darajali pozitsiya (GK: 4, CB: 6, LB: 4, RB: 4, LWB: 3, RWB: 3, CDM: 4, CM: 5, CAM: 4, LM: 3, RM: 3, LW: 4, RW: 4, CF: 3, ST: 5).
+  - Barcha 9 ta majburiy afsonalar (Cristiano Ronaldo, Lionel Messi, Marcelo, Gareth Bale, Eden Hazard, Luka Modrić, Toni Kroos, Xavi, Andrés Iniesta) prime kalitlar bilan kiritildi. Peak Messi va Ronaldo narxi €500,000,000 ga belgilandi, boshqa afsonalar narxlari €100m-€500m diapazonida darajalarga ko'ra taksimlandi.
+  - Manbalar fayli `data/football/legends/sources.json` va avtomatlashtirilgan Zod validatsiyasi `src/data/validate-legends.ts` yaratildi. Validatsiya hisoboti `validation-report.json` ga yozildi.
+  - Deterministik seed SQL generatori `src/data/generate-seed-sql.ts` orqali 60 ta legend template versiyasi `supabase/seed.sql` tarkibiga takrorlanuvchan ravishda kiritildi.
+  - Telegram bot UI handlerlari `src/bot/handlers/legendHandler.ts` yaratildi: saralash (GK, DEF, MID, FWD, ALL), sahifalash, batafsil ma'lumot ekrani, va byudjet yetishmovchiligi/xarid xabarlari ulindi.
+  - 32 ta Vitest va pgTAP unit va integratsiya testlari o'tdi.
