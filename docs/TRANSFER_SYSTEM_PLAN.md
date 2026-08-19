@@ -20,7 +20,8 @@ Ushbu hujjat **Telegram Football Manager** o'yinidagi transfer oynalari, menejer
 ## 2. Menejerlar O'rtasidagi Transferlar (Manager-to-Manager Transfers)
 
 1. **Taklif Yuborish:** Haridor menejer futbolchining muzlatilgan bozor qiymatining (`frozen_market_value`) **kamida 50%** qismidan boshlab taklif kiritishi mumkin.
-2. **Pullarni Muzlatish (`reserved_funds` & `financial_ledger`):** Taklif yuborilgach, taklif qilingan summa `reserved_funds` jadvalida saqlanadi va klubning `reserved_balance` ustuniga qo'shiladi. Ushbu pul boshqa amallar uchun ishlatilishi taqiqlanadi.
+2. **Pullarni Muzlatish (`club_finances`, `financial_ledger` & RPC Helpers):** Taklif yuborilgach, taklif qilingan summa `reserve_club_funds` RPC funksiyasi orqali klubning `reserved_balance` balansiga atomar qo'shiladi va `available_balance` mos ravishda kamayadi. Pul harakati `financial_ledger` jadvalida ishorali manfiy debet yozuvi sifatida qayd etiladi. Taklif rad etilsa `release_club_reserved_funds` orqali pul qaytariladi, taklif qabul qilinsa `capture_club_reserved_funds` orqali mablag' atomar yechib olinadi.
+
 3. **Qarshi Takliflar va Muzokaralar Tarixi (`transfer_offer_history`):**
    - Sotuvchi taklifni qabul qilishi (`ACCEPT`), rad etishi (`REJECT`) yoki qarshi narx taklif qilishi (`COUNTER`) mumkin.
    - Original taklif ustiga urib yozilmaydi; har bir qarshi taklif `transfer_offer_history` jadvalida saqlanadi.

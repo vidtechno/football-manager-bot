@@ -184,3 +184,19 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
   - Inson menejer va bot menejer bir vaqtda bitta klubni boshqara olmasligi hamda liga LOBBY dan chiqqandan so'ng klub tanlash taqiqlanishi bazaviy validation triggerlar orqali ta'minlandi.
   - Admin Telegram ID lari manba kodiga va hujjatlarga qattiq yozilmaydi (`ADMIN_TELEGRAM_ID` env orqali beriladi).
   - Har ikkala jadvalda RLS yoqildi, `anon` va `authenticated` ruxsatlari olib tashlandi, `service_role` ga minimal DML va RPC execution berildi.
+
+---
+
+### [2026-08-19] DEC-020: 4D-Bosqich Liga Futbolchilari va Klub Moliyasi Poydevori Migratsiyasi Shakllantirilishi
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Liga futbolchilari nusxalari (`league_players`), pozitsiyalari (`league_player_positions`), klub moliyasi (`club_finances`) va o'zgarmas moliyaviy jurnal (`financial_ledger`) jadvallarini hamda tranzaktsiyaviy RPC funksiyalarini yaratish.
+- **Qaror:**
+  - `league_players`, `league_player_positions`, `club_finances`, va `financial_ledger` jadvallari yaratildi.
+  - `enum_player_availability_status` va `enum_financial_transaction_type` ENUM turlari kiritildi.
+  - Moliyaviy yo'nalish ishorali musbat/manfiy qiymat (`amount_eur`) orqali ifodalanadi (musbat = kredit, manfiy = debet).
+  - Tenglashtiruvchi boshlang'ich byudjet formulasi: `€100m + (max_squad_value - club_squad_value) * 35%` (maksimal €400m) `calculate_club_starting_budget` funksiyasida markazlashtirildi.
+  - RPC funksiyalari `instantiate_league_players_from_templates`, `initialize_club_finances`, `record_financial_transaction`, `reserve_club_funds`, `release_club_reserved_funds`, `capture_club_reserved_funds` amalga oshirildi.
+  - Shablon ma'lumotlari yoki versiyalar bo'sh bo'lgan holatda avtomatik xavfsiz boshqariladigan xatolik (`P0001`) qaytarilishi ta'minlandi.
+  - `financial_ledger` o'zgarmasligi trigger orqali muhofaza qilindi (`UPDATE` va `DELETE` taqiqlandi).
+  - Barcha 4 ta jadvalda RLS yoqildi, `anon` va `authenticated` ruxsatlari olib tashlandi, `service_role` ga kamida minimal DML va RPC bajarish ruxsatlari berildi.
