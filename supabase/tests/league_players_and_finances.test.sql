@@ -94,7 +94,8 @@ BEGIN
     VALUES (v_mgr_id, 999888777, 'TestFinMgr');
 
     INSERT INTO public.leagues (id, name, code, status, owner_manager_id)
-    VALUES (v_league_id, 'Finances Test League', 'FIN234', 'LOBBY', v_mgr_id);
+    VALUES (v_league_id, 'Finances Test League', 'FNC234', 'LOBBY', v_mgr_id);
+
 
     SELECT id INTO v_template_id FROM public.club_templates WHERE slug = 'real-madrid';
 
