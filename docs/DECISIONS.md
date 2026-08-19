@@ -200,3 +200,19 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
   - Shablon ma'lumotlari yoki versiyalar bo'sh bo'lgan holatda avtomatik xavfsiz boshqariladigan xatolik (`P0001`) qaytarilishi ta'minlandi.
   - `financial_ledger` o'zgarmasligi trigger orqali muhofaza qilindi (`UPDATE` va `DELETE` taqiqlandi).
   - Barcha 4 ta jadvalda RLS yoqildi, `anon` va `authenticated` ruxsatlari olib tashlandi, `service_role` ga kamida minimal DML va RPC bajarish ruxsatlari berildi.
+
+---
+
+### [2026-08-19] DEC-021: 4D-Bosqich Liga Futbolchilari va Klub Moliyasi Migratsiyasining Masofaviy Joylashtirilishi (Remote Deployment)
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Phase 4D migratsiyasini audit qilish, GitHub Actions CI orqali avtomatlashtirilgan lokal migratsiya va pgTAP SQL testlaridan muvaffaqiyatli o'tkazish, PR #6 orqali squash merge qilish va masofaviy Supabase loyihasiga joylashtirish.
+- **Qaror:**
+  - Joylashtirish sanasi: 2026-08-19
+  - Migratsiya ID: `20260819005622_create_league_players_and_finances.sql`
+  - PR Raqami va Merge Commit: PR [#6](https://github.com/vidtechno/football-manager-bot/pull/6), Squash Merge commit `742fa4d79f4aaab3976f0db05322eb3b12d5b96b`
+  - Masofaviy Supabase (`cxuqmfvnrzsrafjhoggu`) bazasiga 4 ta jadval (`league_players`, `league_player_positions`, `club_finances`, `financial_ledger`), 2 ta ENUM (`enum_player_availability_status`, `enum_financial_transaction_type`), va 7 ta RPC funksiyalari joylashtirildi.
+  - Forward repair orqali `validate_league_club_human_selection()` funksiyasi `manager_blocks` ustunini `unblocked_at IS NULL` tekshiruviga muvofiqlashtirildi.
+  - Anonim API so'rovlari bo'yicha barcha 4 ta yangi jadval uchun HTTP 401 Permission Denied holati qaytarildi.
+  - Masofaviy bazaga hech qanday soxta ma'lumot kiritilmadi.
+
