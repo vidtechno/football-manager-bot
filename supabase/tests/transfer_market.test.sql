@@ -103,13 +103,36 @@ BEGIN
 
     -- Insert 20 players for seller club to satisfy >= 19 squad count requirement
     FOR i IN 1..20 LOOP
-        INSERT INTO public.player_templates (slug, full_name, display_name, date_of_birth, nationality)
-        VALUES ('seller-player-tpl-' || gen_random_uuid(), 'Seller Player ' || i, 'Seller Player ' || i, '2000-01-01', 'Uzbekistan')
-        RETURNING id INTO v_tpl_id;
+        INSERT INTO public.player_templates (
+            canonical_key,
+            current_club_template_id,
+            full_name,
+            date_of_birth,
+            nationality
+        ) VALUES (
+            'seller-player-ck-' || gen_random_uuid(),
+            v_club_template1_id,
+            'Seller Player ' || i,
+            '2000-01-01',
+            'Uzbekistan'
+        ) RETURNING id INTO v_tpl_id;
 
-        INSERT INTO public.player_template_versions (player_template_id, version_number, overall_rating, market_value_eur)
-        VALUES (v_tpl_id, 1, 75, 10000000.00)
-        RETURNING id INTO v_ver_id;
+        INSERT INTO public.player_template_positions (player_template_id, position_code, is_primary)
+        VALUES (v_tpl_id, 'ST', TRUE);
+
+        INSERT INTO public.player_template_versions (
+            player_template_id,
+            version,
+            market_value_eur,
+            overall_rating,
+            pace, shooting, passing, dribbling, defending, physical
+        ) VALUES (
+            v_tpl_id,
+            1,
+            10000000.00,
+            75,
+            75, 75, 75, 75, 75, 75
+        ) RETURNING id INTO v_ver_id;
 
         INSERT INTO public.league_players (
             league_id,
