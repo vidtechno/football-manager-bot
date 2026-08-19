@@ -132,7 +132,9 @@ export function handleLegendDetails(
     );
   }
 
-  const legendIndex = allLegends.findIndex((entry) => entry.legendId === legendId);
+  const legendIndex = allLegends.findIndex(
+    (entry) => entry.legendId === legendId,
+  );
   const keyboard = buildLegendDetailKeyboard(legendIndex, leagueId, canAfford);
 
   return { text, keyboard };
