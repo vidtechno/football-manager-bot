@@ -46,8 +46,8 @@ BEGIN
     VALUES (v_league_id, v_human_mgr_id, 'OWNER');
 
     -- Select existing club templates (do not insert new templates to preserve seed count = 20)
-    SELECT id INTO v_tpl1_id FROM public.club_templates ORDER BY created_at ASC LIMIT 1;
-    SELECT id INTO v_tpl2_id FROM public.club_templates ORDER BY created_at ASC LIMIT 1 OFFSET 1;
+    SELECT id INTO v_tpl1_id FROM public.club_templates ORDER BY id ASC LIMIT 1;
+    SELECT id INTO v_tpl2_id FROM public.club_templates ORDER BY id ASC LIMIT 1 OFFSET 1;
 
     -- Setup clubs
     INSERT INTO public.league_clubs (league_id, club_template_id, display_name, short_code, human_manager_id)
