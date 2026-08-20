@@ -84,6 +84,13 @@ const envSchema = z.object({
       "Atrof-muhit o'zgaruvchisi bo'sh bo'lishi mumkin emas: CRON_SECRET",
     ),
 
+  WEB_JWT_SECRET: z
+    .string()
+    .optional()
+    .default('default_web_jwt_secret_min_32_chars_long_key_2026'),
+  WEB_APP_URL: z.string().optional().default('http://localhost:3000'),
+  ALLOW_DEV_AUTH: z.string().optional().default('false'),
+
   ADMIN_TELEGRAM_IDS: z.string().optional(),
 });
 

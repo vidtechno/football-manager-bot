@@ -12,7 +12,8 @@ export interface DbManager {
 
 export interface DbAdminUser {
   id: string;
-  telegramUserId: number;
+  telegramUserId?: number;
+  managerId?: string;
   role: string;
   status: string;
   createdAt: string;
@@ -20,7 +21,7 @@ export interface DbAdminUser {
 
 export class IdentityService {
   /**
-   * Retrieves an existing manager by Telegram User ID, or creates one atomically if missing.
+   * Resolves or creates a human manager by Telegram User ID.
    */
   static async getOrCreateManager(
     telegramUserId: number,
@@ -28,14 +29,16 @@ export class IdentityService {
   ): Promise<DbManager> {
     const supabase = getSupabaseAdminClient();
 
-    const { data: existing, error: findErr } = await supabase
+    const { data: existing, error: findError } = await supabase
       .from('managers')
       .select('*')
       .eq('telegram_user_id', telegramUserId)
       .maybeSingle();
 
-    if (findErr) {
-      throw new Error(`GET_MANAGER_FAILED: ${findErr.message}`);
+    if (findError) {
+      throw new Error(
+        `DATABASE_ERROR: Failed to query manager: ${findError.message}`,
+      );
     }
 
     if (existing) {
@@ -49,33 +52,31 @@ export class IdentityService {
       };
     }
 
-    const managerName = displayName
-      ? displayName.trim().slice(0, 24)
-      : `Manager_${telegramUserId.toString().slice(-4)}`;
+    const fallbackName =
+      displayName && displayName.trim().length >= 3
+        ? displayName.trim().slice(0, 24)
+        : `Manager_${telegramUserId}`;
 
-    const { data: created, error: createErr } = await supabase
+    const { data: created, error: createError } = await supabase
       .from('managers')
       .insert({
         telegram_user_id: telegramUserId,
-        manager_name: managerName,
+        manager_name: fallbackName,
         language_code: 'uz',
       })
       .select('*')
       .single();
 
-    if (createErr) {
-      throw new Error(`CREATE_MANAGER_FAILED: ${createErr.message}`);
+    if (createError) {
+      throw new Error(
+        `DATABASE_ERROR: Failed to create manager: ${createError.message}`,
+      );
     }
 
-    // Insert manager profile default row
-    await supabase
-      .from('manager_profiles')
-      .insert({
-        manager_id: created.id,
-        display_name: managerName,
-      })
-      .select('*')
-      .maybeSingle();
+    await supabase.from('manager_profiles').insert({
+      manager_id: created.id,
+      display_name: fallbackName,
+    });
 
     return {
       id: created.id,
@@ -88,7 +89,7 @@ export class IdentityService {
   }
 
   /**
-   * Retrieves an active admin user record by Telegram User ID. Returns null if unauthorized.
+   * Retrieves an active admin user record by Telegram User ID.
    */
   static async getAdminUser(
     telegramUserId: number,
@@ -156,10 +157,45 @@ export class IdentityService {
 
     return {
       id: admin.id,
-      telegramUserId: Number(admin.telegram_user_id),
+      telegramUserId: Number(admin.telegram_user_id || 0),
+      managerId: admin.manager_id || undefined,
       role: admin.role,
       status: admin.status,
       createdAt: admin.created_at,
     };
+  }
+
+  /**
+   * Resolves whether a manager is an active admin in admin_users table (by managerId or telegramUserId).
+   */
+  static async isManagerAdmin(
+    managerId?: string,
+    telegramUserId?: number,
+  ): Promise<boolean> {
+    const supabase = getSupabaseAdminClient();
+
+    if (managerId) {
+      const { data } = await supabase
+        .from('admin_users')
+        .select('id')
+        .eq('manager_id', managerId)
+        .eq('status', 'ACTIVE')
+        .maybeSingle();
+
+      if (data) return true;
+    }
+
+    if (telegramUserId && telegramUserId > 0) {
+      const { data } = await supabase
+        .from('admin_users')
+        .select('id')
+        .eq('telegram_user_id', telegramUserId)
+        .eq('status', 'ACTIVE')
+        .maybeSingle();
+
+      if (data) return true;
+    }
+
+    return false;
   }
 }
