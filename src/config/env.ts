@@ -116,7 +116,18 @@ export function loadEnvironment(
     return cachedEnv;
   }
 
-  if (process.env['NODE_ENV'] !== 'production') {
+  if (process.env['NODE_ENV'] === 'test') {
+    process.env['SUPABASE_PROJECT_ID'] ||= 'test-proj-id';
+    process.env['SUPABASE_URL'] ||= 'https://test-proj.supabase.co';
+    process.env['SUPABASE_ANON_KEY'] ||= 'test-anon-key-12345678901234567890';
+    process.env['SUPABASE_SECRET_KEY'] ||=
+      'test-secret-key-12345678901234567890';
+    process.env['TELEGRAM_BOT_TOKEN'] ||=
+      '123456789:ABCdefGHIjklMNOpqrsTUVwxyZ';
+    process.env['TELEGRAM_BOT_USERNAME'] ||= 'football_manager_demo_bot';
+    process.env['TELEGRAM_WEBHOOK_SECRET'] ||= 'test-webhook-secret';
+    process.env['CRON_SECRET'] ||= 'test-cron-secret';
+  } else if (process.env['NODE_ENV'] !== 'production') {
     config({ path: '.env.local' });
   }
 

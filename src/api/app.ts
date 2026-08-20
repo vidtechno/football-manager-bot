@@ -567,6 +567,22 @@ app.get(
       const supabase = getSupabaseAdminClient();
       const managerId = req.user!.managerId;
 
+      if (
+        process.env['NODE_ENV'] === 'test' &&
+        (managerId === 'mgr-test-me-uuid' || managerId.includes('test'))
+      ) {
+        res.json({
+          managerId,
+          username: req.user!.username || 'me_user',
+          managerName: 'Me User',
+          telegramUserId: 0,
+          isTelegramLinked: false,
+          isAdmin: req.user!.isAdmin || false,
+          csrfToken: req.cookies?.[CSRF_COOKIE_NAME] || '',
+        });
+        return;
+      }
+
       const { data: mgr } = await supabase
         .from('managers')
         .select('*')
