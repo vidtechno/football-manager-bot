@@ -69,3 +69,9 @@ Ushbu hujjat **Telegram Football Manager** loyihasining texnik arxitekturasi, ko
 2. **Cron Secret Verification:** Cron trigger'larida `Authorization: Bearer <CRON_SECRET>` tekshiriladi.
 3. **Environment Secret Protection:** `.env.local` sirlari hech qachon mijoz kodiga, Git repository'siga yoki hujjatlarga chiqarilmaydi.
 4. **Least-Privilege RLS:** Public mijozlar uchun to'g'ridan-to me'ri bazaga kirish yopilgan.
+
+### 2.3. Legend Transfers Isolation & Transactional Purchases
+
+- **Per-League Isolation:** Har bir liga muxtor Afsonalar Bozoriga (`league_legend_market`) ega. Bitta afsonaviy futbolchi bir vaqtning o'zida bir nechta ligada mustaqil mavjud bo'lishi mumkin, lekin bitta liganing ichida faqat bitta klubga tegishli bo'lishi mumkin.
+- **Squad Size Limit:** Faol klublar uchun tarkib sig'imi minimal 18, maksimal 30 ta futbolchi qilib belgilangan (kamida 2 GK, 6 DEF, 6 MID, 4 FWD).
+- **Transactional Atomic Purchases:** `purchase_league_legend` RPC funksiyasi row-level locking (`FOR UPDATE`), menejer ruxsati tekshiruvi, va balans yetarliligini atomar tarzda bajaradi va tranzaksiyani `financial_ledger` jurnaliga muhrlaydi.

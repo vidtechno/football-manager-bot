@@ -215,3 +215,86 @@ Ushbu hujjat **Telegram Football Manager** loyihasida qabul qilingan barcha tasd
   - Forward repair orqali `validate_league_club_human_selection()` funksiyasi `manager_blocks` ustunini `unblocked_at IS NULL` tekshiruviga muvofiqlashtirildi.
   - Anonim API so'rovlari bo'yicha barcha 4 ta yangi jadval uchun HTTP 401 Permission Denied holati qaytarildi.
   - Masofaviy bazaga hech qanday soxta ma'lumot kiritilmadi.
+
+---
+
+### [2026-08-19] DEC-022: 4E-Bosqich Joriy 20 ta Klub Tarkiblari, Narxlari va Baholashlarining Versiyalangan Ma'lumotlar To'plami (Dataset Architecture & Seed Policy)
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** 20 ta Gigants Mode top-klublari uchun 2026-08-19 ma'lumotlar snapshot sanasi bilan joriy birinchi jamoa futbolchilari, bozor narxlari, pozitsiyalari va baholashlarining to'liq, audittan o'tadigan, versiyalangan ma'lumotlar to'plamini shakllantirish.
+- **Qaror:**
+  - Ma'lumotlar to'plami arxitekturasi: `data/football/2026-08-19/` katalogida `clubs.json`, `players.json`, `sources.json` hamda `validation-report.json` fayllari yaratildi.
+  - Generatsiya va validatsiya: `src/data/types.ts` Zod tiplari, `src/data/validate-dataset.ts` deterministik validatsiya dvigateli va `src/data/generate-seed-sql.ts` orqali takrorlanuvchan `supabase/seed.sql` shakllantirildi.
+  - Qoidalar: Har bir klub uchun 18-25 ta futbolchi (kamida 2 ta GK), GK/Outfield atributlarining qat'iy ajratilishi, non-negative EUR narxlari, va takrorlanmas `canonicalKey` belgilandi.
+  - Sinov va xavfsizlik: Vitest orqali 11 ta test muvaffaqiyatli o'tdi. Masofaviy Supabase va avvalgi migratsiyalarga hech qanday o'zgartirish kiritilmadi, maxfiy kalitlar va admin Telegram ID lar sir saqlandi.
+
+---
+
+### [2026-08-19] DEC-023: 4F-Bosqich Tarkib Sig'imini 18-30 gacha Oshirish va Afsonalar Bozori (Legend Transfers) Poydevori Shakllantirilishi
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Faol klub tarkibi sig'imini 18-25 dan 18-30 ta futbolchigacha kengaytirish, pozitsion minimal talablarni (2 GK, 6 DEF, 6 MID, 4 FWD) qat'iylashtirish, hamda har bir liga uchun ajratilgan "Legend Transfers" afsonaviy futbolchilar bozori poydevorini va tranzaktsiyaviy RPC strukturasini yaratish.
+- **Qaror:**
+  - Tarkib sig'imi 18-30 ga kengaytirildi, `src/data/validate-dataset.ts`, `instantiate_league_players` funksiyasi hamda testlar muvofiqlashtirildi.
+  - `src/data/build-players-json.ts` xavfsiz validatsiya va passthrough wrapperga o'tkazildi, 567 ta futbolchidan iborat yangi ma'lumotlar to'plami saqlandi.
+  - Afsonalar Bozori arxitekturasi: Global `legend_templates` jadvali va har bir liga uchun ajratilgan `league_legend_market` jadvali shakllantirildi (20260819140000).
+  - Tranzaktsiyaviy xarid PL/pgSQL funksiyasi (`purchase_league_legend`) yaratildi: `FOR UPDATE` qulfi, ligaga tegishlilik, menejer muvofiqligi, mablag' yetarliligi tekshiruvi, balansdan ayirish hamda `financial_ledger` jurnaliga yozish atomar ravishda ta'minlandi.
+  - Zod validator `src/data/validate-legends.ts` hamda loyiha arxitekturasi hujjati `docs/LEGEND_TRANSFERS_PLAN.md` shakllantirildi.
+  - Vitest va pgTAP test to'plamlari muvaffaqiyatli o'tdi. Masofaviy Supabase va avvalgi migratsiyalarga o'zgartirish kiritilmadi.
+
+---
+
+### [2026-08-19] DEC-024: 4G-Bosqich Transfer Budjeti Paketlari, Admin Tasdiqlashi, Kunlik 3-Tur Limiti va Solo Liganing Butunlay O'chirilishi
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Afsonalarni faqat klub transfer budjeti (`club_finances.current_balance`) orqali xarid qilishni belgilash, narx diapazonini €100m-€500m ga (peak Messi va Ronaldo uchun €500m) muvofiqlashtirish, 5 ta real to'lov paketi va admin tasdiqlash oqimini shakllantirish, kunlik tur limitini 3 ta turga tushirish, hamda solo ligani o'chirish tranzaktsion imkoniyatini taqdim etish.
+- **Qaror:**
+  - `legend_templates` jadvaliga `CHECK (default_price_eur BETWEEN 100000000 AND 500000000)` cheklovi o'rnatildi. Peak Messi va Ronaldo narxi qat'iy €500m ga belgilandi.
+  - 5 ta sozlanadigan paketlar `transfer_budget_packages` va buyurtma so'rovlari `transfer_budget_purchase_requests` jadvallari shakllantirildi (20260819150000).
+  - Admin tasdiqlashi `approve_transfer_budget_purchase_request` atomar va idempotent qilindi (`FOR UPDATE` qulfi, balansga qo'shish va `TRANSFER_PURCHASE` moliyaviy jurnal yozuvi).
+  - Kunlik tur limiti Toshkent vaqti (`Asia/Tashkent`) bo'yicha ko'pi bilan 3 ta tur etib belgilandi (`check_daily_round_limit`).
+  - Solo liga egasi (1 inson menejer, 19 bot) uchun ligani butunlay tranzaktsiyaviy o'chirish RPC funksiyasi (`delete_solo_league`) shakllantirildi. Ko'p insonli ligalarda o'chirish taqiqlandi.
+  - Telegram matnlari va URL deep link generatori (`buildAdminPaymentDeepLink`) O'zbek tilidagi qat'iy uslubiy qoidalarga muvofiqlashtirildi.
+  - Vitest (25 test) va pgTAP SQL testlari to'liq yozildi va o'tdi.
+
+---
+
+### [2026-08-19] DEC-025: 4H-Bosqich Telegram Bot Ishga Tushirish Integratsiyasi va Xavfsizlikni Kuchaytirish (Security Hardening & Runtime UI Integration)
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** RPC funksiyalari xavfsizligini oshirish (`EXECUTE` huquqlarini `service_role` uchun cheklash, `SET search_path = public`), Telegram bot menyulari, tugmalari va deep-link interfeysini to'liq ulash, kanonik tur o'tkazish tranzaksiyasiga Toshkent vaqti bo'yicha kunlik 3-tur limitini integratsiyalash, hamda solo ligani o'chirishning 2 bosqichli Telegram UI oqimini taqdim etish.
+- **Qaror:**
+  - Migratsiya `20260819160000_harden_rpc_security_and_round_limits.sql` yaratildi: nozik RPC funksiyalaridan (`delete_solo_league`, `approve_transfer_budget_purchase_request`, `reject_transfer_budget_purchase_request`, `purchase_league_legend`, `create_transfer_budget_purchase_request`, `execute_league_round`) `anon` va `authenticated` bajarish huquqlari bekor qilindi, faqat `service_role` ga berildi.
+  - Kanonik tur o'tkazish funksiyasi `execute_league_round` yaratildi: u o'z tranzaksiyasi ichida birinchi bo'lib `check_daily_round_limit(p_league_id)` chaqiruvini bajaradi (Toshkent vaqti bo'yicha kuniga ko'pi bilan 3 tur).
+  - Telegram bot xabarlari `src/bot/messages/templates.ts`, klaviaturalari `src/bot/keyboards/menus.ts`, xizmatlari `src/services/purchaseService.ts` va handlerlari `src/bot/handlers/` yaratildi.
+  - `buildAdminPaymentDeepLink` generatori `https://t.me/diyorbek_anorboyev?text=...` URL shaklida kodlangan deep link havola yaratadi.
+  - Solo liganing 2 bosqichli o'chirilishi `handleSoloLeagueDeleteStep1` va `handleSoloLeagueDeleteStep2` orqali ta'minlandi (ko'p insonli ligada taqiqlandi).
+  - Bo'sh afsonalar bozori uchun `buildEmptyLegendsMarketMessage` (`ℹ️ Legendalar bozori hozircha tayyorlanmoqda.`) o'rnatildi.
+  - Vitest test to'plami `tests/bot-runtime-integration.test.ts` va pgTAP SQL test to'plami `supabase/tests/rpc_security_and_round_limits.test.sql` muvaffaqiyatli o'tdi.
+
+---
+
+---
+
+### [2026-08-20] DEC-027: Doimiy Ochiq Futbolchilar Transfer Bozori va Bot Xaridlari Mantig‘i
+
+- **Maqom:** Tasdiqlangan (Approved)
+- **Kontekst:** Transferlar uchun turlar bo‘yicha har qanday cheklovlarni (1-6 va boshqa tur cheklovlarini) olib tashlash, transfer bozorini 24/7 doimiy ochiq etib belgilash, har bir klub uchun ko‘pi bilan 4 ta faol e’lon (`ACTIVE`) ruxsat etish, hamda 24 soatdan so‘ng o‘yinchilarni bot klublar tomonidan avtomatik sotib olinishining xavfsiz va ehtimollikka asoslangan tizimini joriy etish.
+- **Qaror:**
+  - Migratsiya `20260820000000_permanent_player_transfer_market.sql` yaratildi: `enum_transfer_listing_status`, `enum_transfer_buyer_type` tiplari hamda `league_transfer_listings` jadvali va u bo‘yicha partial unique index `uq_active_listing_per_player` tashkil etildi.
+  - Atomar database RPC funksiyalari o‘rnatildi:
+    - `create_player_transfer_listing`: 4 ta faol e’lon va sotuvdan so‘ng kamida 18 ta o‘yinchi tarkib cheklovini va sotuvchi egaligini tekshiradi.
+    - `cancel_player_transfer_listing`: Sotuvchi menejerga o‘z faol e’lonini bekor qilish imkonini beradi (`status = 'CANCELLED'`).
+    - `purchase_player_transfer_listing`: Atomar tranzaksiyada row lock qo‘llaydi, balans va tarkib hajmini (xaridor <= 30, sotuvchi >= 18) tekshiradi, o‘yinchi egaligini o‘tkazadi, audit ledger yozuvlarini yaratadi.
+    - `process_bot_transfer_reviews`: 24 soatdan oshgan faol e’lonlarni (overall <= 82, narx <= 120%) ko‘rib chiqadi va 70%/45%/25% ehtimollik bo‘yicha mos bot klubga sotadi (`buyer_type = 'BOT'`).
+  - TypeScript servis qatlami `src/services/transferService.ts`, Telegram UI klaviaturalari `src/bot/keyboards/transferKeyboards.ts`, handlerlari `src/bot/handlers/transferHandler.ts` va bot ishchisi `src/jobs/botTransferReviewWorker.ts` yaratildi.
+  - Vitest test to‘plami `tests/transferService.test.ts` hamda pgTAP SQL test to‘plami `supabase/tests/transfer_market.test.sql` to‘liq sinovdan o‘tkazildi.
+
+- **Qaror:**
+  - Bot routerida `adm_app_req` va `adm_rej_req` callback routelari to'liq kiritildi va server-side idempotent xarid RPC lariga ulandi.
+  - Afsonalar bozori ma'lumotlar to me'yorlari shakllantirildi: 60 ta futbolchi, 15 ta pozitsiyadan har birida kamida 3 ta birinchi darajali pozitsiya (GK: 4, CB: 6, LB: 4, RB: 4, LWB: 3, RWB: 3, CDM: 4, CM: 5, CAM: 4, LM: 3, RM: 3, LW: 4, RW: 4, CF: 3, ST: 5).
+  - Barcha 9 ta majburiy afsonalar (Cristiano Ronaldo, Lionel Messi, Marcelo, Gareth Bale, Eden Hazard, Luka Modrić, Toni Kroos, Xavi, Andrés Iniesta) prime kalitlar bilan kiritildi. Peak Messi va Ronaldo narxi €500,000,000 ga belgilandi, boshqa afsonalar narxlari €100m-€500m diapazonida darajalarga ko'ra taksimlandi.
+  - Manbalar fayli `data/football/legends/sources.json` va avtomatlashtirilgan Zod validatsiyasi `src/data/validate-legends.ts` yaratildi. Validatsiya hisoboti `validation-report.json` ga yozildi.
+  - Deterministik seed SQL generatori `src/data/generate-seed-sql.ts` orqali 60 ta legend template versiyasi `supabase/seed.sql` tarkibiga takrorlanuvchan ravishda kiritildi.
+  - Telegram bot UI handlerlari `src/bot/handlers/legendHandler.ts` yaratildi: saralash (GK, DEF, MID, FWD, ALL), sahifalash, batafsil ma'lumot ekrani, va byudjet yetishmovchiligi/xarid xabarlari ulindi.
+  - 32 ta Vitest va pgTAP unit va integratsiya testlari o'tdi.

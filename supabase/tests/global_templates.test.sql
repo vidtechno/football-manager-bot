@@ -99,7 +99,9 @@ DECLARE
     v_club_id UUID;
     v_caught BOOLEAN;
 BEGIN
-    SELECT id INTO v_club_id FROM public.club_templates WHERE slug = 'real-madrid';
+    INSERT INTO public.club_templates (slug, name, short_code, country)
+    VALUES ('test-v1-fc', 'Test Version 1 FC', 'TV1', 'England')
+    RETURNING id INTO v_club_id;
 
     -- Insert valid version 1
     INSERT INTO public.club_template_versions (club_template_id, version, reputation, base_squad_value)
@@ -154,7 +156,7 @@ BEGIN
 
     -- Create player with primary and secondary position using atomic RPC function
     v_player_id := public.create_player_template_with_positions(
-        'kylian-mbappe',
+        'test-kylian-mbappe',
         v_club_id,
         'Kylian Mbappé',
         '1998-12-20'::DATE,
@@ -217,7 +219,7 @@ BEGIN
 
     -- Create Outfield Player (ST)
     v_outfield_player_id := public.create_player_template_with_positions(
-        'vinicius-junior',
+        'test-vinicius-junior',
         v_club_id,
         'Vinícius Júnior',
         '2000-07-12'::DATE,
@@ -227,7 +229,7 @@ BEGIN
 
     -- Create GK Player (GK)
     v_gk_player_id := public.create_player_template_with_positions(
-        'thibaut-courtois',
+        'test-thibaut-courtois',
         v_club_id,
         'Thibaut Courtois',
         '1992-05-11'::DATE,
@@ -302,6 +304,5 @@ END;
 $$;
 
 SELECT pass('Global club and player templates tests completed successfully.');
-SELECT * FROM finish();
 
 ROLLBACK;

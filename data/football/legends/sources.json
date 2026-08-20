@@ -1,0 +1,31 @@
+[
+  {
+    "sourceId": "src-ea-fc-icons-2026",
+    "sourceName": "Official EA FC 24/25 Historical Icon & Legend Database",
+    "url": "https://www.ea.com/games/ea-sports-fc/ultimate-team/item-database",
+    "retrievalDate": "2026-08-19",
+    "category": "OFFICIAL_GAME_DATA",
+    "fieldsSupported": [
+      "peakOverallRating",
+      "outfieldAttributes",
+      "goalkeeperAttributes",
+      "primaryPosition",
+      "secondaryPositions"
+    ]
+  },
+  {
+    "sourceId": "src-historical-stats-archive-2026",
+    "sourceName": "Transfermarkt & Rec.Sport.Soccer Statistics Foundation Archival Database",
+    "url": "https://www.transfermarkt.com",
+    "retrievalDate": "2026-08-19",
+    "category": "ARCHIVAL_DATABASE",
+    "fieldsSupported": [
+      "fullName",
+      "nationality",
+      "dateOfBirth",
+      "peakClub",
+      "peakPeriod",
+      "status"
+    ]
+  }
+]

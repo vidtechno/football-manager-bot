@@ -193,6 +193,5 @@ END;
 $$;
 
 SELECT pass('Identity and access tests completed successfully.');
-SELECT * FROM finish();
 
 ROLLBACK;

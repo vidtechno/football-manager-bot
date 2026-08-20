@@ -1,0 +1,162 @@
+[
+  {
+    "slug": "real-madrid",
+    "name": "Real Madrid",
+    "shortCode": "RMA",
+    "country": "Spain",
+    "domesticLeague": "La Liga",
+    "reputation": 95
+  },
+  {
+    "slug": "barcelona",
+    "name": "FC Barcelona",
+    "shortCode": "BAR",
+    "country": "Spain",
+    "domesticLeague": "La Liga",
+    "reputation": 93
+  },
+  {
+    "slug": "atletico-madrid",
+    "name": "Atlético Madrid",
+    "shortCode": "ATM",
+    "country": "Spain",
+    "domesticLeague": "La Liga",
+    "reputation": 87
+  },
+  {
+    "slug": "manchester-city",
+    "name": "Manchester City",
+    "shortCode": "MCI",
+    "country": "England",
+    "domesticLeague": "Premier League",
+    "reputation": 94
+  },
+  {
+    "slug": "liverpool",
+    "name": "Liverpool FC",
+    "shortCode": "LIV",
+    "country": "England",
+    "domesticLeague": "Premier League",
+    "reputation": 91
+  },
+  {
+    "slug": "arsenal",
+    "name": "Arsenal FC",
+    "shortCode": "ARS",
+    "country": "England",
+    "domesticLeague": "Premier League",
+    "reputation": 89
+  },
+  {
+    "slug": "chelsea",
+    "name": "Chelsea FC",
+    "shortCode": "CHE",
+    "country": "England",
+    "domesticLeague": "Premier League",
+    "reputation": 86
+  },
+  {
+    "slug": "manchester-united",
+    "name": "Manchester United",
+    "shortCode": "MUN",
+    "country": "England",
+    "domesticLeague": "Premier League",
+    "reputation": 88
+  },
+  {
+    "slug": "tottenham",
+    "name": "Tottenham Hotspur",
+    "shortCode": "TOT",
+    "country": "England",
+    "domesticLeague": "Premier League",
+    "reputation": 84
+  },
+  {
+    "slug": "bayern-munich",
+    "name": "Bayern Munich",
+    "shortCode": "BAY",
+    "country": "Germany",
+    "domesticLeague": "Bundesliga",
+    "reputation": 92
+  },
+  {
+    "slug": "borussia-dortmund",
+    "name": "Borussia Dortmund",
+    "shortCode": "BVB",
+    "country": "Germany",
+    "domesticLeague": "Bundesliga",
+    "reputation": 85
+  },
+  {
+    "slug": "bayer-leverkusen",
+    "name": "Bayer Leverkusen",
+    "shortCode": "LEV",
+    "country": "Germany",
+    "domesticLeague": "Bundesliga",
+    "reputation": 86
+  },
+  {
+    "slug": "paris-saint-germain",
+    "name": "Paris Saint-Germain",
+    "shortCode": "PSG",
+    "country": "France",
+    "domesticLeague": "Ligue 1",
+    "reputation": 90
+  },
+  {
+    "slug": "inter",
+    "name": "Inter Milan",
+    "shortCode": "INT",
+    "country": "Italy",
+    "domesticLeague": "Serie A",
+    "reputation": 88
+  },
+  {
+    "slug": "ac-milan",
+    "name": "AC Milan",
+    "shortCode": "ACM",
+    "country": "Italy",
+    "domesticLeague": "Serie A",
+    "reputation": 86
+  },
+  {
+    "slug": "juventus",
+    "name": "Juventus",
+    "shortCode": "JUV",
+    "country": "Italy",
+    "domesticLeague": "Serie A",
+    "reputation": 87
+  },
+  {
+    "slug": "napoli",
+    "name": "SSC Napoli",
+    "shortCode": "NAP",
+    "country": "Italy",
+    "domesticLeague": "Serie A",
+    "reputation": 84
+  },
+  {
+    "slug": "benfica",
+    "name": "SL Benfica",
+    "shortCode": "BEN",
+    "country": "Portugal",
+    "domesticLeague": "Primeira Liga",
+    "reputation": 82
+  },
+  {
+    "slug": "porto",
+    "name": "FC Porto",
+    "shortCode": "POR",
+    "country": "Portugal",
+    "domesticLeague": "Primeira Liga",
+    "reputation": 81
+  },
+  {
+    "slug": "ajax",
+    "name": "AFC Ajax",
+    "shortCode": "AJX",
+    "country": "Netherlands",
+    "domesticLeague": "Eredivisie",
+    "reputation": 80
+  }
+]

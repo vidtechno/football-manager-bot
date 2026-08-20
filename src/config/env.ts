@@ -83,6 +83,15 @@ const envSchema = z.object({
       1,
       "Atrof-muhit o'zgaruvchisi bo'sh bo'lishi mumkin emas: CRON_SECRET",
     ),
+
+  WEB_JWT_SECRET: z
+    .string()
+    .optional()
+    .default('default_web_jwt_secret_min_32_chars_long_key_2026'),
+  WEB_APP_URL: z.string().optional().default('http://localhost:3000'),
+  ALLOW_DEV_AUTH: z.string().optional().default('false'),
+
+  ADMIN_TELEGRAM_IDS: z.string().optional(),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;
@@ -107,7 +116,18 @@ export function loadEnvironment(
     return cachedEnv;
   }
 
-  if (process.env['NODE_ENV'] !== 'production') {
+  if (process.env['NODE_ENV'] === 'test') {
+    process.env['SUPABASE_PROJECT_ID'] ||= 'test-proj-id';
+    process.env['SUPABASE_URL'] ||= 'https://test-proj.supabase.co';
+    process.env['SUPABASE_ANON_KEY'] ||= 'test-anon-key-12345678901234567890';
+    process.env['SUPABASE_SECRET_KEY'] ||=
+      'test-secret-key-12345678901234567890';
+    process.env['TELEGRAM_BOT_TOKEN'] ||=
+      '123456789:ABCdefGHIjklMNOpqrsTUVwxyZ';
+    process.env['TELEGRAM_BOT_USERNAME'] ||= 'football_manager_demo_bot';
+    process.env['TELEGRAM_WEBHOOK_SECRET'] ||= 'test-webhook-secret';
+    process.env['CRON_SECRET'] ||= 'test-cron-secret';
+  } else if (process.env['NODE_ENV'] !== 'production') {
     config({ path: '.env.local' });
   }
 
