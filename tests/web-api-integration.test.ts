@@ -13,7 +13,10 @@ process.env['NODE_ENV'] ||= 'test';
 
 import request from 'supertest';
 import { app } from '../src/api/app.js';
-import { verifyTelegramInitData, generateAppToken } from '../src/api/telegramAuth.js';
+import {
+  verifyTelegramInitData,
+  generateAppToken,
+} from '../src/api/telegramAuth.js';
 import { AuthService } from '../src/services/authService.js';
 import { IdentityService } from '../src/services/identityService.js';
 
@@ -23,7 +26,9 @@ describe('Phase 10, 11 & 13 — Username/Password Auth, Cookie, CSRF & Admin RBA
     expect(AuthService.validateUsername('a'.repeat(25)).isValid).toBe(false); // Too long
     expect(AuthService.validateUsername('user@name').isValid).toBe(false); // Invalid chars
     expect(AuthService.validateUsername('Diyor_2026').isValid).toBe(true);
-    expect(AuthService.validateUsername('Diyor_2026').normalized).toBe('diyor_2026');
+    expect(AuthService.validateUsername('Diyor_2026').normalized).toBe(
+      'diyor_2026',
+    );
   });
 
   it('2. should validate password minimum, maximum length and whitespace-only rules', () => {
@@ -34,7 +39,10 @@ describe('Phase 10, 11 & 13 — Username/Password Auth, Cookie, CSRF & Admin RBA
   });
 
   it('3. should verify Telegram initData HMAC signature & timing-safe check', () => {
-    const invalidPayload = verifyTelegramInitData('user=%7B%22id%22%3A12345%7D&hash=invalidhash', 'test-bot-token');
+    const invalidPayload = verifyTelegramInitData(
+      'user=%7B%22id%22%3A12345%7D&hash=invalidhash',
+      'test-bot-token',
+    );
     expect(invalidPayload).toBeNull();
   });
 
@@ -135,15 +143,23 @@ describe('Phase 10, 11 & 13 — Username/Password Auth, Cookie, CSRF & Admin RBA
   });
 
   it('11. should generate CSRF tokens and set HttpOnly refresh session cookies', async () => {
-    const session = await AuthService.createAuthSession('mgr-test-session-uuid', true);
+    const session = await AuthService.createAuthSession(
+      'mgr-test-session-uuid',
+      true,
+    );
     expect(session.refreshToken).toBeTypeOf('string');
     expect(session.csrfToken).toBeTypeOf('string');
     expect(session.isRememberMe).toBe(true);
-    expect(new Date(session.expiresAt).getTime()).toBeGreaterThan(Date.now() + 29 * 24 * 60 * 60 * 1000);
+    expect(new Date(session.expiresAt).getTime()).toBeGreaterThan(
+      Date.now() + 29 * 24 * 60 * 60 * 1000,
+    );
   });
 
   it('12. should verify database-backed admin role resolution in IdentityService', async () => {
-    const isAdminNone = await IdentityService.isManagerAdmin('non-existent-mgr-uuid', 999999999);
+    const isAdminNone = await IdentityService.isManagerAdmin(
+      'non-existent-mgr-uuid',
+      999999999,
+    );
     expect(isAdminNone).toBe(false);
   });
 
